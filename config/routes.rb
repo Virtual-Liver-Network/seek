@@ -1,5 +1,7 @@
 SEEK::Application.routes.draw do
 
+  mount StyleGuide::Engine => "/style-guide"
+
   resources :scales do
     collection do
       post :search

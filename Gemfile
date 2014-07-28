@@ -81,8 +81,12 @@ gem 'unicorn-rails'
 gem "recaptcha", '0.3.1'
 
 gem 'rb-readline', '~> 0.4.2'
+gem 'style-guide'
+#gem 'kalei', :require => 'kalei/engine'
 
 group :assets do
+  gem "sass-rails"
+  gem "coffee-rails"
   gem 'turbo-sprockets-rails3'
 end
 
@@ -104,3 +108,6 @@ end
 group :assets do
   gem 'yui-compressor'
 end
+
+gem "rack-livereload", :group => "development"
+gem "guard-livereload", :group => "development"
