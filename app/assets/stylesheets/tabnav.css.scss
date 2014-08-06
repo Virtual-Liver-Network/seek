@@ -1,3 +1,4 @@
+@import "branding/variables";
 .dm {
     font-family: 'Lucida Grande', Tahoma, Arial, Helvetica, sans-serif;
     padding-top: 10px;
@@ -18,7 +19,7 @@
     text-align: center
 }
 .dm .item1 {
-    background: #3173ff;
+    background: $blueBgColorDropDownMenu;
     color: #ffffff;
     white-space: nowrap;
 
@@ -26,7 +27,7 @@
 .dm .item1:hover,
 .dm .item1-active,
 .dm .item1-active:hover {
-    background: #47bee4;
+    background: $primaryHoverColor;
     color: #ffffff;
 }
 .dm .section {

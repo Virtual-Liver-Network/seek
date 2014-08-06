@@ -1,5 +1,10 @@
 #The terms should be capitalized at the first character.
 en:
+  style_guide:
+    vln_elements:
+      app_layout_grids: >
+       styles, e.g. borders, min-height, min-width, background colors, with `<div id='doc3' style="xxx">`
+       have been added for better displaying the layout
   #Biosamples renaming
   biosamples:
     sample_parent_term: "Specimen"

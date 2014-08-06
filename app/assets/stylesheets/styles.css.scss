@@ -1,3 +1,5 @@
+@import "branding/variables";
+
 body {
 	font-family: arial,sans-serif;
     font-size: 14px;
@@ -648,7 +650,7 @@ ul.tabbernav li a
     margin-left: 3px;
     border: 1px solid #aaa;
     border-bottom: none;
-    background: #ccccff;
+    background: $relatedItemsTabsBgColor;
     text-decoration: none;
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;
@@ -662,7 +664,7 @@ ul.tabbernav li a:link { color: #333; }
 ul.tabbernav li a:hover
 {
     color: #000;
-    background: #3173ff;
+    background: $blueBgColorDropDownMenu;
     border-color: #CCC;
 }
 
@@ -872,7 +874,7 @@ img.badge {
 #topbar {
     text-align: center;
     height: 20px;
-    background-image: url("<%= asset_path('searchfade-repeat.png') %>");
+    background-image: url("searchfade-repeat.png");
     background-repeat: repeat-x;
     background-position: top center;
     padding: 10px 0;
@@ -1113,7 +1115,7 @@ ul.horiz_list_items li {
     border: 2px solid #999;
     border-width: 1px 0 1px 0;
     color: #333;
-    background-image: url("<%= asset_path('footer-bg.png') %>");
+    background-image: url("footer-bg.png");
     background-position: top;
     background-repeat: repeat-x;
     background-color: #eee;
@@ -1334,7 +1336,7 @@ div.collapsable_div {
 
 div.collapsable_div_header {
   margin: 0; 
-  background-image: url("<%= asset_path('header-bg.png') %>");
+  background-image: url("header-bg.png");
   background-position: top;
   background-repeat: repeat-x;
   background-color: #eee;
@@ -1899,7 +1901,7 @@ ul.usage_times_list {
 
 .none_text {
     font-style: italic;
-    color: #666666;
+    color: $noneTextColor;
 }
 
 ul.model_scales_list {

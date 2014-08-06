@@ -81,7 +81,7 @@ gem 'unicorn-rails'
 gem "recaptcha", '0.3.1'
 
 gem 'rb-readline', '~> 0.4.2'
-gem 'style-guide'
+
 #gem 'kalei', :require => 'kalei/engine'
 
 group :assets do
@@ -91,11 +91,11 @@ group :assets do
 end
 
 group :development do
+  gem 'style-guide'
   gem "pry"
   gem "pry-doc"
   gem "pry-remote"
   gem "request-log-analyzer"
-  gem 'rails-dev-boost', :git => 'git://github.com/thedarkone/rails-dev-boost.git'
 end
 
 group :test do

@@ -1,3 +1,5 @@
+@import "branding/variables";
+
 .menutabs {
     padding: 4px 0 1px 2em;
     margin: 0;
@@ -24,7 +26,7 @@
     border-right: 1px solid #BBBBBB;
     border-bottom: 1px solid transparent;
     text-decoration: none;
-    background-image: url("<%= asset_path('tab-bg.png') %>");
+    background-image: url("tab-bg.png");
     background-position: top;
     background-repeat: repeat-x;
     background-color: #EDEDED;
@@ -33,18 +35,18 @@
 
 .menutabs li a:link {
     color: #FFFFFF;
-    background: #317eff;
+    background: $blueBgColorMenuTab;
     border: 0px;
 }
 
 .menutabs li a:visited {
     color: #FFFFFF;
-    background: #317eff;
+    background: $blueBgColorMenuTab;
 }
 
 .menutabs li a:hover {
     color: #FFFFFF;
-    background-color: #2651ff;
+    background-color:$blueBgColorMenuTabHover;
 }
 
 .menutabs li#selected_tabnav a {

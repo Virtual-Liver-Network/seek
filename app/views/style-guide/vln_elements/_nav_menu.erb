@@ -1,0 +1,86 @@
+<%= javascript_include_tag 'dropMenu' %>
+<div>
+  <p> VLN dropdown menus</p>
+
+<table cellspacing="0" cellpadding="0" id="menu" class="dm">
+  <tr>
+    <td>
+      <a class="item1 curved_top" href="javascript:void(0)"> Yellow
+        Pages <%= image_tag('misc_icons/arrow_down_small_white.png') %></a>
+
+      <div class="section">
+        <li><a href="#"> People</a></li>
+        <li><a href="#"> Projects</a></li>
+        <li><a href="#"> Institutions</a></li>
+      </div>
+    </td>
+    <td>
+      <div class="tab_gap_before">
+        <a class="item1 curved_top" href="javascript:void(0)">
+          Experiments <%= image_tag('misc_icons/arrow_down_small_white.png') %></a>
+
+        <div class="section">
+          <li><a href="#"> Investigations </a></li>
+          <li><a href="#"> Studies </a></li>
+          <li><a href="#"> Assays </a></li>
+        </div>
+      </div>
+    </td>
+    <td>
+      <div class="tab_gap_before">
+        <a class="item1 curved_top" href="#"> Help </a>
+      </div>
+    </td>
+
+  </tr>
+</table>
+<br/>
+<br/>
+<br/>
+<br/>
+</div>
+<div>
+  <p> SysMO two levels menus</p>
+
+
+<ul class="menutabs">
+  <li>
+    <a class="curved_top" href="#">Yellow pages</a>
+  </li>
+  <li>
+    <a class="curved_top" href="#">Experiment details</a>
+  </li>
+  <li>
+    <a class="curved_top" href="#">Assets</a>
+  </li>
+
+  <li>
+    <a class="curved_top" href="#">Scales</a>
+  </li>
+  <li class="spacer_before">
+    <a class="curved_top" href="#"> Documentation </a>
+  </li>
+</ul>
+</div>
+<div id="topbar" class="curved_top">
+  <ul id="section_menu_items" style="">
+    <li class="curved">
+      <a class="curved" href="#">Programmes</a>
+    </li>
+    <li class="curved">
+      <a class="curved" href="#">People</a>
+    </li>
+    <li class="curved">
+      <a class="curved" href="#">Projects</a>
+    </li>
+    <li class="curved">
+      <a class="curved" href="#">Institutions</a>
+    </li>
+  </ul>
+</div>
+
+
+<script type="text/javascript">
+    var dm = new DropMenu1('menu');
+    dm.init();
+</script>

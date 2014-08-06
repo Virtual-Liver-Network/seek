@@ -1,0 +1,37 @@
+<div id="search_box">
+  <font color="white">
+    <b> Search: </b>
+  </font>
+  <input id="search_query" class="curved" type="text" value="Search here..."  onclick="clickclear(this, 'Search here...')" onblur="clickrecall(this, 'Search here...')" name="search_query">
+  <select id="search_type" name="search_type" style="visibility: visible;">
+    <option selected="selected" value="All">All</option>
+    <option value="assays">Assays</option>
+    <option value="data_files">Data files</option>
+    <option value="events">Events</option>
+    <option value="institutions">Institutions</option>
+    <option value="investigations">Investigations</option>
+    <option value="models">Models</option>
+    <option value="people">People</option>
+    <option value="presentations">Presentations</option>
+    <option value="projects">Projects</option>
+    <option value="publications">Publications</option>
+    <option value="samples">Samples</option>
+    <option value="sops">SOPs</option>
+    <option value="specimens">Specimens</option>
+    <option value="strains">Strains</option>
+    <option value="studies">Studies</option>
+  </select>
+  <select id="scale" name="scale" style="visibility: visible;">
+    <option selected="selected" value="all">All</option>
+    <option value="organism">Organism</option>
+    <option value="liver">Liver</option>
+    <option value="liverLobule">Liver lobule</option>
+    <option value="intercellular">Intercellular</option>
+    <option value="cell">Cell</option>
+  </select>
+<span title="">
+<input id="include_external_search" type="checkbox" value="1" name="include_external_search">
+External
+</span>
+  <input type="submit" value="Search" name="commit">
+</div>

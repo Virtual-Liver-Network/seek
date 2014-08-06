@@ -38,7 +38,7 @@
         border-bottom: #AAAAEE 1px solid;
 	border-width: 0 1px 1px 1px;
 	border-bottom-color: #CCCCCC;
-	background-image: url("<%= asset_path('gadget-hd-bg.png') %>");
+	background-image: url("gadget-hd-bg.png");
 	background-position: top;
 	background-repeat: repeat-x;
 	background-color: #EEEEEE;
@@ -218,7 +218,7 @@
 }
 
 input.gadget_button {
-    background-color: #307af5;
+    background-color: $blueBgColorGadgetButton;
     height: 2em;
     border: thin #dcdcdc;
     border-radius: 2px;
@@ -233,11 +233,11 @@ input.gadget_button {
 }
 
 input.gadget_button_menu {
-    background-image: url(<%=asset_path("misc_icons/arrow_down_small_white.png")%>);
+    background-image: url("misc_icons/arrow_down_small_white.png");
     background-color: transparent; /* make the button transparent */
     background-repeat: no-repeat;  /* make the background image appear only once */
     background-position: calc(100% - 3px) center;
-    background-color: #307af5;
+    background-color:  $blueBgColorGadgetButton;
     height: 2em;
     border: thin #dcdcdc;
     border-radius: 2px;
