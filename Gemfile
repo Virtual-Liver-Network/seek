@@ -81,8 +81,7 @@ gem 'unicorn-rails'
 gem "recaptcha", '0.3.1'
 
 gem 'rb-readline', '~> 0.4.2'
-
-#gem 'kalei', :require => 'kalei/engine'
+gem 'style-guide'
 
 group :assets do
   gem "sass-rails"
@@ -91,7 +90,6 @@ group :assets do
 end
 
 group :development do
-  gem 'style-guide'
   gem "pry"
   gem "pry-doc"
   gem "pry-remote"
