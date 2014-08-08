@@ -1,0 +1,26 @@
+en:
+    style_guide:
+      seek_customization:
+        app_colors: >
+          primary colors
+        app_layout_grids: >
+         styles, e.g. borders, min-height, min-width, background colors, with `<div id='doc3' style="xxx">`
+         have been added for better displaying the layout
+        buttons: >
+          buttons can be `<a> <input> <button>`  elements. Disabled buttons are with class/attribute `disabled`.
+          Some special buttons like buttons for actions(e.g. create, edit, manage item) and gadget buttons
+        items_list: >
+          view items in a list
+        nav_menu: >
+          there are two styles of menu. One with drop-down sub-menus is used in VLN SEEK http://seek.virtuelle-leber.de
+          and the other with two levels menus(the second level is on the top bar or search bar).
+          see SysMO SEEK test https://testing.sysmo-db.org for more details
+        related_items_tabs: >
+          view items in a tab format, e.g. related other items on the item show page or search (with scales) results
+        scales: >
+          scales slider without images
+
+
+
+
+
