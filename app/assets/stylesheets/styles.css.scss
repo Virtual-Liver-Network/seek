@@ -630,56 +630,57 @@ li.tabberactive = the active tab
 ul.tabbernav
 {
     margin: 0;
-    padding: 3px 0;
+    padding: 5px;
     border-bottom: 1px solid #CCC;    
     font-size: 90%;    
     margin-left: 0.5em;
     margin-right: 0.5em;
+    background-color: $darkBg;
+    text-align: left; 
 }
 
 ul.tabbernav li
 {
     list-style: none;
-    margin: 0;
-    display: inline;
+    margin: 5px;
+    padding: 0 10px;
+    display: inline-block;
+    background-color: $tab;
+    border-radius: 2px;
+    color: $lightFg;
 }
 
 ul.tabbernav li a
 {
-    padding: 3px 0.5em;
-    margin-left: 3px;
-    border: 1px solid #aaa;
-    border-bottom: none;
-    background: $relatedItemsTabsBgColor;
+    line-height: 30px;
     text-decoration: none;
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
-    -moz-border-radius-topleft: 4px;
-    -moz-border-radius-topright: 4px;
-
+    color: inherit;
 }
 
-ul.tabbernav li a:link { color: #333; }
+ul.tabbernav li .count{
+    vertical-align: super;
+    font-size: 0.7em;
+    line-height: 1em;
+    font-weight: bold;
+    color: $tabActive;
+}
 
 ul.tabbernav li a:hover
 {
-    color: #000;
-    background: $blueBgColorDropDownMenu;
-    border-color: #CCC;
+    color: inherit;
 }
 
-ul.tabbernav li.tabberactive a
+ul.tabbernav li.tabberactive
 {
-    background-color: #fff;
-    border-bottom: 1px solid #fff;
+    box-shadow: inset 0 2px 0 $darkBoxshadow;
+    background-color: $tabActive;
+    color: $darkFg;
 }
 
-ul.tabbernav li.tabberactive a:hover
-{
-    color: #000;
-    background: white;
-    border-bottom: 1px solid white;
+ul.tabbernav li.tabberactive .count{
+    color: $tab;
 }
+
 
 ul.tabbernav li a.external_result {
     background: #DCF;
