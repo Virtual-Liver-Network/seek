@@ -181,7 +181,7 @@ ul#section_menu_items > li > a:hover {
     margin-top: 5px;
     padding: $advanced_options_pedding;
     background-color: $lightBg;
-    box-shadow: 0px 1px 1px 1px $darkBoxshadow;
+    box-shadow: 0px 2px 1px 0px darken($boxshadow, 20%);
     color: $blackFg;
     text-align: left;
     font-size: 0.8em;
@@ -200,7 +200,7 @@ ul#section_menu_items > li > a:hover {
         }
     }
 
-    input[type="radio"]{
+    input[type="radio"], input[type="checkbox"]{
         display: none;
 
         & + label{
@@ -222,42 +222,15 @@ ul#section_menu_items > li > a:hover {
 
             &:last-child{
                 margin-bottom: 0px;
+            }
+
+            &:hover::before{
+                background-position: -1px -23px;
             }
         }
 
         &:checked + label::before{
             background-position: -1px -2px;
-        }
-    }
-
-
-    input[type="checkbox"]{
-        display: none;
-
-        & + label{
-            display: block;
-            line-height: 17px;
-            margin-bottom: 5px;
-    
-            &::before{
-                content: "";
-                height: 17px;
-                width: 17px;
-                background-image: url("icons.png");
-                background-repeat: no-repeat;
-                background-position: -1px -45px;
-                vertical-align: bottom;
-                display: inline-block;
-                margin-right: 5px;
-            }
-
-            &:last-child{
-                margin-bottom: 0px;
-            }
-        }
-
-        &:checked + label::before{
-            background-position: -1px -23px;
         }
     }
 
