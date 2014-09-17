@@ -10,9 +10,7 @@
     }
 }
 .dm .item1,
-.dm .item1:hover,
-.dm .item1-active,
-.dm .item1-active:hover {
+.dm .item1-active,{
     text-decoration: none;
     display: inline-block;
     position: relative;
@@ -20,18 +18,19 @@
     margin-top: 5px;
     font-weight: bold;
     text-align: center;
-    padding: 0 15px 5px;
     
+    a{
+        padding: 0 15px 5px;
+        line-height: 2;
+        display: block;
+    }
+
 }
 .dm .item1 {
     background: transparent;
     color: #ffffff;
-    white-space: nowrap;
-
 }
-.dm .item1:hover,
-.dm .item1-active,
-.dm .item1-active:hover {
+.dm .item1-active, .dm .item1:hover {
     background: $lightBg;
     color: $darkBg;
 }
@@ -43,25 +42,27 @@
     text-align: left;
     font-weight: bolder;
     left: 0;
-    margin: 5px 0 0 0;
+    margin: 0;
     box-shadow: 0px 1px 1px 0px darken($boxshadow, 20%);
-}
-.section li,
-.section li:hover{
-    text-decoration: none;
-    display: block;
-    white-space: nowrap;
-    padding: 0 15px;
-    line-height: 2;
-}
 
-.section li {
-    background: $lightBg;
-    color: $darkBg;
+    li {
+        text-decoration: none;
+        display: block;
+        white-space: nowrap;
+        padding: 0;
+        background: $lightBg;
+        color: $darkBg;
 
-    &:hover {
-        background: $darkBg;
-        color: $lightBg;
+        a{
+            display: block;
+            padding: 0 15px;
+            line-height: 2;
+        }
+
+        &:hover {
+            background: $darkBg;
+            color: $lightBg;
+        }
     }
 }
 
