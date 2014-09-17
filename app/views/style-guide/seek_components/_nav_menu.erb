@@ -1,39 +1,29 @@
 <%= javascript_include_tag 'dropMenu' %>
 <div>
   <p> VLN dropdown menus</p>
-
-<table cellspacing="0" cellpadding="0" id="menu" class="dm">
-  <tr>
-    <td>
-      <a class="item1 curved_top" href="javascript:void(0)"> Yellow
-        Pages <%= image_tag('misc_icons/arrow_down_small_white.png') %></a>
-
-      <div class="section">
-        <li><a href="#"> People</a></li>
-        <li><a href="#"> Projects</a></li>
-        <li><a href="#"> Institutions</a></li>
-      </div>
-    </td>
-    <td>
-      <div class="tab_gap_before">
-        <a class="item1 curved_top" href="javascript:void(0)">
-          Experiments <%= image_tag('misc_icons/arrow_down_small_white.png') %></a>
-
-        <div class="section">
+<div style="height: 250px; background-color: #F0F0F0">
+  <nav style="padding: 0 2em; background-color: #015D8E;" >
+    <ul id="menu" class="dm">
+      <li class="item1">
+        <a class="curved_top" href="javascript:void(0)"> Yellow Pages</a>
+        <ul class="section">
+          <li><a href="#">People</a></li>
+          <li><a href="#">Projects</a></li>
+          <li><a href="#">Institutions</a></li>
+        </ul>
+      </li><li class="item1">
+        <a class="curved_top" href="javascript:void(0)">Experiments</a>
+        <ul class="section">
           <li><a href="#"> Investigations </a></li>
           <li><a href="#"> Studies </a></li>
           <li><a href="#"> Assays </a></li>
-        </div>
-      </div>
-    </td>
-    <td>
-      <div class="tab_gap_before">
-        <a class="item1 curved_top" href="#"> Help </a>
-      </div>
-    </td>
-
-  </tr>
-</table>
+        </ul>
+      </li><li class="item1">
+        <a class="curved_top" href="#"> Help </a>
+      </li>
+    <ul>
+  </nav>
+</div>
 <br/>
 <br/>
 <br/>

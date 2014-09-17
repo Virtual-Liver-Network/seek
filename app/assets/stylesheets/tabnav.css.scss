@@ -2,25 +2,28 @@
 
 .dm {
     font-family: 'Lucida Grande', Tahoma, Arial, Helvetica, sans-serif;
-    padding-top: 10px;
+    text-align: left;
+    margin: 0;
+
+    a, a:hover{
+        color: inherit;
+    }
 }
 .dm .item1,
 .dm .item1:hover,
 .dm .item1-active,
 .dm .item1-active:hover {
-
-    padding: 3px 8px 4px 8px;
-    border: 1px #003366;
-    border-style: solid none solid none;
     text-decoration: none;
-    display: block;
+    display: inline-block;
     position: relative;
-    width: 100%;
+    line-height: 2;
+    margin-top: 5px;
     font-weight: bold;
-    text-align: center
+    text-align: center;
+    padding: 0 15px 5px;
 }
 .dm .item1 {
-    background: $blueBgColorDropDownMenu;
+    background: transparent;
     color: #ffffff;
     white-space: nowrap;
 
@@ -28,53 +31,38 @@
 .dm .item1:hover,
 .dm .item1-active,
 .dm .item1-active:hover {
-    background: $primaryHoverColor;
-    color: #ffffff;
+    background: $lightBg;
+    color: $darkBg;
 }
 .dm .section {
-    border: 1px #003366;
-    border-style: solid solid solid solid;
+    width: 200px;
     position: absolute;
     visibility: hidden;
     z-index: 3 !important;
-    white-space: nowrap;
-
     text-align: left;
     font-weight: bolder;
-    font-size: 95%;
-    margin: 0;
+    left: 0;
+    margin: 5px 0 0 0;
+    box-shadow: 0px 1px 1px 0px darken($boxshadow, 20%);
 }
 .section li,
 .section li:hover{
-     padding: 3px 8px 4px 8px;
     text-decoration: none;
     display: block;
     white-space: nowrap;
-    color: #ffffff;
+    padding: 0 15px;
+    line-height: 2;
 }
 
 .section li {
-    background: #47bee4;
-    color: #ffffff;
+    background: $lightBg;
+    color: $darkBg;
 
+    &:hover {
+        background: $darkBg;
+        color: $lightBg;
+    }
 }
-.section li :hover {
-    color: #ffffff;
-}
-.section li a {
-	color: #ffffff;
-	text-decoration: none;
-}
-
-
-.section li a:hover {
-    color: #000099;
-}
-
-.tab_gap_before {
-    margin-left: 1em;
-}
-
 
 .dm .left, .dm .left:hover { border-style: solid none solid solid; }
 .dm .right, .dm .right:hover { border-style: solid solid solid none; }
