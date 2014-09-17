@@ -36,7 +36,7 @@
     margin: 30px 40px;
     clear:right;
     height: 8px;
-    background-color: $mainBg;
+    background-color: $boxshadow;
 
     .ui-slider-range{
         background-color: $mainFg;
@@ -66,7 +66,7 @@
     border: solid 1px $boxshadow;
     border-radius: 16px;
     background-color: $lightBg;
-    box-shadow: 0px 0px 1px 0px $boxshadow;
+    box-shadow: 0px 0px 1px 0px darken($boxshadow, 20%);
 
     &:focus{
         outline: none;
@@ -222,7 +222,7 @@ ul#scale_list li {
         &.selected{
             color: $darkFg;
             & ~ li::before{
-                background-color: $mainBg;
+                background-color: $boxshadow;
             }
         }
     }
