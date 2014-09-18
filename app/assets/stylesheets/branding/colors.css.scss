@@ -1,5 +1,25 @@
 @import "variables";
 
+@mixin sample-color($color) {
+  
+  .original{
+    background-color: $color;
+    color: $color;
+  }
+  
+  @for $i from 1 through 10 {
+    .darker-#{$i * 10}{
+      background-color: darken($color, $i * 10);
+      color: lighten($color, $i * 10);
+    }
+
+    .brighter-#{$i * 10}{
+      background-color: lighten($color, $i * 10);
+      color: darken($color, $i * 10);
+    }
+  }
+}
+
 
 .blue_bg_color_drop_down_menu {
   background-color: $blueBgColorDropDownMenu;
@@ -43,6 +63,23 @@
   background-color: $noneTextColor;
 }
 
+.color-main-background{
+  background-color: $mainBg;
+}
 
+.sample-board-color-1{
+  @include sample-color($mainFg);
+}
 
+.sample-board-color-2{
+  @include sample-color($mainBg);
+}
+
+.sample-board-color-3{
+  @include sample-color($secondary-color-green);
+}
+
+.sample-board-color-4{
+  @include sample-color($secondary-color-purple);
+}
 

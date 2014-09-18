@@ -20,14 +20,18 @@ $DarkForeColor: #015D8E;
 
 $vlnLighterBlue: #147EB7;
 
-$darkBg: #015D8E;
 $mainBg: #F0F0F0;
+$mainFg: #0077B5;
+
+$secondary-color-green: #0fa58a;
+$secondary-color-purple: #a30fa3;
+
+$darkBg: #015D8E;
 $lightBg: #FFFFFF;
 $darkFg: $darkBg;
-$mainFg: #0077B5;
 $lightFg: #FFF;
 $blackFg: #282828;
-$boxshadow: #E3E4E8;
+$boxshadow: darken($mainBg, 10%);
 $darkBoxshadow: #91BACF;
 $tab: #147EB7;
 $tabActive: #ABDBF4;
