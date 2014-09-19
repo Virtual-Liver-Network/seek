@@ -83,3 +83,7 @@
   @include sample-color($secondary-color-purple);
 }
 
+.sample-board-color-5{
+  @include sample-color($secondary-color-lime);
+}
+
