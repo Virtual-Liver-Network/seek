@@ -1024,8 +1024,6 @@ div.list_item_whole_width{
     width: 100%;
 }
 
-
-
 div.hidden_list_item {
     width: 95%;
     background-color: #F0F0F0;
@@ -1128,71 +1126,70 @@ ul.horiz_list_items li {
 /* Begin Footer styles */
 
 #ft {	
-    border: 2px solid #999;
-    border-width: 1px 0 1px 0;
-    color: #333;
-    background-image: url("footer-bg.png");
-    background-position: top;
-    background-repeat: repeat-x;
-    background-color: #eee;
-	bottom:0px;
-    margin-bottom:0.5em;
-}
+        border: 2px solid #999;
+        color: $lightFg;
+        background-position: top;
+        background-repeat: repeat-x;
+        background-color: $darkBg;
+    	bottom:0px;
+        margin-bottom:0.5em;
 
-#ft .copyright {
-    text-align: center;
-    font-weight: bold;
-    padding: 0.5em;
-}
+        a{
+            color: $tabActive;
+        }
 
-#ft table {
-    width: 100%;
-    border-top: 1px solid #999;
-    border-spacing: 0;
-    margin: 0;		
-}
+    .copyright {
+        text-align: center;
+        font-weight: bold;
+        padding: 0.5em;
+    }
 
-#ft td {
-    padding: 0.8em 0.5em;	 
-}
+    table {
+        width: 100%;
+        border-spacing: 0;
+        margin: 0;      
+    }
 
-#ft table p {
-    padding: 0.3em 0;
-    line-height: 1;	
-}
+    td {
+        padding: 0.8em 0.5em; 
+    }
 
-#ft td.left {
-    width: 10em;
-}
+    table p {
+        padding: 0.3em 0;
+        line-height: 1;
+    }
 
-#ft td.left p {
-    text-align: center;
-}
+    td.left {
+        width: 10em;
+    }
 
-#ft td.middle {
-    width: auto;    
-    border-left: 1px solid #999;
-    text-align: center;		
-}
-	
-#ft td.middle p {
-    width: 100%;
-    text-align: center;     
-}
+    td.left p {
+        text-align: center;
+    }
 
-#ft td.middle img {	
-	vertical-align: middle;
-	padding-left: 3px;
-}
+    td.middle {
+        width: auto;    
+        text-align: center;     
+    }
 
-#ft td.right {
-    width: 110px;
-    text-align: center;
-    border-left: 1px solid #999;
-}
+    td.middle p {
+        width: 100%;
+        text-align: center;    
+    }
 
-#ft td.right p {
-    text-align: center;
+    td.middle img { 
+        vertical-align: middle;
+        padding-left: 3px;
+    }
+
+    td.right {
+        width: 110px;
+        text-align: center;
+    }
+    
+    td.right p {
+        text-align: center;
+    }
 }
 
 div.error_div {
