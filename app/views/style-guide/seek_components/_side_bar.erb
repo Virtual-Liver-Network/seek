@@ -1,82 +1,42 @@
-<div id="myexp_sidebar" class="yui-b">
+<div id="myexp_sidebar" class="yui-b" style="background-color: #F0F0F0; padding: 20px; width: 250px;">
   <div class="sysmo_gadget">
-    <div class="header curved_top">
+    <div class="header">
       <p> Log in / Register </p>
     </div>
-    <div class="contents curved_bottom">
+    <div class="contents" id="login-container">
       <form method="post" action="/session" accept-charset="UTF-8">
-
         <input id="called_from_controller" type="hidden" value="homes" name="called_from[controller]">
         <input id="called_from_action" type="hidden" value="index" name="called_from[action]">
         <input id="called_from_id" type="hidden" name="called_from[id]">
 
-        <div class="login_surround curved">
-          <div id="password_login">
-            <p class="label"> Login: </p>
-
-            <p>
-              <input id="login" class="field" type="text" style="width:150px" name="login">
-            </p>
-
-            <p class="label"> Password: </p>
-
-            <p>
-              <input id="password" class="field curved" type="password" style="width:150px" name="password">
-            </p>
-
-            <p class="label">
-              Remember me:
-              <input id="remember_me" type="checkbox" style="width:2em;" name="remember_me">
-            </p>
-          </div>
-          <div id="openid_login" style="display: none">
-            <p class="label">
-              <a href="#" target="_blank"><%= image_tag "openid-16x16.gif" %>OpenID:</a>
-            </p>
-
-            <p>
-              <input id="openid_identifier" class="field curved" type="text" style="width:150px" name="openid_identifier">
-            </p>
-          </div>
-          <p>
-            Alternatively...
-            <br>
-            <a href="#" id="login_toggle_link">Log in using <%= image_tag "openid-16x16.gif" %>OpenID</a>
-            <br>
-          </p>
+        <a href="#" id="login_toggle_link">Log in using <%= image_tag "openid-16x16.gif" %> OpenID</a>
+        <div id="password_login">
+          <input id="login" placeholder="username"  class="field" type="text" name="login"/>
+          <input id="password" placeholder="password" class="field" type="password" name="password"/>
+          <input id="remember_me" type="checkbox" name="remember_me"/>
+          <label for="remember_me">remember me</label>
         </div>
-        <p>
-          <input id="login_button" type="submit" value="Log in" onclick="$('login_button').disabled=true;this.form.submit();return(false);" name="commit">
-        </p>
+        <input id="login_button" type="submit" value="Log in" onclick="return false" name="commit">
       </form>
-      <p>
-        <b>Need an account?</b>
-        <br>
-        <b>
-          <a href="#">Sign up</a>
-        </b>
-      </p>
-
-      <p style="font-size: 83%;">
-        <b>
-          <a href="#">Forgotten password?</a>
-        </b>
-      </p>
+      <div id="account_options">
+        <a href="#">Create account</a>
+        <a href="#">Forgot password</a>
+      </div>
     </div>
   </div>
 
 
   <div id="sidebar_tag_cloud">
     <div class="sysmo_gadget">
-      <div class="header curved_top">
+      <div class="header">
         Tags
         <a href="#">[show all]</a>
       </div>
-      <div class="contents curved_bottom">
+      <div class="contents">
         <div class="tags_smaller">
           <div class="hTagcloud">
             <div class="popularity">
-              <a href="#"> tag1</a>
+              <a class="popular" href="#">CellNetAnalyzer (CNA)</a><a class="popular" href="#">data management</a><a class="popular" href="#">Fluidigm</a><a class="popular" href="#">HepatoSys</a><a class="popular" href="#">IL-6</a><a class="popular" href="#">inflammation</a><a class="popular" href="#">Insulin signalling</a><a class="popular" href="#">Kinetic Modelling</a><a class="popular" href="#">logical modelling</a><a class="popular" href="#">LPS</a><a class="popular" href="#">LPS showcase</a><a class="popular" href="#">metabolism</a><a class="popular" href="#">MidtermReview</a><a class="popular" href="#">Nuclear receptors</a><a class="popular" href="#">ODE</a><a class="popular" href="#">primary hepatocytes</a><a class="popular" href="#">primary human hepatocytes</a><a class="popular" href="#">Report</a><a class="popular" href="#">TNFalpha</a><a class="popular" href="#">VLN</a>
             </div>
           </div>
         </div>
@@ -87,8 +47,8 @@
 
 
   <div id="organism_gadget" class="sysmo_gadget">
-    <div class="header curved_top"> Organisms</div>
-    <div class="contents curved_bottom">
+    <div class="header"> Organisms</div>
+    <div class="contents">
       <ul>
         <li>
           <a href="#"> organism example</a>

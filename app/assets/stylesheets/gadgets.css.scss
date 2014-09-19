@@ -2,14 +2,13 @@
 @import "branding/variables";
 
 .sysmo_gadget {
-	margin-bottom: 0.5em;
+	padding: 3px;
 	text-align: center;
-
-
 }
 
 .sysmo_gadget p {
 	margin: 0;
+
 }
 
 .sysmo_gadget a:hover {
@@ -35,24 +34,19 @@
 
 .sysmo_gadget .header {
 	min-height: 10px;
-	border: #CCCCCC 0px solid;
-        border-bottom: #AAAAEE 1px solid;
-	border-width: 0 1px 1px 1px;
-	border-bottom-color: #CCCCCC;
-	background-image: url("gadget-hd-bg.png");
-	background-position: top;
-	background-repeat: repeat-x;
-	background-color: #EEEEEE;
 	padding-bottom: 0.3em;
         padding-top: 0.3em;
         padding-left: 0.2em;
         padding-right: 0.2em;
 	text-align: center;
 	vertical-align: middle;
+	background-color: $darkBg;
+	color: $lightFg;
+	font-weight: bold;
 }
 
 .sysmo_gadget .header p {
-	font-weight: bold;
+
 	text-align: center;
 }
 
@@ -64,16 +58,10 @@
 }
 
 .sysmo_gadget .contents {
-	border-top: none;
-	border-right: #CCCCCC 1px solid;
-	border-bottom: none;
-	border-left: #CCCCCC 1px solid;
 	color: #000000;
   padding: 3px;
 	margin-top: 0;
 	text-align: center;
-  background-color: #FFFFFF;
-
 }
 
 .sysmo_gadget .contents p {
@@ -100,8 +88,8 @@
 }
 
 .sysmo_gadget .contents .login_surround {
-	border: 1px solid #ccc;
     padding: 0.2em 0;
+
 }
 
 .sysmo_gadget .contents .label {

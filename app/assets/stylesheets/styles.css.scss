@@ -88,9 +88,6 @@ input[type="text"] {
     border: solid 1px #aaa;
     background-color:white;
     color: #333333;
-    border-radius: 4px;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
     padding: 2px;
 }
 
@@ -135,8 +132,106 @@ input[type="text"] {
     padding-left: 7px;
 }
 
-#password_login input {
-	width: 18em;
+#login-container{
+    text-align: left;
+    padding: 0 0.8em;
+
+    #login_toggle_link{
+        line-height: 3em;
+        font-size: 0.8em;
+        color: $mainFg;
+
+        img{
+            height: 1em;
+            width: auto;
+        }
+    }
+
+    #login{
+        background-position: 4px 9px;
+    }
+
+    #password{
+        background-position: 4px -18px;
+    }
+
+    #password_login {
+
+        margin: 0 0 1em;
+
+        input[type="text"], input[type="password"] {
+    	    width: 100%;
+            line-height: 2.5em;
+            padding-left: 2em;
+            border: none;
+            background-color: $mainBg;
+            box-sizing: border-box;
+            margin-bottom: 1em;
+            border-radius: 0;
+            display: block;
+            background-image: url("icons-login.png");
+            background-repeat: no-repeat;
+        }
+
+        input[type="checkbox"]{
+            display: none;
+            margin-bottom: 1em;
+
+            & + label{
+                display: block;
+                font-size: 0.9em;
+                line-height: 0.9em;
+
+                &::before{
+                    content: "";
+                    height: 17px;
+                    width: 17px;
+                    background-image: url("icons.png");
+                    background-repeat: no-repeat;
+                    background-position: -1px -45px;
+                    vertical-align: middle;
+                    display: inline-block;
+                    margin-right: 5px;
+                }
+
+                &:hover::before{
+                    background-position: -1px -23px;
+                }
+            }
+
+            &:checked + label::before{
+                background-position: -1px -2px;
+            }
+        }
+    }
+
+    #login_button{
+        border: none;
+        display: block;
+        line-height: 2.5em;
+        width: 100%;
+        background-color: $secondary-color-lime;
+        color: $lightFg;
+        font-weight: bold;
+    }
+
+    #account_options{
+        text-align: center;
+        line-height: 3em;
+        font-size: 0.8em;
+        a{
+            color: $mainFg;
+
+            &::after{
+               content: " |";
+               color: $boxshadow;
+            }
+
+            &:last-child::after{
+                content: none;
+            }
+        }
+    }
 }
 
 #openid_login input {
@@ -1976,10 +2071,8 @@ input[type="submit"] {
     color: #000;
     -webkit-appearance: none; /* stop mobile safari from using default button styles */
     border: 1px solid #aaa;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
     background: #eee;
+    border-radius: none;
     cursor: pointer;
 }
 
