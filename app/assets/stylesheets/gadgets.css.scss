@@ -4,6 +4,13 @@
 .sysmo_gadget {
 	padding: 3px;
 	text-align: center;
+	background-color: $lightBg;
+ 	margin-bottom: 1em;
+ 	border-bottom: solid 2px $boxshadow;
+
+ 	&:last-child{
+ 		margin-bottom: 0;
+ 	}
 }
 
 .sysmo_gadget p {

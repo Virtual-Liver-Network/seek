@@ -1218,73 +1218,122 @@ ul.horiz_list_items li {
     display: inline;
 }
 
-/* Begin Footer styles */
+/* Main Layout*/
 
-#ft {	
-        border: 2px solid #999;
+#body{
+
+    text-align: left;
+    background-color: $mainBg; 
+
+    > header{
+        background-color: $lightBg;
+        padding: 1em;
+
+        #seek_logo {
+            height: 2em;
+        }
+
+        #image_block{
+            float: right;
+        }
+    }
+
+    > nav {
+        background-color: $darkBg;
+        margin-bottom: 1em;
+        padding: 0 1em;
+        color: $lightFg;
+    }
+
+    > aside {
+        width: 20%;
+        display: inline-block;
+        box-sizing: border-box;
+        vertical-align: top;
+        height: 100%;
+        padding-right: 1em;
+    }
+
+    > main {
+        display: inline-block;
+        box-sizing: border-box;
+        width: 80%;
+        padding: 0 1em;
+        
+        section {
+            width: 100%;
+            background-color: $lightBg;
+            border-bottom: 2px solid $boxshadow;
+            margin-bottom: 1em;
+        }
+    }
+
+    > footer {
+        clear: both;
         color: $lightFg;
         background-position: top;
         background-repeat: repeat-x;
         background-color: $darkBg;
     	bottom:0px;
-        margin-bottom:0.5em;
 
         a{
             color: $tabActive;
         }
 
-    .copyright {
-        text-align: center;
-        font-weight: bold;
-        padding: 0.5em;
+        .copyright {
+            text-align: center;
+            font-weight: bold;
+            padding: 0.5em;
+        }
+
+        table {
+            width: 100%;
+            border-spacing: 0;
+            margin: 0;      
+        }
+
+        td {
+            padding: 0.8em 0.5em; 
+        }
+
+        table p {
+            padding: 0.3em 0;
+            line-height: 1;
+        }
+
+        td.left {
+            width: 10em;
+        }
+
+        td.left p {
+            text-align: center;
+        }
+
+        td.middle {
+            width: auto;    
+            text-align: center;     
+        }
+
+        td.middle p {
+            width: 100%;
+            text-align: center;    
+        }
+
+        td.middle img { 
+            vertical-align: middle;
+            padding-left: 3px;
+        }
+
+        td.right {
+            width: 110px;
+            text-align: center;
+        }
+        
+        td.right p {
+            text-align: center;
+        }
     }
 
-    table {
-        width: 100%;
-        border-spacing: 0;
-        margin: 0;      
-    }
-
-    td {
-        padding: 0.8em 0.5em; 
-    }
-
-    table p {
-        padding: 0.3em 0;
-        line-height: 1;
-    }
-
-    td.left {
-        width: 10em;
-    }
-
-    td.left p {
-        text-align: center;
-    }
-
-    td.middle {
-        width: auto;    
-        text-align: center;     
-    }
-
-    td.middle p {
-        width: 100%;
-        text-align: center;    
-    }
-
-    td.middle img { 
-        vertical-align: middle;
-        padding-left: 3px;
-    }
-
-    td.right {
-        width: 110px;
-        text-align: center;
-    }
-    
-    td.right p {
-        text-align: center;
-    }
 }
 
 div.error_div {
