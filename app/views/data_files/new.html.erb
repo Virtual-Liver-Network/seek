@@ -1,7 +1,7 @@
 
 <% @page_title ||= "New #{t('data_file')}" %>
 <h1><%= @page_title %></h1>
-<% all_institutions = Institution.order(:name) %>
+<% all_institutions = Institution.order(:title) %>
 <div class="show_basic">
     <%= form_tag({:action => :create}, :multipart => true) do -%>
       <%= hidden_field_tag 'data_file[parent_name]', @data_file.parent_name%>
@@ -25,7 +25,7 @@
                     <% end %>
           </span><br/>
           <%= select_tag :institution_id,
-                       options_for_select(all_institutions.collect { |o| [h(o.name), o.id] }, current_user.try(:person).try(:projects).try(:first).try(:institution_ids).try(:first)), {} %>
+                       options_for_select(all_institutions.collect { |o| [h(o.title), o.id] }, current_user.try(:person).try(:projects).try(:first).try(:institution_ids).try(:first)), {} %>
 
 
         </p>
@@ -34,7 +34,7 @@
         <p style="margin-top: 0.5em;">
           <b>Template</b>
           <br>
-          <%=  select_tag 'data_file[template_name]', options_for_select(["Autodetect by filename", "Jena", "Duesseldorf_Bode", "Dortmund_Hengstler", "Dortmund_BCat_KO"], "Autodetect by filename") %>
+          <%=  select_tag 'data_file[template_name]', options_for_select(["Autodetect by filename", "Jena", "Duesseldorf_Bode", "Duesseldorf_Bode_Surgical", "Dortmund_Hengstler", "Dortmund_BCat_KO"], "Autodetect by filename") %>
         </p>
        <% end %>
         <p style="margin-top: 0.5em;">

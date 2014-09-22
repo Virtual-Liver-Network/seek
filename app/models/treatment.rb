@@ -12,4 +12,13 @@ class Treatment < ActiveRecord::Base
   validates :sample, presence:true
 
   TREATMENT_PROTOCOLS = ["NO PERTURBATION","PERTURBATION ROTENONE FISH","PERTURBATION ROTENONE MOUSE","PERTURBATION ROTENONE WORM","PERTURBATION ROTENONE FIBROBLAST"]
+
+  def time_after_treatment_with_unit
+    time_after_treatment.nil? ? "" : "#{time_after_treatment} (#{time_after_treatment_unit.symbol}s)"
+  end
+
+  def value_with_unit
+    start_value.nil? ? "" : start_value.to_s + " " + (end_value.nil? ? "" : "- " + end_value.to_s + " ") + unit.symbol
+  end
+
 end
