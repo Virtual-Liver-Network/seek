@@ -43,7 +43,7 @@ SEEK::Application.configure do
   Seek::Config.default :pdf_conversion_enabled,true
   Seek::Config.default :forum_enabled,false
   Seek::Config.default :filestore_path,"filestore"
-  Seek::Config.default :biosamples_enabled, true
+  Seek::Config.default :biosamples_enabled,false
   Seek::Config.default :modelling_analysis_enabled,true
   Seek::Config.default :organisms_enabled,true
   Seek::Config.default :models_enabled,true
@@ -85,7 +85,7 @@ SEEK::Application.configure do
   Seek::Config.default :copyright_addendum_enabled,false
   Seek::Config.default :copyright_addendum_content,'Additions copyright ...'
 
-  Seek::Config.default :is_virtualliver, true
+  Seek::Config.default :is_virtualliver,false
 
 # Pagination
   Seek::Config.default :default_pages,{:specimens => 'latest',:samples => 'latest', :people => 'latest', :projects => 'latest', :institutions => 'latest', :investigations => 'latest',:studies => 'latest', :assays => 'latest', :data_files => 'latest', :models => 'latest',:sops => 'latest', :publications => 'latest',:events => 'latest', :strains => 'latest', :presentations => 'latest'}
