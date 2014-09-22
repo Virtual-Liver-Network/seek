@@ -8,7 +8,6 @@
 *= require fast_auto_complete
 *= require redbox
 *= require autocompleter_advanced
-*= require alphabetical_pagination
 *= require savage_beast/forums
 *= require site_announcements
 
@@ -24,4 +23,5 @@
 @import "tabnav";
 @import "top_menu";
 @import "acts_as_taggable_stylesheet";
+@import "alphabetical_pagination";
 
