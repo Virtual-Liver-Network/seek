@@ -116,7 +116,7 @@ module Seek
               :"tissue_and_cell_types.title" => mapping_entry("Organism Part"),
 
               :"sop.title" => mapping_entry("Storage Protocol"),
-              :"institution.name" => mapping_entry("Storage Location")
+              :"institution.title" => mapping_entry("Storage Location")
 
 
           },
@@ -272,7 +272,7 @@ module Seek
               :"tissue_and_cell_types.title" => mapping_entry("FIXED", proc {"Liver"}),
 
               :"sop.title" => mapping_entry("FIXED", proc {""}),
-              :"institution.name" => mapping_entry("FIXED", proc{""}),
+              :"institution.title" => mapping_entry("FIXED", proc{""}),
 
 
 
@@ -432,7 +432,7 @@ module Seek
               :"tissue_and_cell_types.title" => mapping_entry("FIXED", proc {"Liver"}),
 
               :"sop.title" => mapping_entry("FIXED", proc {""}),
-              :"institution.name" => mapping_entry("FIXED", proc {""})
+              :"institution.title" => mapping_entry("FIXED", proc {""})
           },
 
 
@@ -515,7 +515,7 @@ module Seek
                   :"tissue_and_cell_types.title" => mapping_entry("FIXED", proc {"Liver"}),
 
                   :"sop.title" => mapping_entry("FIXED", proc {""}),
-                  :"institution.name" => mapping_entry("FIXED", proc {""})
+                  :"institution.title" => mapping_entry("FIXED", proc {""})
               },
 
 
@@ -595,9 +595,7 @@ module Seek
               :"treatment.type" => mapping_entry("FIXED", proc {"surgical procedure"}),
               :"treatment.comments" => mapping_entry("Treatment"),
               :"treatment.substance" => mapping_entry("FIXED", proc {""}),
-              :"treatment.start_value" => mapping_entry("FIXED", proc {""}),
-              :"treatment.end_value" => mapping_entry("FIXED", proc{""}),
-              :"treatment.standard_deviation" => mapping_entry("FIXED", proc{""}),
+              :"treatment.concentration" => mapping_entry("FIXED", proc {""}),
               :"treatment.unit" => mapping_entry("FIXED", proc {""}),
               :"treatment.incubation_time" => mapping_entry("Incubation period (hours)"),
               :"treatment.incubation_time_unit" => mapping_entry("FIXED", proc {"hour"}),
@@ -612,7 +610,7 @@ module Seek
               :"tissue_and_cell_types.title" => mapping_entry("FIXED", proc {"Liver"}),
 
               :"sop.title" => mapping_entry("FIXED", proc {""}),
-              :"institution.name" => mapping_entry("FIXED", proc {""})
+              :"institution.title" => mapping_entry("FIXED", proc {""})
           },
 
 
@@ -643,65 +641,6 @@ module Seek
       }
 
     end
-
-    def sysmodb_mapping # mapping for sysmodb samples
-      {
-          :name => "sysmodb",
-          :data_row_offset => 6, # add this to the row of a header column to get to row with the first data element
-
-          :samples_mapping => {     # TODO: which fields are really necessary?
-                                    :samples_sheet_name => "Oragnism_sample",  # required
-
-                                    :add_specimens => true,
-                                    :add_treatments => true,
-                                    :add_samples => true,
-
-                                    :probing_column => :"samples.title",  # this should map to a column that has no blank elements in between other elements
-
-                                    :"organisms.title" => mapping_entry("organism.title"),
-
-                                    :"strains.title" => mapping_entry("strain.title"),
-
-                                    :"specimens.sex" => mapping_entry("FIXED", proc {"none"}),
-                                    :"specimens.title" => mapping_entry("FIXED", proc {"none"}),
-                                    :"specimens.lab_internal_number" => mapping_entry("specimen.lab_internal_number"),
-                                    :"specimens.age" => mapping_entry("FIXED", proc {"none"}),
-                                    :"specimens.age_unit" => mapping_entry("FIXED", proc {"none"}),
-                                    :"specimens.comments" => mapping_entry("FIXED", proc {"none"}),
-                                    :"specimens.genotype.title" => mapping_entry("genotype.title"),
-                                    :"specimens.genotype.modification" => mapping_entry("genotype.modification"),
-
-                                    :"treatment.treatment_protocol" => mapping_entry("FIXED", proc {"none"}),
-                                    :"treatment.type" => mapping_entry("treatment1.type"),
-                                    :"treatment.comments" => mapping_entry("FIXED", proc {""}),
-                                    :"treatment.substance" => mapping_entry("FIXED", proc {"none"}),
-                                    :"treatment.start_value" => mapping_entry("treatment1.value"),
-                                    :"treatment.end_value" => mapping_entry("FIXED", proc{""}),
-                                    :"treatment.standard_deviation" => mapping_entry("treatment1.sd"),
-                                    :"treatment.unit" => mapping_entry("treatment1.unit"),
-                                    :"treatment.incubation_time" => mapping_entry("FIXED", proc {"none"}),
-                                    :"treatment.incubation_time_unit" => mapping_entry("FIXED", proc {"none"}),
-
-                                    :"samples.comments" => mapping_entry("sample.comments"),
-                                    :"samples.title" => mapping_entry("sample.title"),
-                                    :"samples.sample_type" => mapping_entry("FIXED", proc {"none"}),
-                                    :"samples.donation_date" => mapping_entry("sample.sampling_date"),
-                                    :"samples.organism_part"  => mapping_entry("sample.organism_part"),
-
-                                    :"tissue_and_cell_types.title" => mapping_entry("FIXED", proc {"none"}),
-
-                                    :"sop.title" => mapping_entry("FIXED", proc {"none"}),
-                                    :"institution.name" => mapping_entry("FIXED", proc {"none"})
-          },
-
-
-          :assay_mapping => nil
-
-
-      }
-
-    end
-
 
     def unknown_mapping
       nil
@@ -753,7 +692,7 @@ module Seek
               :"tissue_and_cell_types.title" => mapping_entry(""),
 
               :"sop.title" => mapping_entry(""),
-              :"institution.name" => mapping_entry("")
+              :"institution.title" => mapping_entry("")
           },
 
 
