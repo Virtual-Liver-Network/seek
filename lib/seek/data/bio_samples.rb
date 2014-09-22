@@ -53,8 +53,8 @@ module Seek
       @mock_json_import = {}
       @assay_json = {}
 
-      @institution_name = ""
-      @institution_name = Institution.find(institution_id).try(:title) if institution_id
+      @institution_title = ""
+      @institution_title = Institution.find(institution_id).try(:title) if institution_id
 
       if xml
         begin
@@ -66,7 +66,7 @@ module Seek
         end
         if doc
           template = @file.template_name
-          Rails.logger.warn "Template = #{template}, Institution name = " + @institution_name
+          Rails.logger.warn "Template = #{template}, Institution name = " + @institution_title
           filename = @file.content_blob.original_filename
           parser_mapper = Seek::ParserMapper.new
           @parser_mapping = parser_mapper.mapping(template.downcase != "autodetect by filename" ? template.downcase : parser_mapper.filename_to_mapping_name(filename))
@@ -139,9 +139,9 @@ module Seek
           populate_db build_mock_json_import
       end
 
-      end
-
     end
+
+
 
     def find_template_sheet doc
       #sheet = doc.find_first("//ss:sheet[@name='IDF']")
@@ -630,10 +630,10 @@ module Seek
         row = treatment_data[:protocol][:row]
 
         treatment = {"type" => type,
-                     "start value" => concentration,
-                     "end value" => nil,
+                     "start value" => start_value,
+                     "end value" => end_value,
                      "unit" => unit,
-                     "standard deviation" => nil,
+                     "standard deviation" => standard_deviation,
                      "comments" => comments,
                      "protocol" => treatment_protocol,
                      "incubation time" => incubation_time,
@@ -642,7 +642,7 @@ module Seek
 
 
         @treatments[row] = treatment
-        @treatments_text[row] = "Treatment Protocol:#{treatment_protocol}, Unit:#{unit}, Concentration:#{concentration}, Substance:#{substance}"
+        @treatments_text[row] = "Treatment Protocol:#{treatment_protocol}, Unit:#{unit}, Concentration:#{start_value}, Substance:#{substance}"
         Rails.logger.warn "add treatment, row = #{row} : #{treatment}"
       
         treatment
@@ -968,7 +968,7 @@ module Seek
           sample.comments = comments
           sample.treatment = treatment
           sample.policy = @file.policy.deep_copy
-          sample.creators << @creator
+          #sample.creators << @creator
           sample.save!
         else
           unless sample.specimen == specimen &&
@@ -1092,7 +1092,8 @@ module Seek
     end
 
     def hunt_for_horizontal_field_value_mapped sheet, field_name, mapping
-      Array(mapping[field_name][:value].call((hunt_for_horizontal_field_value(sheet, mapping[field_name][:column])))).map { |it| {:value => it}}
+      #Array(mapping[field_name][:value].call((hunt_for_horizontal_field_value(sheet, mapping[field_name][:column])))).map { |it| {:value => it}}
+      mapping[field_name][:value].call((hunt_for_horizontal_field_value(sheet, mapping[field_name][:column]))).map { |it| {:value => it}}
     end
 
 
@@ -1200,6 +1201,5 @@ module Seek
       return table_names[index+1].content
     end
   end
-
   end
 end
