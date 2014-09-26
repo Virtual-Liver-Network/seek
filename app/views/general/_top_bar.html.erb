@@ -1,7 +1,12 @@
-<%= tabbar %>
 <div id="topbar" class="curved_top">
-  <ul id="section_menu_items"></ul>
-  <%= render :partial=>"search/search_box" %>
+  <div style="float:left;">
+    <%=  render(:partial=>"general/tabnav_dropdown") %>
+
+  </div>
+  <div>
+    <%= render :partial=>"search/search_box" %>
+
+  </div>
 </div>
 
 <%= select_menu(menu_definitions) unless Seek::Config.is_virtualliver-%>

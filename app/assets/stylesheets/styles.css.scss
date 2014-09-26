@@ -1028,11 +1028,10 @@ img.badge {
 #topbar {
     text-align: center;
     height: 20px;
-    background-image: url("searchfade-repeat.png");
-    background-repeat: repeat-x;
-    background-position: top center;
+    background-color: $DarkForeColor;
     padding: 10px 0;
     border-top: 0px;
+    margin: 15px 0;
 }
 
 #topbar * {

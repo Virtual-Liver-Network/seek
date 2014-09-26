@@ -1,6 +1,5 @@
 
-<% @search_query=t('search_prompt') unless @search_query %>
-<% @search_type="All" unless @search_type %>
+<% @search_type="all" unless @search_type %>
 
 
 <% force_search_type(search_type_options) %>
@@ -9,18 +8,35 @@
 
   <%= form_tag main_app.search_path do -%>
     <div id="search_box">
-      <span id='search_label'><%= t('search_label')%></span>
-      <%= text_field_tag :search_query, @search_query, :onclick => "clickclear(this, '#{t('search_prompt')}')", :onblur => "clickrecall(this, '#{t('search_prompt')}')" ,:class=>"curved", :style=>"display:none;"-%>
-      <%= select_tag :search_type, options_for_select(search_type_options,@search_type)  %>
+      <label id="search_query_wrapper">
+        <%= text_field_tag :search_query, @search_query, :placeholder=>"#{t('search_prompt')}"  ,:class=>"curved", :style=>"display:none;"-%> <button class="advance" type="button" onclick="$('advanced_options').toggle();"></button><button type="submit"></button>
+      </label>
+      <fieldset id="advanced_options" style="display: none;">
+          <%= field_set_tag "Resource types" do
+            search_type_options.map do |resource_type|
+             label_text = resource_type=="sops"? "#{t('sop')}s" : resource_type.humanize
+             radio_button_tag("search_type", resource_type, @search_type== resource_type,  :id => "search_type_#{resource_type}") + label_tag("search_type_#{resource_type}", label_text)
+            end.join("\n").html_safe
+           end
+          %>
+
+
       <% if show_scales? && Seek::Config.is_virtualliver %>
-        <%= select_tag :scale, (options_for_select({"All" => 'all'}, :selected => (params[:scale] ? nil : 'all')) + options_from_collection_for_select(Scale.all.reverse, :key, :title, params[:scale])) %>
+          <%= field_set_tag "Scales" do
+            selected_scale = params[:scale] ? nil : 'all'
+            (["all"] + Scale.all.reverse.map(&:key) ).map do |scale|
+              radio_button_tag("scale", scale, selected_scale == scale,  :id => "scale_#{scale}") + label_tag("scale_#{scale}", scale.humanize)
+            end.join("\n").html_safe
+          end
+          %>
       <% end %>
       <% if Seek::Config.external_search_enabled %>
         <span title='<%= tooltip_title_attrib(external_search_tooltip_text) -%>' >
-          <%= check_box_tag :include_external_search, 1, @include_external_search -%>External
+          <%= check_box_tag :include_external_search, 1, @include_external_search -%> <%= label_tag :include_external_search, "External" %>
         </span>
       <% end %>
       <%= submit_tag "Search" -%>
+      </fieldset>
     </div>
   <% end  -%>
 <% end %>
