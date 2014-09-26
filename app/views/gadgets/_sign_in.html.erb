@@ -1,67 +1,46 @@
 <% unless logged_in_and_registered? -%>
-<div class="sysmo_gadget">
-    <div class="header curved_top">
+    <div class="sysmo_gadget">
+      <div class="header">
         <p>
-            Log in / Register
+          Log in / Register
         </p>
-    </div>
-    <div class="contents curved_bottom">
+      </div>
+      <div class="contents" id="login-container">
         <%= form_tag main_app.session_path do %>
-        <%= hidden_field_tag "called_from[url]", request.original_url -%>
-        <%= hidden_field_tag "called_from[controller]", controller.controller_name -%>
-        <%= hidden_field_tag "called_from[action]", controller.action_name -%>
-        <%= hidden_field_tag "called_from[id]", params[:id] -%>
-        <div class="login_surround curved">
+            <%= hidden_field_tag "called_from[url]", request.original_url -%>
+            <%= hidden_field_tag "called_from[controller]", controller.controller_name -%>
+            <%= hidden_field_tag "called_from[action]", controller.action_name -%>
+            <%= hidden_field_tag "called_from[id]", params[:id] -%>
+
+            <a href="#" id="login_toggle_link" onclick="toggleLogin();return false">Log in
+              using <%= image_tag "openid-16x16.gif" %>OpenID</a>
+
             <div id="password_login">
-                <p class="label">
-                    Login:
-                </p>
-                <p>
-                    <%= text_field_tag 'login', nil, :class => 'field', :style => 'width:150px'-%>
-                </p>
-                <p class="label">
-                    Password:
-                </p>
-                <p>
-                    <%= password_field_tag 'password', nil, :class => 'field curved', :style => 'width:150px'-%>
-                </p>
-                <p class="label">
-                    Remember me: <%= check_box_tag 'remember_me',nil,false, {:style=>"width:2em;"} %>
-                </p>
+               <%= text_field_tag 'login', nil, :class => 'field', :placeholder => "username" -%>
+               <%= password_field_tag 'password', nil, :class => 'field', :placeholder => "password"  -%>
+                <%= check_box_tag 'remember_me', nil, false%>
+                <%= label_tag "remember_me", "Remember me" %>
             </div>
             <div id="openid_login" style="display: none">
-                <p class="label">
-                    <a href="http://openid.net/" target="_blank"><%= image_tag "openid-16x16.gif" %>OpenID:</a>
-                </p>
-                <p>
-                    <%= text_field_tag 'openid_identifier', nil, :class => 'field curved', :style => 'width:150px' -%>
-                </p>
+              <p>
+                <a href="http://openid.net/" target="_blank"><%= image_tag "openid-16x16.gif" %>OpenID:</a>
+               </p>
+              <p>
+                <%= text_field_tag 'openid_identifier', nil, :class => 'field' -%>
+              </p>
             </div>
-            <p>
-                Alternatively...
-                <br/>
-                <a href="#" id="login_toggle_link" onclick="toggleLogin();return false">Log in using <%= image_tag "openid-16x16.gif" %>OpenID</a>
-                <br/>
-            </p>
-        </div>
-        <p>
-            <%= submit_tag "Log in", :id=>"login_button",:onclick=>"$('login_button').disabled=true;this.form.submit();return(false);" %>
-        </p>
-        <% end %>
-        <p>
-            <b>Need an account?</b>
-            <br/>
-            <b><%= link_to "Sign up", main_app.signup_url %></b>
-        </p>
 
-        <p style="font-size: 83%;">
-            <b><%= link_to "Forgotten password?", main_app.forgot_password_url %></b>
-        </p>
-    </div>    
-</div>
+            <%= submit_tag "Log in", :id => "login_button", :onclick => "$('login_button').disabled=true;this.form.submit();return(false);" %>
+        <% end %>
+        <div id="account_options">
+           <%= link_to "Sign up", main_app.signup_url %>
+           <%= link_to "Forgotten password?", main_app.forgot_password_url %>
+        </div>
+      </div>
+    </div>
 <% end -%>
 <script type="text/javascript">
-    function toggleLogin(){
+    function toggleLogin() {
         var elem1 = $('password_login');
         var elem2 = $('openid_login');
         var link = $('login_toggle_link');
