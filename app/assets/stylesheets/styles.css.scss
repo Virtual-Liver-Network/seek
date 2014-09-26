@@ -1303,6 +1303,7 @@ ul.horiz_list_items li {
     }
 
     > aside {
+        float: left;
         width: 20%;
         display: inline-block;
         box-sizing: border-box;
@@ -1312,6 +1313,7 @@ ul.horiz_list_items li {
     }
 
     > main {
+        float:left;
         display: inline-block;
         box-sizing: border-box;
         width: 80%;

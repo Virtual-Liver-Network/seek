@@ -32,19 +32,14 @@
 </head>
 
 <body id="body">
-
-<div id="doc3" class="yui-t2">
-
-
-  <div id="header">
+  <header>
     <%= render :partial=>"layouts/header_main" %>
-  </div>
+  </header>
+  <nav>
     <%= render :partial=>"general/top_bar" %>
-
-
-  <div id="bd">
-    <div id="yui-main">
-      <div <%= "class='yui-b'".html_safe unless @no_sidebar %> id="content">
+  </nav>
+    <main>
+      <section>
         <table width="100%">
           <tr>
             <td>
@@ -52,13 +47,11 @@
                 <%= render_breadcrumbs :separator => ' > ' %>
               </div>
             </td>
-
             <td class="return_to_search" id='return_to_search'>
               <%= add_return_to_search %>
             </td>
           </tr>
         </table>
-
         <%# applying styling to error / notice messages -%>
         <% if flash[:error] %>
             <div id="error_flash" class="box_standout curved with_smaller_shadow" style="color: red; margin: 0.8em 0.8em; line-height: 1.4;">
@@ -72,25 +65,20 @@
               <%= flash[:notice] %>
             </div>
         <% end %>
-
         <%# main content part of every page -%>
         <%= yield :layout %>
 
-      </div>
-      <br style="clear:both"/>
-    </div>
+      </section>
+    </main>
     <% unless @no_sidebar -%>
-        <div id="myexp_sidebar" class="yui-b">
+        <aside>
           <%= render :partial => "layouts/sidebar" %>
-        </div>
+        </aside>
     <% end -%>
-  </div>
 
-  <div id="ft">
+  <footer>
     <%= render :partial=>"layouts/footer" %>
-  </div>
-
-</div>
+  </footer>
 
 <% unless is_front_page? %>
     <script type="text/javascript">
