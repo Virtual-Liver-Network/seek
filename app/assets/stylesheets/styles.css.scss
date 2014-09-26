@@ -1,3 +1,5 @@
+@import "branding/variables";
+
 body {
 	font-family: arial,sans-serif;
     font-size: 14px;
@@ -141,9 +143,6 @@ input[type="text"] {
     border: solid 1px #aaa;
     background-color:white;
     color: #333333;
-    border-radius: 4px;
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
     padding: 2px;
 }
 
@@ -191,8 +190,106 @@ input[type="text"] {
     width: 98%;
 }
 
-#password_login input {
-	width: 18em;
+#login-container{
+    text-align: left;
+    padding: 0 0.8em;
+
+    #login_toggle_link{
+        line-height: 3em;
+        font-size: 0.8em;
+        color: $mainFg;
+
+        img{
+            height: 1em;
+            width: auto;
+        }
+    }
+
+    #login{
+        background-position: 4px 9px;
+    }
+
+    #password{
+        background-position: 4px -18px;
+    }
+
+    #password_login {
+
+        margin: 0 0 1em;
+
+        input[type="text"], input[type="password"] {
+    	    width: 100%;
+            line-height: 2.5em;
+            padding-left: 2em;
+            border: none;
+            background-color: $mainBg;
+            box-sizing: border-box;
+            margin-bottom: 1em;
+            border-radius: 0;
+            display: block;
+            background-image: url("icons-login.png");
+            background-repeat: no-repeat;
+        }
+
+        input[type="checkbox"]{
+            display: none;
+            margin-bottom: 1em;
+
+            & + label{
+                display: block;
+                font-size: 0.9em;
+                line-height: 0.9em;
+
+                &::before{
+                    content: "";
+                    height: 17px;
+                    width: 17px;
+                    background-image: url("icons.png");
+                    background-repeat: no-repeat;
+                    background-position: -1px -45px;
+                    vertical-align: middle;
+                    display: inline-block;
+                    margin-right: 5px;
+                }
+
+                &:hover::before{
+                    background-position: -1px -23px;
+                }
+            }
+
+            &:checked + label::before{
+                background-position: -1px -2px;
+            }
+        }
+    }
+
+    #login_button{
+        border: none;
+        display: block;
+        line-height: 2.5em;
+        width: 100%;
+        background-color: $secondary-color-lime;
+        color: $lightFg;
+        font-weight: bold;
+    }
+
+    #account_options{
+        text-align: center;
+        line-height: 3em;
+        font-size: 0.8em;
+        a{
+            color: $mainFg;
+
+            &::after{
+               content: " |";
+               color: $boxshadow;
+            }
+
+            &:last-child::after{
+                content: none;
+            }
+        }
+    }
 }
 
 #openid_login input {
@@ -686,56 +783,57 @@ li.tabberactive = the active tab
 ul.tabbernav
 {
     margin: 0;
-    padding: 3px 0;
+    padding: 5px;
     border-bottom: 1px solid #CCC;    
     font-size: 90%;    
     margin-left: 0.5em;
     margin-right: 0.5em;
+    background-color: $darkBg;
+    text-align: left; 
 }
 
 ul.tabbernav li
 {
     list-style: none;
-    margin: 0;
-    display: inline;
+    margin: 5px;
+    padding: 0 10px;
+    display: inline-block;
+    background-color: $tab;
+    border-radius: 2px;
+    color: $lightFg;
 }
 
 ul.tabbernav li a
 {
-    padding: 3px 0.5em;
-    margin-left: 3px;
-    border: 1px solid #aaa;
-    border-bottom: none;
-    background: #ccccff;
+    line-height: 30px;
     text-decoration: none;
-    border-top-right-radius: 4px;
-    border-top-left-radius: 4px;
-    -moz-border-radius-topleft: 4px;
-    -moz-border-radius-topright: 4px;
-
+    color: inherit;
 }
 
-ul.tabbernav li a:link { color: #333; }
+ul.tabbernav li .count{
+    vertical-align: super;
+    font-size: 0.7em;
+    line-height: 1em;
+    font-weight: bold;
+    color: $tabActive;
+}
 
 ul.tabbernav li a:hover
 {
-    color: #000;
-    background: #3173ff;
-    border-color: #CCC;
+    color: inherit;
 }
 
-ul.tabbernav li.tabberactive a
+ul.tabbernav li.tabberactive
 {
-    background-color: #fff;
-    border-bottom: 1px solid #fff;
+    box-shadow: inset 0 2px 0 $darkBoxshadow;
+    background-color: $tabActive;
+    color: $darkFg;
 }
 
-ul.tabbernav li.tabberactive a:hover
-{
-    color: #000;
-    background: white;
-    border-bottom: 1px solid white;
+ul.tabbernav li.tabberactive .count{
+    color: $tab;
 }
+
 
 ul.tabbernav li a.external_result {
     background: #DCF;
@@ -930,7 +1028,7 @@ img.badge {
 #topbar {
     text-align: center;
     height: 20px;
-    background-image: url("<%= asset_path('searchfade-repeat.png') %>");
+    background-image: url("searchfade-repeat.png");
     background-repeat: repeat-x;
     background-position: top center;
     padding: 10px 0;
@@ -975,67 +1073,95 @@ img.search_fav_avatar {
     vertical-align:middle;
 }
 
-div.list_item, div.private_list_item, div.public_list_item {
-    width: 95%;
-    background-color: #F0F0F0;
+.list_item,  {
+    width: 100%;
+    box-sizing: border-box;
+    background-color: $mainBg;
     margin-top: 6px;
-    padding: 1em;
-    border: #999 solid 1px;
-    border-collapse: collapse;
+    border: $boxshadow solid 1px;
     min-height: 90px;
-    float: left;
-}
+    display: table;
 
-div.list_item_content {
-    width: 75%;
-    float: left;
-    margin-left:1em;
-}
+    a{
+        color: $mainFg;
+    }
 
-div.list_item_content.noavatar {
-    width: 87%;
-}
+    &.private_list_item{
+        border-width: 2px;
+        border-right-width: 17px;
+        border-color: $secondary-color-purple;
+        background-color: $lightBg;
+    }
 
-div.list_item_content.noavatar.noactions {
-    width: 97%;
-}
+    &.public_list_item{
+        border-width: 2px;
+        border-right-width: 17px;
+        border-color: $secondary-color-green;
+        background-color: $lightBg;
+    }
 
-div.list_item_content.noactions {
-    width: 85%;
-}
+    .list_item_avatar{
+        display: table-cell;
+        vertical-align: top;
+        padding: 1em 0 1em 1em;
+        width: 100px;
 
-div.list_item_avatar {
-    float: left;
-    width: 11%;
-    text-align: center;
-}
+        img{
+            max-width: 90%;
+        }
+    }
 
-div.list_item_actions {
-    float: right;
-    width: 80px;
-    font-size: smaller;
-}
+    .list_item_content{
+        display: table-cell;
+        vertical-align: top;
+        padding: 1em 1em 1em 1em;
 
-div.list_item_desc {
-    border: 1px solid #bbb;;
-    margin: 0.2em 0;
-    padding: 0.4em 0.6em;
-    background-color: #fffeda;
-    text-align: left;
-    line-height: 1.3;
-    overflow: hidden;
-    font-size: 80%;
-}
+        .list_item_left_column{
+            box-sizing: border-box;
+            width: 50%;
+            display: inline-block;
+            border-right: 1px dashed #bbb;
+        }
+        .list_item_right_column{
+            box-sizing: border-box;
+            display: inline-block;
+            width: 50%;
+            padding-left: 1em;
+        }
 
-div.list_item_title{
-    border-bottom:1px solid #bbb;
-    margin-bottom:0.1em;
-    padding-bottom:0.1em;
-}
+        .list_item_title{
+            border-bottom:1px dashed #bbb;
+            margin-bottom:0.1em;
+            padding-bottom:0.1em;
+            text-align: left;
+            font-size: 1.3em;
 
-div.list_item_title p {
-    font-size:131%;
-    font-weight:bold;
+            img{
+                vertical-align: text-top;
+                max-height: 1em;
+                width: auto;
+            }
+        }
+    }
+
+    .list_item_actions{
+        display: table-cell;
+        vertical-align: top;
+        width: 100px;
+        padding: 1em 1em 1em 0em;
+        font-size: 0.8em;
+    } 
+
+    .list_item_desc {
+        margin: 0.2em 0;
+        padding: 0.4em 0.6em;
+        background-color: $tabActive;
+        text-align: left;
+        line-height: 1.3;
+        overflow: hidden;
+        font-size: 80%;
+    }
+
 }
 
 p.list_item_attribute {
@@ -1043,27 +1169,13 @@ p.list_item_attribute {
     line-height: 1;
 }
 
-div.list_item_left_column{
-    float: left;
-    width: 45%;
-    border-right: 1px solid #bbb;
-}
 
-div.list_item_right_column{
-    float: left;
-    margin-right: 1em;
-    margin-left: 1em;
-    padding-left: 1em;
-    width: 45%;
-}
 
 div.list_item_whole_width{
-    float: left;
     margin-top: 0.1em;
     margin-right: 1em;
     width: 100%;
 }
-
 
 div.hidden_list_item {
     width: 95%;
@@ -1164,74 +1276,122 @@ ul.horiz_list_items li {
     display: inline;
 }
 
-/* Begin Footer styles */
+/* Main Layout*/
 
-#ft {	
-    border: 2px solid #999;
-    border-width: 1px 0 1px 0;
-    color: #333;
-    background-image: url("<%= asset_path('footer-bg.png') %>");
-    background-position: top;
-    background-repeat: repeat-x;
-    background-color: #eee;
-	bottom:0px;
-    margin-bottom:0.5em;
-}
+#body{
 
-#ft .copyright {
-    text-align: center;
-    font-weight: bold;
-    padding: 0.5em;
-}
+    text-align: left;
+    background-color: $mainBg; 
 
-#ft table {
-    width: 100%;
-    border-top: 1px solid #999;
-    border-spacing: 0;
-    margin: 0;		
-}
+    > header{
+        background-color: $lightBg;
+        padding: 1em;
 
-#ft td {
-    padding: 0.8em 0.5em;	 
-}
+        #seek_logo {
+            height: 2em;
+        }
 
-#ft table p {
-    padding: 0.3em 0;
-    line-height: 1;	
-}
+        #image_block{
+            float: right;
+        }
+    }
 
-#ft td.left {
-    width: 10em;
-}
+    > nav {
+        background-color: $darkBg;
+        margin-bottom: 1em;
+        padding: 0 1em;
+        color: $lightFg;
+    }
 
-#ft td.left p {
-    text-align: center;
-}
+    > aside {
+        width: 20%;
+        display: inline-block;
+        box-sizing: border-box;
+        vertical-align: top;
+        height: 100%;
+        padding-right: 1em;
+    }
 
-#ft td.middle {
-    width: auto;    
-    border-left: 1px solid #999;
-    text-align: center;		
-}
-	
-#ft td.middle p {
-    width: 100%;
-    text-align: center;     
-}
+    > main {
+        display: inline-block;
+        box-sizing: border-box;
+        width: 80%;
+        padding: 0 1em;
+        
+        section {
+            width: 100%;
+            background-color: $lightBg;
+            border-bottom: 2px solid $boxshadow;
+            margin-bottom: 1em;
+        }
+    }
 
-#ft td.middle img {	
-	vertical-align: middle;
-	padding-left: 3px;
-}
+    > footer {
+        clear: both;
+        color: $lightFg;
+        background-position: top;
+        background-repeat: repeat-x;
+        background-color: $darkBg;
+    	bottom:0px;
 
-#ft td.right {
-    width: 110px;
-    text-align: center;
-    border-left: 1px solid #999;
-}
+        a{
+            color: $tabActive;
+        }
 
-#ft td.right p {
-    text-align: center;
+        .copyright {
+            text-align: center;
+            font-weight: bold;
+            padding: 0.5em;
+        }
+
+        table {
+            width: 100%;
+            border-spacing: 0;
+            margin: 0;      
+        }
+
+        td {
+            padding: 0.8em 0.5em; 
+        }
+
+        table p {
+            padding: 0.3em 0;
+            line-height: 1;
+        }
+
+        td.left {
+            width: 10em;
+        }
+
+        td.left p {
+            text-align: center;
+        }
+
+        td.middle {
+            width: auto;    
+            text-align: center;     
+        }
+
+        td.middle p {
+            width: 100%;
+            text-align: center;    
+        }
+
+        td.middle img { 
+            vertical-align: middle;
+            padding-left: 3px;
+        }
+
+        td.right {
+            width: 110px;
+            text-align: center;
+        }
+        
+        td.right p {
+            text-align: center;
+        }
+    }
+
 }
 
 div.error_div {
@@ -1397,7 +1557,7 @@ div.collapsable_div {
 
 div.collapsable_div_header {
   margin: 0; 
-  background-image: url("<%= asset_path('header-bg.png') %>");
+  background-image: url("header-bg.png");
   background-position: top;
   background-repeat: repeat-x;
   background-color: #eee;
@@ -1959,7 +2119,7 @@ ul.usage_times_list {
 
 .none_text {
     font-style: italic;
-    color: #666666;
+    color: $noneTextColor;
 }
 
 ul.model_scales_list {
@@ -2020,10 +2180,8 @@ input[type="submit"] {
     color: #000;
     -webkit-appearance: none; /* stop mobile safari from using default button styles */
     border: 1px solid #aaa;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
     background: #eee;
+    border-radius: none;
     cursor: pointer;
 }
 

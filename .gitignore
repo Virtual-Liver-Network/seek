@@ -68,3 +68,4 @@ vendor/cache/
 coverage/
 
 Test\ Results*.html
+*.sublime-workspace

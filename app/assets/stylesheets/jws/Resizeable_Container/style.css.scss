@@ -1,10 +1,10 @@
-.rtContainer
+.reContainer
 {
  position: relative;
  font-size: 1px; 
 }
 
-.rtTextArea
+.reContent
 {
   position: absolute;
   left: 1px;
@@ -12,12 +12,10 @@
   border: 0px;
   margin: 0px 0px 0px 0px;
   padding: 0px 0px 0px 0px;
-  
-  /* This sets the color of the textarea */
   background-color: White;
 }
 
-.rtTopEdge, .rtLeftEdge
+.reTopEdge, .reLeftEdge
 {
   position: absolute;
   left: 0px; 
@@ -28,44 +26,44 @@
   background-color: #A5ACB2;
 }
 
-.rtTopEdge
+.reTopEdge
 {
   height: 1px;  
 }
 
-.rtLeftEdge
+.reLeftEdge
 {
   width: 1px;
 }
 
-.rtRightEdge
+.reRightEdge
 {
   position: absolute;
   width: 4px;
   top: 3px;
   cursor: e-resize;
-  background-image: url("<%= asset_path('jws/vert_repeater.gif') %>");
+  background-image: url("jws/vert_repeater.gif");
   background-repeat: repeat-y;
 }
 
-.rtBottomEdge
+.reBottomEdge
 {
   position: absolute;
   height: 4px;
   left: 3px;
   cursor: s-resize;
-  background-image: url("<%= asset_path('jws/horz_repeater.gif') %>");
+  background-image: url("jws/horz_repeater.gif");
   background-repeat: repeat-x;
 }
 
-.rtCorner, .rtLeftCorner, .rtTopCorner, .rtBottomHandle, .rtRightHandle, .rtTopRightImage, .rtBottomLeftImage
+.reCorner, .reLeftCorner, .reTopCorner, .reBottomHandle, .reRightHandle, .reTopRightImage, .reBottomLeftImage
 {
   position: absolute;
-  background-image: url("<%= asset_path('jws/non_repeaters.gif') %>");
+  background-image: url("jws/non_repeaters.gif");
   background-repeat: no-repeat;
 }
 
-.rtCorner
+.reCorner
 {
   height: 7px;
   width: 7px;
@@ -73,7 +71,7 @@
   background-position: -23px -7px;
 }
 
-.rtLeftCorner
+.reLeftCorner
 {
   height: 7px;
   width: 7px;
@@ -82,7 +80,7 @@
   background-position: -16px -7px;
 }
 
-.rtTopCorner
+.reTopCorner
 {
   height: 7px;
   width: 7px;
@@ -91,7 +89,7 @@
   background-position: -23px 0px;
 }
 
-.rtRightHandle
+.reRightHandle
 {
   width: 8px;
   height: 22px;
@@ -99,7 +97,7 @@
   background-position: 0px 0px;
 }
 
-.rtBottomHandle
+.reBottomHandle
 {
   width: 22px;
   height: 8px;
@@ -107,7 +105,7 @@
   background-position: -8px -14px;
 }
 
-.rtTopRightImage
+.reTopRightImage
 {
    width: 4px;
    height: 3px;
@@ -116,7 +114,7 @@
    background-position: -10px -6px;
 }
 
-.rtBottomLeftImage
+.reBottomLeftImage
 {
    width: 3px;
    height: 4px;

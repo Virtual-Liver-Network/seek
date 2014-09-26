@@ -1,0 +1,76 @@
+<%= javascript_include_tag 'dropMenu' %>
+<div>
+  <p> VLN dropdown menus</p>
+<div style="height: 250px; background-color: #F0F0F0">
+  <nav style="padding: 0 1em; background-color: #015D8E;" >
+    <ul id="menu" class="dm">
+      <li class="item1">
+        <a class="curved_top" href="javascript:void(0)"> Yellow Pages</a>
+        <ul class="section">
+          <li><a href="#">People</a></li>
+          <li><a href="#">Projects</a></li>
+          <li><a href="#">Institutions</a></li>
+        </ul>
+      </li><li class="item1">
+        <a class="curved_top" href="javascript:void(0)">Experiments</a>
+        <ul class="section">
+          <li><a href="#"> Investigations </a></li>
+          <li><a href="#"> Studies </a></li>
+          <li><a href="#"> Assays </a></li>
+        </ul>
+      </li><li class="item1">
+        <a class="curved_top" href="#"> Help </a>
+      </li>
+    <ul>
+  </nav>
+</div>
+<br/>
+<br/>
+<br/>
+<br/>
+</div>
+<div>
+  <p> SysMO two levels menus</p>
+
+
+<ul class="menutabs">
+  <li>
+    <a class="curved_top" href="#">Yellow pages</a>
+  </li>
+  <li>
+    <a class="curved_top" href="#">Experiment details</a>
+  </li>
+  <li>
+    <a class="curved_top" href="#">Assets</a>
+  </li>
+
+  <li>
+    <a class="curved_top" href="#">Scales</a>
+  </li>
+  <li class="spacer_before">
+    <a class="curved_top" href="#"> Documentation </a>
+  </li>
+</ul>
+</div>
+<div id="topbar" class="curved_top">
+  <ul id="section_menu_items" style="">
+    <li class="curved">
+      <a class="curved" href="#">Programmes</a>
+    </li>
+    <li class="curved">
+      <a class="curved" href="#">People</a>
+    </li>
+    <li class="curved">
+      <a class="curved" href="#">Projects</a>
+    </li>
+    <li class="curved">
+      <a class="curved" href="#">Institutions</a>
+    </li>
+  </ul>
+</div>
+
+
+<script type="text/javascript">
+    var dm = new DropMenu1('menu');
+    dm.init();
+</script>

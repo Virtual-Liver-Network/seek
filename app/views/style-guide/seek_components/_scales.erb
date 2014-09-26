@@ -1,0 +1,35 @@
+<%= javascript_include_tag "jquery-1.5.1.min","jquery-ui-1.8.14.custom.min"%>
+<%= stylesheet_link_tag  "scales/scales" %>
+<section>
+  <div id="slider">
+    <ul id="options" class="step">
+      <li id="all" class="selected">all</li>
+      <li id="organism">arganism</li>
+      <li id="liver">liver</li>
+      <li id="liverLobule">liver lobule</li>
+      <li id="intercellular">intercellular</li>
+      <li id="cell">cell</li>
+    </ul>
+  </div>
+  <div id="zoom">
+    <div class="panel selected">
+      <%= image_tag asset_path("scales/vl-scales/all.png"), {:alt=>"all", :id=>"scale_image_all"} %>
+    </div>
+    <div class="panel">
+      <%= image_tag asset_path("scales/vl-scales/organism.png"), {:alt=>"organism", :id=>"scale_image_organism"} %>
+    </div>
+    <div class="panel">
+    <%= image_tag asset_path("scales/vl-scales/liver.png"), {:alt=>"liver", :id=>"scale_image_liver"} %>
+    </div>
+    <div class="panel">
+      <%= image_tag asset_path("scales/vl-scales/liverLobule.jpg"), {:alt=>"liverLobule", :id=>"scale_image_liverLobule"} %>
+    </div>
+    <div class="panel">
+      <%= image_tag asset_path("scales/vl-scales/intercellular.png"), {:alt=>"intercellular", :id=>"scale_image_intercellular"} %>
+    </div>
+    <div class="panel">
+      <%= image_tag asset_path("scales/vl-scales/cell.png"), {:alt=>"cell", :id=>"scale_image_cell"} %>
+    </div>
+  </div>
+</section>
+<%= javascript_include_tag "scales/scales" %>

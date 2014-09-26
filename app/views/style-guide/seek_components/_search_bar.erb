@@ -1,0 +1,62 @@
+<div style="height: 500px; background-color: #F0F0F0">
+  <div style="background-color: #015D8E; height: 2em; padding: 10px 0">
+    <div id="search_box"> 
+      <label id="search_query_wrapper">
+        <input id="search_query" type="text" placeholder="search here" name="search_query"><button class="advance" type="button"></button><button type="submit"></button>
+      </label>
+      <fieldset id="advanced_options" >
+        <fieldset id="search_type">
+          <input id="search_type_all" type="radio" name="search_type" value="All" checked >
+          <label for="search_type_all">All</label>
+          <input id="search_type-assays" type="radio" name="search_type" value="assays">
+          <label for="search_type-assays">Assays</label>
+          <input id="search_type-data_files" type="radio" name="search_type" value="data_files">
+          <label for="search_type-data_files">Data files</label>
+          <input id="search_type-events" type="radio" name="search_type" value="events">
+          <label for="search_type-events">Events</label>
+          <input id="search_type-institutions" type="radio" name="search_type" value="institutions">
+          <label for="search_type-institutions">Institutions</label>
+          <input id="search_type-investigations" type="radio" name="search_type" value="investigations">
+          <label for="search_type-investigations">Investigations</label>
+          <input id="search_type-models" type="radio" name="search_type" value="models">
+          <label for="search_type-models">Models</label>
+          <input id="search_type-people" type="radio" name="search_type" value="people">
+          <label for="search_type-people">People</label>
+          <input id="search_type-presentations" type="radio" name="search_type" value="presentations">
+          <label for="search_type-presentations">Presentations</label>
+          <input id="search_type-projects" type="radio" name="search_type" value="projects">
+          <label for="search_type-projects">Projects</label>
+          <input id="search_type-publications" type="radio" name="search_type" value="publications">
+          <label for="search_type-publications">Publications</label>
+          <input id="search_type-samples" type="radio" name="search_type" value="samples">
+          <label for="search_type-samples">Samples</label>
+          <input id="search_type-sops" type="radio" name="search_type" value="sops">
+          <label for="search_type-sops">SOPs</label>
+          <input id="search_type-specimens" type="radio" name="search_type" value="specimens">
+          <label for="search_type-specimens">Specimens</label>
+          <input id="search_type-strains" type="radio" name="search_type" value="strains">
+          <label for="search_type-strains">Strains</label>
+          <input id="search_type-studies" type="radio" name="search_type" value="studies">
+          <label for="search_type-studies">Studies</label>
+        </fieldset>
+        <fieldset id="scale" name="scale" style="visibility: visible;">
+          <input id="scale-all" type="radio" name="scale" value="all" checked>
+          <label for="scale-all">All</label>
+          <input id="scale-organism" type="radio" name="scale" value="organism">
+          <label for="scale-organism">Organism</label>
+          <input id="scale-liver" type="radio" name="scale" value="liver">
+          <label for="scale-liver">Liver</label>
+          <input id="scale-liverLobule" type="radio" name="scale" value="liverLobule">
+          <label for="scale-liverLobule">Liver lobule</label>
+          <input id="scale-intercellular" type="radio" name="scale" value="intercellular">
+          <label for="scale-intercellular">Intercellular</label>
+          <input id="scale-cell" type="radio" name="scale" value="cell">
+          <label for="scale-cell">Cell</label>
+        </fieldset>
+        <input id="include_external_search" type="checkbox" value="1" name="include_external_search">
+        <label for="include_external_search">External</label>
+        <button type="submit"></button>
+      </fieldset>
+    </div>
+  </div>
+</div>

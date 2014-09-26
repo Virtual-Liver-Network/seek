@@ -11,6 +11,7 @@ end
 
 module SEEK
   class Application < Rails::Application
+    config.style_guide.paths << Rails.root.join("app/views/style-guide/**/*")
     config.autoload_paths += %W(#{Rails.root}/app/sweepers #{Rails.root}/app/reindexers #{Rails.root}/app/jobs)
 
     #also include lib/** files

@@ -1,0 +1,50 @@
+@import "branding/colors";
+.alphabetcal_pagination {
+	padding: 3px;
+	margin: 3px;
+	text-align: center;
+    font-weight:bold;
+    font-size:larger;
+    display: table;
+    width: 100%;
+    background-color: $darkBg;
+    padding: 0.5em 0.5em;
+    color: $mainFg;
+
+    > *{
+    	display: table-cell;
+    	line-height: 1;
+    }
+
+    span{
+    	padding-right: 0.75em;
+    }
+
+    ul{
+    	width: 100%;
+    	text-align: center;
+    }
+
+    li{
+		display: inline-block;
+
+		&.disabled_page{
+			padding: 0 0.25em;
+		}
+    }
+
+	a {
+		text-decoration: none; /* no underline */
+		color: $lightFg;
+		display: block;
+		line-height: 1.5;
+		border-radius: 3px;
+		padding: 0 0.25em;
+	}
+
+	.current_page, a:hover{
+	  background-color: $tabActive;
+	  color: $darkBg;
+	  box-shadow: inset 0 2px 0 $darkBoxshadow;
+	}
+}

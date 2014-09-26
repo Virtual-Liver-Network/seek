@@ -1,0 +1,17 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "app/views/style-guide"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "app/assets/stylesheets"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "app/assets/javascripts"
+		}
+	]
+}

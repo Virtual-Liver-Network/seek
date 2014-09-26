@@ -87,8 +87,11 @@ gem "recaptcha", '0.3.1'
 gem 'metainspector'
 gem 'mechanize'
 
+gem 'style-guide'
 
 group :assets do
+  gem "sass-rails"
+  gem "coffee-rails"
   gem 'turbo-sprockets-rails3'
   gem 'yui-compressor'
 end
@@ -119,3 +122,6 @@ group :test do
   gem 'sunspot_matchers'
 end
 
+
+gem "rack-livereload", :group => "development"
+gem "guard-livereload", :group => "development"

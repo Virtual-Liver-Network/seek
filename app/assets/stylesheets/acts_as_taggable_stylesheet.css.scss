@@ -1,4 +1,6 @@
-.hTagcloud { font-weight: normal; text-align: center; color: #999999; line-height: 1.3em; }
+@import "branding/colors";
+
+.hTagcloud { font-weight: normal; text-align: center; color: $mainFg; line-height: 1.3em; }
 .hTagcloud .popularity 		{ margin:0; padding:0; }
 .hTagcloud .popularity li	{ display:inline; text-decoration:none; line-height: 1.3em; }
 .hTagcloud .popularity .popular			{ font-size:85% }
@@ -22,3 +24,11 @@
 .tags_onesize .hTagcloud .popularity .vvv-popular { font-size:100%; }
 .tags_onesize .hTagcloud .popularity .vvvv-popular { font-size:100%; }
 
+.popularity a{
+}
+
+.popularity a::before { 
+	content: "\2002\2022\2002"; 
+}
+.popularity a:hover::before { color: $mainFg;}
+.popularity a:first-child::before { content: none;}

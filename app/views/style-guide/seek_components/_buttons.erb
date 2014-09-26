@@ -1,0 +1,43 @@
+<p> <a href="#" class="link_button"> link button</a> <a href="#" class="link_button disabled"> disabled link button</a> </p>
+<p> <input type="button" value="input type button"> <input type="button" class="disabled" value="disabled input type button"> </p>
+<p> <button> button tag </button> <button disabled> disabled button tag </button></p>
+
+
+<p> Buttons for actions, e.g. upload a data file, create/edit/manage/delete an assay</p>
+<ul class="sectionIcons">
+  <li>
+     <span class="icon">
+       Enabled button
+     <a href="#"><%= image_tag "famfamfam_silk/add.png" %> Upload/New (Version)Item </a>
+     </span>
+  </li>
+
+  <li>
+       <span class="icon">
+         Disabled button
+       <a href="#" class="disabled"><%= image_tag "famfamfam_silk/add.png" %> Upload/New (Version)Item </a>
+       </span>
+  </li>
+</ul>
+
+<p> gadget button, or menu-style gadget button </p>
+<div><input class="gadget_button" type="button" value="gadget input type button"></div>
+
+<div>
+  <input class="gadget_button_menu" type="button" onclick="javascript: toggleDynamicMenu('new_asset_menu');" value="gadget input type button menu">
+  <ul id="new_asset_menu" class="dynamic_menu with_smaller_shadow" style="margin-left:190px;overflow: visible;display: none">
+    <li class="dynamic_menu_li" onclick="javascript:return false;">sub menu 1</li>
+    <li class="dynamic_menu_li" onclick="javascript:return false;">sub menu 2</li>
+    <li class="dynamic_menu_li" onclick="javascript:return false;">sub menu 3</li>
+    <li class="dynamic_menu_li" onclick="javascript:return false;">sub menu 4</li>
+
+    </li>
+  </ul>
+</div>
+
+<br/>
+<br/>
+<br/>
+<br/>
+
+

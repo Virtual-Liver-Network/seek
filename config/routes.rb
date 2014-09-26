@@ -1,6 +1,7 @@
 SEEK::Application.routes.draw do
 
   mount TavernaPlayer::Engine, :at => "/"
+  mount StyleGuide::Engine => "/style-guide"
 
   resources :scales do
     collection do

@@ -1,0 +1,72 @@
+@import "branding/variables";
+
+.dm {
+    font-family: 'Lucida Grande', Tahoma, Arial, Helvetica, sans-serif;
+    text-align: left;
+    margin: 0;
+
+    a, a:hover{
+        color: inherit;
+    }
+}
+.dm .item1,
+.dm .item1-active,{
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+    line-height: 2;
+    margin-top: 5px;
+    font-weight: bold;
+    text-align: center;
+    
+    a{
+        padding: 0 15px 5px;
+        line-height: 2;
+        display: block;
+    }
+
+}
+.dm .item1 {
+    background: transparent;
+    color: #ffffff;
+}
+.dm .item1-active, .dm .item1:hover {
+    background: $lightBg;
+    color: $darkBg;
+}
+.dm .section {
+    width: 200px;
+    position: absolute;
+    visibility: hidden;
+    z-index: 3 !important;
+    text-align: left;
+    font-weight: bolder;
+    left: 0;
+    margin: 0;
+    box-shadow: 0px 1px 1px 0px darken($boxshadow, 20%);
+
+    li {
+        text-decoration: none;
+        display: block;
+        white-space: nowrap;
+        padding: 0;
+        background: $lightBg;
+        color: $darkBg;
+
+        a{
+            display: block;
+            padding: 0 15px;
+            line-height: 2;
+        }
+
+        &:hover {
+            background: $darkBg;
+            color: $lightBg;
+        }
+    }
+}
+
+.dm .left, .dm .left:hover { border-style: solid none solid solid; }
+.dm .right, .dm .right:hover { border-style: solid solid solid none; }
+
+* html .dm td { position: relative; } /* ie 5.0 fix */

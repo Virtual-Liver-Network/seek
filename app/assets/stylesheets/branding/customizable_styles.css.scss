@@ -1,0 +1,38 @@
+@import "variables";
+
+
+h1.content_sg {
+  color: $h1Color;
+}
+
+.circle {
+  padding: 2px;
+  float:left;
+  width: 100px;
+  height: 100px;
+  -moz-border-radius: 50px;
+  -webkit-border-radius: 50px;
+  border-radius: 50px;
+}
+
+a.link_button{
+  background-color: #f0f4ff;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  box-shadow: -2px -2px 3px #eee;
+  line-height: 1;
+  padding: 0.5em;
+  text-decoration: none;
+  width: 100%;
+}
+
+.color-sample {
+  text-align: left;
+  span {
+    display: inline-block;
+    width: 30px;
+    line-height: 60px;
+    text-align: center;
+    font-weight: bold
+  }
+}

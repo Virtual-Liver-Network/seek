@@ -1,0 +1,61 @@
+<div id="myexp_sidebar" class="yui-b" style="background-color: #F0F0F0; padding: 20px; width: 250px;">
+  <div class="sysmo_gadget">
+    <div class="header">
+      <p> Log in / Register </p>
+    </div>
+    <div class="contents" id="login-container">
+      <form method="post" action="/session" accept-charset="UTF-8">
+        <input id="called_from_controller" type="hidden" value="homes" name="called_from[controller]">
+        <input id="called_from_action" type="hidden" value="index" name="called_from[action]">
+        <input id="called_from_id" type="hidden" name="called_from[id]">
+
+        <a href="#" id="login_toggle_link">Log in using <%= image_tag "openid-16x16.gif" %> OpenID</a>
+        <div id="password_login">
+          <input id="login" placeholder="username"  class="field" type="text" name="login"/>
+          <input id="password" placeholder="password" class="field" type="password" name="password"/>
+          <input id="remember_me" type="checkbox" name="remember_me"/>
+          <label for="remember_me">remember me</label>
+        </div>
+        <input id="login_button" type="submit" value="Log in" onclick="return false" name="commit">
+      </form>
+      <div id="account_options">
+        <a href="#">Create account</a>
+        <a href="#">Forgot password</a>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="sidebar_tag_cloud">
+    <div class="sysmo_gadget">
+      <div class="header">
+        Tags
+        <a href="#">[show all]</a>
+      </div>
+      <div class="contents">
+        <div class="tags_smaller">
+          <div class="hTagcloud">
+            <div class="popularity">
+              <a class="popular" href="#">CellNetAnalyzer (CNA)</a><a class="popular" href="#">data management</a><a class="popular" href="#">Fluidigm</a><a class="popular" href="#">HepatoSys</a><a class="popular" href="#">IL-6</a><a class="popular" href="#">inflammation</a><a class="popular" href="#">Insulin signalling</a><a class="popular" href="#">Kinetic Modelling</a><a class="popular" href="#">logical modelling</a><a class="popular" href="#">LPS</a><a class="popular" href="#">LPS showcase</a><a class="popular" href="#">metabolism</a><a class="popular" href="#">MidtermReview</a><a class="popular" href="#">Nuclear receptors</a><a class="popular" href="#">ODE</a><a class="popular" href="#">primary hepatocytes</a><a class="popular" href="#">primary human hepatocytes</a><a class="popular" href="#">Report</a><a class="popular" href="#">TNFalpha</a><a class="popular" href="#">VLN</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div id="organism_gadget" class="sysmo_gadget">
+    <div class="header"> Organisms</div>
+    <div class="contents">
+      <ul>
+        <li>
+          <a href="#"> organism example</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+
+</div>
