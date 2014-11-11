@@ -21,8 +21,14 @@ namespace :seek do
       :repopulate_auth_lookup_tables,
   ]
 
+  task :backup_tasks => [
+      :environment,
+      :dump_existing_suggested_assay_types,
+      :dump_existing_suggested_technology_types
+  ]
+
   desc("upgrades SEEK from the last released version to the latest released version")
-  task(:upgrade => [:environment, "db:migrate", "db:sessions:clear", "tmp:clear"]) do
+  task(:upgrade => [:environment, "seek:backup_tasks","db:migrate", "db:sessions:clear", "tmp:clear"]) do
 
     solr=Seek::Config.solr_enabled
 
@@ -37,6 +43,43 @@ namespace :seek do
     end
 
     puts "Upgrade completed successfully"
+  end
+
+  desc("dump existing assay types in VLN but not in the core of JERM ontology as suggested types")
+  task(:dump_existing_suggested_assay_types => :environment) do
+    new_assay_type_edges= {}
+    new_assay_type_titles = ["cDNA microarray", "Protein activation", "DNA synthesis", "lipidomics", "new metabolomic assay"]
+    # "cDNA microarray" mapped to "transcriptional profiling" ??
+    new_assay_type_titles.each do |title|
+      new_assay_type_edges[title] = {}
+      type = AssayType.where(title: title).first
+      parents_labels = type.parents.map(&:title).map{|label| label == "experimental assay type" ? "experimental assay" : label}
+      new_assay_type_edges[title]["parents_labels"] = parents_labels
+      new_assay_type_edges[title]["parents_uris"] = parents_labels.map{|pl| SuggestedAssayType.base_ontology_hash_by_label[pl.downcase].try(:uri).try(&:to_s)}
+      new_assay_type_edges[title]["assay_ids"] = type.assays.map(&:id)
+    end
+    File.open('tmp/assay_types.yml', "w") { |f|
+      f.write new_assay_type_edges.to_yaml
+    }
+
+  end
+
+  desc("dump existing technology types in VLN but not in the core of JERM ontology as suggested types")
+  task(:dump_existing_suggested_technology_types => :environment) do
+    new_technology_type_edges= {}
+        new_technology_type_titles = ["cdna microarray", "affymetrix genechip oligonucleotide arrays", "fluidigm high-throughput taqman platform", "western blotting", "fluorescence", "quantitative immunoblotting"]
+       # cdna microarray: microarray
+        new_technology_type_titles.each do |title|
+          new_technology_type_edges[title] = {}
+          type = TechnologyType.where(title: title).first
+          parents_labels = type.parents.map(&:title).map{|label| label == "technology" ? "technology type" : label}
+          new_technology_type_edges[title]["parents_labels"] = parents_labels
+          new_technology_type_edges[title]["parents_uris"] = parents_labels.map{|pl| SuggestedTechnologyType.base_ontology_hash_by_label[pl.downcase].try(:uri).try(&:to_s)}
+          new_technology_type_edges[title]["assay_ids"] = type.assays.map(&:id)
+        end
+        File.open('tmp/technology_types.yml', "w") { |f|
+          f.write new_technology_type_edges.to_yaml
+        }
   end
 
   desc("Cleans out group memberships where the person no longer exists")
