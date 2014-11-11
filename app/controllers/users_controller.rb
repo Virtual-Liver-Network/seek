@@ -2,9 +2,10 @@ class UsersController < ApplicationController
     
   before_filter :is_current_user_auth, :only=>[:edit, :update]  
   before_filter :is_user_admin_auth, :only => [:impersonate]
+
   skip_before_filter :restrict_guest_user
   skip_before_filter :project_membership_required
-  skip_before_filter :profile_for_login_required,:only=>[:update]
+  skip_before_filter :profile_for_login_required,:only=>[:update,:cancel_registration]
   
   # render new.rhtml
   def new
@@ -23,6 +24,15 @@ class UsersController < ApplicationController
       check_registration
     end
 
+  end
+
+  def cancel_registration
+    user = User.current_user
+    if user && !user.person
+      logout_user
+      user.destroy
+    end
+    redirect_to main_app.root_path
   end
 
   def set_openid
@@ -51,7 +61,7 @@ class UsersController < ApplicationController
         Mailer.welcome_no_projects(current_user, base_host).deliver
         logout_user
         flash[:notice] = "Signup complete! However, you will need to wait for an administrator to associate you with your project(s) before you can login."        
-        redirect_to new_session_path
+        redirect_to main_app.root_path
       else
         Mailer.welcome(current_user, base_host).deliver
         flash[:notice] = "Signup complete!"
@@ -95,7 +105,7 @@ class UsersController < ApplicationController
     if request.get?
       # forgot_password.rhtml
     elsif request.post?      
-      user = User.find_by_login(params[:login])
+      user = User.find_by_login(params[:login]) || Person.where(email: params[:login]).first.try(:user)
 
       respond_to do |format|
         if user && user.person && !user.person.email.blank?
@@ -106,7 +116,7 @@ class UsersController < ApplicationController
           flash[:notice] = "Instructions on how to reset your password have been sent to #{user.person.email}"
           format.html { render :action => "forgot_password" }
         else
-          flash[:error] = "Invalid login: #{params[:login]}" if !user
+          flash[:error] = "Invalid login name/email: #{params[:login]}" if !user
           flash[:error] = "Unable to send you an email, as this information isn't available for #{params[:login]}" if user && (!user.person || user.person.email.blank?)
           format.html { render :action => "forgot_password" }
         end

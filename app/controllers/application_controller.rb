@@ -277,7 +277,7 @@ class ApplicationController < ActionController::Base
       when 'destroy', 'destroy_item', 'cancel'
         'delete'
 
-      when 'manage', 'notification', 'read_interaction', 'write_interaction'
+      when 'manage', 'notification', 'read_interaction', 'write_interaction', 'report_problem'
           'manage'
       else
         nil
@@ -311,15 +311,14 @@ class ApplicationController < ActionController::Base
 
       object = name.camelize.constantize.find(params[:id])
 
+      #remember the location to return to if somebody immediately logs in next
+      store_return_to_location
+
       if is_auth?(object, action)
         eval "@#{name} = object"
         params.delete :sharing unless object.can_manage?(current_user)
       else
         respond_to do |format|
-
-          #remember the location to return to if somebody immediately logs in next
-          store_return_to_location
-
           if User.current_user.nil?
             flash[:error] = "You are not authorized to #{action} this #{name.humanize}, you may need to login first."
           else
@@ -327,14 +326,14 @@ class ApplicationController < ActionController::Base
           end
 
           format.html do
-            case action
-              when 'publish'   then redirect_to object
-              when 'manage'   then redirect_to object
-              when 'edit'     then redirect_to object
-              when 'download' then redirect_to object
-              when 'delete' then redirect_to object
-              else                 redirect_to eval "#{self.controller_name}_path"
-            end
+            redirect_path = case action
+                              when 'publish', 'manage', 'edit', 'download', 'delete'
+                                eval("#{self.controller_name.singularize}_path(#{object.id})")
+                              else
+                                eval "#{self.controller_name}_path"
+                            end
+            store_denied_and_redirected_to_location(redirect_path)
+            redirect_to redirect_path
           end
           format.rdf { render :text => "You may not #{action} #{name}:#{params[:id]}", :status => :forbidden }
           format.xml { render :text => "You may not #{action} #{name}:#{params[:id]}", :status => :forbidden }
@@ -380,7 +379,6 @@ class ApplicationController < ActionController::Base
       #don't log if the object is not valid or has not been saved, as this will a validation error on update or create
       return if object.nil? || (object.respond_to?("new_record?") && object.new_record?) || (object.respond_to?("errors") && !object.errors.empty?)
 
-
       case c
         when "sessions"
           if ["create", "destroy"].include?(a)
@@ -390,19 +388,23 @@ class ApplicationController < ActionController::Base
                                :activity_loggable => object,
                                :user_agent => request.env["HTTP_USER_AGENT"])
           end
-        when "investigations", "studies", "assays", "specimens", "samples"
-          if ["show", "create", "update", "destroy"].include?(a)
-            check_log_exists(a, c, object)
-            ActivityLog.create(:action => a,
-                               :culprit => current_user,
-                               :referenced => object.projects.first,
-                               :controller_name => c,
-                               :activity_loggable => object,
-                               :data => object.title,
-                               :user_agent => request.env["HTTP_USER_AGENT"])
-
+        when "sweeps", "runs"
+          if ["show", "update", "destroy", "download"].include?(a)
+            ref = object.projects.first
+          elsif a == "create"
+            ref = object.workflow
           end
-        when "data_files", "models", "sops", "publications", "presentations", "events"
+
+          check_log_exists(a, c, object)
+          ActivityLog.create(:action => a,
+                             :culprit => current_user,
+                             :referenced => ref,
+                             :controller_name => c,
+                             :activity_loggable => object,
+                             :data => object.title,
+                             :user_agent => request.env["HTTP_USER_AGENT"])
+          break
+        when *Seek::Util.authorized_types.map { |t| t.name.underscore.pluralize.split('/').last } # TODO: Find a nicer way of doing this...
           a = "create" if a == "upload_for_tool"
           a = "update" if a == "new_version"
           a = "inline_view" if a == "explore"

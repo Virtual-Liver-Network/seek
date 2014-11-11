@@ -622,6 +622,12 @@ end
     f.original_filename "small-test-spreadsheet.xls"
   end
 
+  Factory.define(:tiff_content_blob,:parent=>:content_blob) do |f|
+    f.content_type "image/tiff"
+    f.data  File.new("#{Rails.root}/test/fixtures/files/tiff_image_test.tif","rb").read
+    f.original_filename 'tiff_image_test.tif'
+  end
+
   Factory.define(:xlsx_content_blob,:parent=>:content_blob) do |f|
     f.content_type "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     f.data  File.new("#{Rails.root}/test/fixtures/files/lihua_column_index_error.xlsx","rb").read
@@ -972,4 +978,9 @@ end
         Factory.build(:taverna_player_run, :sweep => sweep)
       end
     end
+  end
+
+  Factory.define(:failed_run, :parent => :taverna_player_run) do |f|
+    f.status_message_key 'failed'
+    f.state :failed
   end

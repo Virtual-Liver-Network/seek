@@ -24,7 +24,7 @@ class SessionsController < ApplicationController
     redirect_to root_path
   end
 
-  def create   
+  def create
     if using_open_id?
       open_id_authentication
     else      
@@ -67,7 +67,9 @@ class SessionsController < ApplicationController
     if @user = User.authenticate(params[:login], params[:password])
       check_login
     else
-      failed_login "Invalid username/password."
+
+      failed_login "Invalid username/password. Have you <b> #{view_context.link_to "forgotten password?", main_app.forgot_password_url }</b>".html_safe
+
     end  
   end
 
@@ -104,6 +106,7 @@ class SessionsController < ApplicationController
       format.xml {session[:xml_login] = true; head :ok }
     end
     clear_return_to
+    clear_denied_and_redirected_to
   end
 
   def determine_return_url_after_login
