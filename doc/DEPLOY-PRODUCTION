@@ -1,0 +1,22 @@
+Upgrade VLN SEEK from version 0.16.3 to v0.22.0
+
+1. check solr, delayed_job are running. If not, do:
+
+#start solr
+RAILS_ENV=production rake seek:sunspot:solr:start
+
+#start 2 delayed job processes
+RAILS_ENV=production rake seek:workers:start :n => 2
+
+#check delayed job status
+RAILS_ENV=production rake seek:workers:status
+
+
+2.deploy upgrade tasks
+
+RAILS_ENV=production rake vln_seek:deploy
+
+
+
+
+
