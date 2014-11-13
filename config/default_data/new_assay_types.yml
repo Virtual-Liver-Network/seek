@@ -1,0 +1,36 @@
+---
+cDNA microarray:
+  parents_labels:
+  - gene expression profiling
+  parents_uris:
+  - http://www.mygrid.org.uk/ontology/JERMOntology#Gene_expression_profiling
+  assay_ids:
+  - 20
+  - 34
+Protein activation:
+  parents_labels:
+  - proteomics
+  parents_uris:
+  - http://www.mygrid.org.uk/ontology/JERMOntology#Proteomics
+  assay_ids:
+  - 19
+  - 33
+DNA synthesis:
+  parents_labels:
+  - experimental assay
+  parents_uris:
+  - http://www.mygrid.org.uk/ontology/JERMOntology#Experimental_assay_type
+  assay_ids: []
+lipidomics:
+  parents_labels:
+  - experimental assay
+  parents_uris:
+  - http://www.mygrid.org.uk/ontology/JERMOntology#Experimental_assay_type
+  assay_ids:
+  - 96
+new metabolomic assay:
+  parents_labels:
+  - metabolomics
+  parents_uris:
+  - http://www.mygrid.org.uk/ontology/JERMOntology#Metabolomics
+  assay_ids: []

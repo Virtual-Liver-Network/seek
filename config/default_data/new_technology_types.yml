@@ -1,0 +1,63 @@
+---
+cdna microarray:
+  parents_labels:
+  - microarray
+  parents_uris:
+  - http://www.mygrid.org.uk/ontology/JERMOntology#Microarray
+  assay_ids:
+  - 34
+affymetrix genechip oligonucleotide arrays:
+  parents_labels:
+  - microarray
+  parents_uris:
+  - http://www.mygrid.org.uk/ontology/JERMOntology#Microarray
+  assay_ids:
+  - 6
+  - 20
+  - 26
+  - 28
+  - 35
+  - 43
+fluidigm high-throughput taqman platform:
+  parents_labels:
+  - qRT-PCR
+  parents_uris:
+  - http://www.mygrid.org.uk/ontology/JERMOntology#qRT-PCR
+  assay_ids:
+  - 11
+  - 15
+  - 32
+  - 48
+  - 60
+  - 61
+  - 62
+  - 63
+  - 64
+  - 65
+  - 66
+  - 67
+  - 68
+  - 69
+  - 85
+western blotting:
+  parents_labels:
+  - technology type
+  parents_uris:
+  - http://www.mygrid.org.uk/ontology/JERMOntology#Technology_type
+  assay_ids:
+  - 19
+fluorescence:
+  parents_labels:
+  - technology type
+  parents_uris:
+  - http://www.mygrid.org.uk/ontology/JERMOntology#Technology_type
+  assay_ids:
+  - 78
+  - 93
+quantitative immunoblotting:
+  parents_labels:
+  - SDS PAGE
+  parents_uris:
+  - http://www.mygrid.org.uk/ontology/JERMOntology#SDS_PAGE
+  assay_ids:
+  - 33
