@@ -1,6 +1,6 @@
 SEEK::Application.routes.draw do
 
-  mount TavernaPlayer::Engine, :at => "/"
+  mount TavernaPlayer::Engine, :at => (SEEK::Application.config.relative_url_root || "/")
   mount StyleGuide::Engine => "/style-guide"
 
   resources :scales do
@@ -108,6 +108,7 @@ SEEK::Application.routes.draw do
       post :forgot_password
       post :hide_guide_box
       post :impersonate
+      post :cancel_registration
     end
     member do
       put :set_openid
@@ -294,8 +295,7 @@ SEEK::Application.routes.draw do
       post :convert_to_presentation
       post :update_annotations_ajax
       post :new_version
-      #MERGENOTE - this is a destroy, and should be the destory method, not post since we are not updating or creating something.
-      post :destroy_version
+      delete :destroy_version
     end
     resources :studied_factors do
       collection do
@@ -329,7 +329,7 @@ SEEK::Application.routes.draw do
       post :request_resource
       post :update_annotations_ajax
       post :new_version
-      post :destroy_version
+      delete :destroy_version
     end
     resources :content_blobs do
       member do
@@ -343,7 +343,6 @@ SEEK::Application.routes.draw do
 
   resources :models do
     collection do
-      get :build
       get :preview
       post :test_asset_url
       post :items_for_result
@@ -352,7 +351,6 @@ SEEK::Application.routes.draw do
     member do
       get :compare_versions
       post :compare_versions
-      get :builder
       post :check_related_items
       get :visualise
       post :check_gatekeeper_required
@@ -360,16 +358,15 @@ SEEK::Application.routes.draw do
       get :matching_data
       get :published
       post :publish_related_items
-      post :submit_to_jws
       post :new_version
       post :submit_to_sycamore
       post :export_as_xgmml
       post :update_annotations_ajax
-      post :simulate
       post :publish
       post :execute
       post :request_resource
-      post :destroy_version
+      post :simulate
+      delete :destroy_version
     end
     resources :model_images do
       collection do
@@ -407,7 +404,7 @@ SEEK::Application.routes.draw do
       post :request_resource
       post :update_annotations_ajax
       post :new_version
-      post :destroy_version
+      delete :destroy_version
     end
     resources :experimental_conditions do
       collection do
@@ -557,10 +554,14 @@ SEEK::Application.routes.draw do
       delete :favourite_delete
     end
 
-    resources :runs, :controller => 'TavernaPlayer::Runs'
+    resources :runs, :controller => 'taverna_player/runs'
   end
 
-  resources :runs, :controller => 'TavernaPlayer::Runs', :only => ['edit', 'update']
+  resources :runs, :controller => 'taverna_player/runs', :only => ['edit', 'update'] do
+    member do
+      post :report_problem
+    end
+  end
 
   resources :group_memberships
 

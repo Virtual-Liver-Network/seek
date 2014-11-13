@@ -127,11 +127,23 @@ module Acts #:nodoc:
 
     module InstanceMethods
 
+      def managers_names
+        managers.collect(&:title).join(", ")
+      end
+
       def contains_downloadable_items?
+        !all_content_blobs.compact.select { |blob| !blob.is_webpage? }.empty?
+      end
+
+      def all_content_blobs
         blobs = []
         blobs << self.content_blob if self.respond_to?(:content_blob)
         blobs = blobs | self.content_blobs if self.respond_to?(:content_blobs)
-        !blobs.compact.select{|blob| !blob.is_webpage?}.empty?
+        blobs
+      end
+
+      def single_content_blob
+        all_content_blobs.size == 1 ? all_content_blobs.first : nil
       end
 
       def studies
@@ -166,6 +178,14 @@ module Acts #:nodoc:
 
       def related_publications
         self.relationships.select { |a| a.other_object_type == "Publication" }.collect { |a| a.other_object }
+      end
+
+      def is_doiable?
+        Seek::Util.doiable_asset_types.include?(self.class)
+      end
+
+      def is_doi_minted?
+        true
       end
 
       def cache_remote_content_blob
