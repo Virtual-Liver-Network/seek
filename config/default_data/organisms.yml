@@ -1,6 +1,6 @@
 Bacillus subtilis:
   title: Bacillus subtilis
-  
+
 Bos taurus:
   title: Bos taurus
 
@@ -22,7 +22,17 @@ Rattus norvegicus:
 Sus scrofa:
   title: Sus scrofa
 
+Pseudomonas fluorescens:
+  title: Pseudomonas fluorescens
 
+Saccharomyces cerevisiae:
+  title: Saccharomyces cerevisiae
+
+Streptomyces coelicolor:
+  title: Streptomyces coelicolor
+
+Sulfolobus solfataricus:
+  title: Sulfolobus solfataricus
 
 Trypanosoma brucei:
   title: Trypanosoma brucei
