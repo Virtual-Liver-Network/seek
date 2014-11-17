@@ -9,7 +9,8 @@ namespace :vln_seek do
 
   task :upgrade_tasks => [
       :environment,
-      "seek:update_admin_assigned_roles",
+       :update_scales,
+       "seek:update_admin_assigned_roles",
       :update_assay_and_technology_types,
       "seek:repopulate_missing_publication_book_titles",
       :increase_sheet_empty_rows,
@@ -26,15 +27,13 @@ namespace :vln_seek do
       :environment,
        :create_new_assay_types,
        :create_new_technology_types,
-      "seek:resynchronise_assay_types",
-      "seek:resynchronise_technology_types",
+      #"seek:resynchronise_assay_types",
+      #"seek:resynchronise_technology_types",
   ]
 
   task :backup => [
      :environment,
-    :update_scales,
-    :dump_existing_suggested_assay_types,
-    :dump_existing_suggested_technology_types
+     :dump_organisms_strains_data
   ]
 
   task :update_scales => [
@@ -61,62 +60,36 @@ namespace :vln_seek do
     puts "Upgrade completed successfully"
   end
 
-  desc("dump existing assay types in VLN but not in the core of JERM ontology as suggested types")
-   task(:dump_existing_suggested_assay_types => :environment) do
-     new_assay_type_edges= {}
-     new_assay_type_titles = ["cDNA microarray", "Protein activation", "DNA synthesis", "lipidomics", "new metabolomic assay"]
-     # "cDNA microarray" mapped to "transcriptional profiling" ??
-     new_assay_type_titles.each do |title|
-       new_assay_type_edges[title] = {}
-       type = AssayType.where(title: title).first
-       parents_labels = type.parents.map(&:title).map{|label| label == "experimental assay type" ? "experimental assay" : label}
-       new_assay_type_edges[title]["parents_labels"] = parents_labels
-       new_assay_type_edges[title]["parents_uris"] = parents_labels.map{|pl| SuggestedAssayType.base_ontology_hash_by_label[pl.downcase].try(:uri).try(&:to_s)}
-       new_assay_type_edges[title]["assay_ids"] = type.assays.map(&:id)
-     end
-     File.open('config/default_data/new_assay_types.yml', "w") { |f|
-       f.write new_assay_type_edges.to_yaml
-     }
+  task(:dump_organisms_strains_data => :environment) do
+    File.open("config/default_data/organisms.yml", "w") do |f|
+      f.write Organism.all.map{|o|o.attributes.reject{|k,v| k=="created_at" || k == "updated_at"}}.to_yaml
+    end
+    File.open("config/default_data/strains.yml", "w") do |f|
+      f.write Strain.all.map{|s|s.attributes.reject{|k,v| k=="created_at" || k == "updated_at"}}.to_yaml
+    end
 
-   end
+  end
 
-   desc("dump existing technology types in VLN but not in the core of JERM ontology as suggested types")
-   task(:dump_existing_suggested_technology_types => :environment) do
-     new_technology_type_edges= {}
-         new_technology_type_titles = ["cdna microarray", "affymetrix genechip oligonucleotide arrays", "fluidigm high-throughput taqman platform", "western blotting", "fluorescence", "quantitative immunoblotting"]
-        # cdna microarray: microarray
-         new_technology_type_titles.each do |title|
-           new_technology_type_edges[title] = {}
-           type = TechnologyType.where(title: title).first
-           parents_labels = type.parents.map(&:title).map{|label| label == "technology" ? "technology type" : label}
-           new_technology_type_edges[title]["parents_labels"] = parents_labels
-           new_technology_type_edges[title]["parents_uris"] = parents_labels.map{|pl| SuggestedTechnologyType.base_ontology_hash_by_label[pl.downcase].try(:uri).try(&:to_s)}
-           new_technology_type_edges[title]["assay_ids"] = type.assays.map(&:id)
-         end
-         File.open('config/default_data/new_technology_types.yml', "w") { |f|
-           f.write new_technology_type_edges.to_yaml
-         }
-   end
 
    task(:create_new_assay_types => :environment) do
      new_assay_type_edges = YAML.load(File.read("config/default_data/new_assay_types.yml"))
      new_assay_type_edges.each do |label, attrs|
        parent_uri = Array(attrs["parent_uris"]).first
        assay_ids = Array(attrs["assay_ids"])
+       suggested_type_id = nil
        if label.downcase == "cDNA microarray".downcase
          mapped_label = "transcriptional profiling"
-         ontology_class = SuggestedAssayType.base_ontology_hash_by_label[mapped_label.downcase]
+         ontology_class =  SuggestedAssayType.new.ontology_readers.map{|r|r.class_hierarchy.hash_by_label[mapped_label.downcase]}.compact.first
          type_uri = ontology_class.try(:uri).try(:to_s)
-         type_label = ontology_class.try(:label)
        else
          suggested_type = SuggestedAssayType.create!(label: label, parent_uri: parent_uri)
          type_uri = suggested_type.try(:uri)
-         type_label = label
+         suggested_type_id = suggested_type.try(:id)
        end
        assay_ids.each do |a_id|
          if assay = Assay.find(a_id)
            assay.assay_type_uri = type_uri
-           assay.assay_type_label = type_label
+           assay.suggested_assay_type_id = suggested_type_id if suggested_type_id
            disable_authorization_checks do
              assay.save
            end
@@ -133,20 +106,20 @@ namespace :vln_seek do
          new_technology_type_edges.each do |label, attrs|
            parent_uri = Array(attrs["parent_uris"]).first
            assay_ids = Array(attrs["assay_ids"])
+           suggested_type_id = nil
            if label.downcase == "cDNA microarray".downcase
              mapped_label = "microarray"
-             ontology_class = SuggestedTechnologyType.base_ontology_hash_by_label[mapped_label.downcase]
+             ontology_class = SuggestedAssayType.new.ontology_readers.map{|r|r.class_hierarchy.hash_by_label[mapped_label.downcase]}.compact.first
              type_uri = ontology_class.try(:uri).try(:to_s)
-             type_label = ontology_class.try(:label)
            else
              suggested_type = SuggestedTechnologyType.create!(label: label, parent_uri: parent_uri)
              type_uri = suggested_type.try(:uri)
-             type_label = label
+             suggested_type_id = suggested_type.try(:id)
            end
            assay_ids.each do |a_id|
              if assay = Assay.find(a_id)
                assay.technology_type_uri = type_uri
-               assay.technology_type_label = type_label
+               assay.suggested_technology_type_id = suggested_type_id if suggested_type_id
                disable_authorization_checks do
                  assay.save
                end

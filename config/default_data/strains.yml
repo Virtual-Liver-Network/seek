@@ -1,126 +1,197 @@
-K-12/MG1655:
-  id: 1
-  organism: Escherichia coli
-  title: K-12/MG1655
-
-MC4100:
-  id: 2
-  organism: Escherichia coli
-  title: MC4100
-
-168:
-  id: 3
-  organism: Bacillus subtilis
-  title: 168
-
-NCIB3610:
-  id: 4
-  organism: Bacillus subtilis
-  title: NCIB3610
-
-JW49:
-  id: 5
-  organism: Bacillus subtilis
-  title: JW49
-
-ATCC6633:
-  id: 6
-  organism: Bacillus subtilis
-  title: ATCC6633
-
-V583:
-  id: 7
-  organism: Enterococcus faecalis
-  title: V583
-
-ATCC29200:
-  id: 8
-  organism: Enterococcus faecalis
-  title: ATCC29200
-
-DS5:
-  id: 9
-  organism: Enterococcus faecalis
-  title: DS5
-
-TX0012:
-  id: 10
-  organism: Enterococcus faecalis
-  title: TX0012
-
-M49(591):
-  id: 11
-  organism: Streptococcus pyogenes
-  title: M49 (591)
-
-ATCC824:
-  id: 12
-  organism: Clostridium acetobutylicum
-  title: ATCC824
-
-NCIMB8052:
-  id: 13
-  organism: Clostridium acetobutylicum
-  title: NCIMB8052
-
-DOTT1:
-  id: 14
-  organism: Pseudomonas putida
-  title: DOT-T1
-
-NCIMB10525:
-  id: 15
-  organism: Pseudomonas fluorescens
-  title: NCIMB10525
-
-A3(2):
-  id: 16
-  organism: Streptomyces coelicolor
-  title: A3(2)
-
-M145:
-  id: 17
-  organism: Streptomyces coelicolor
-  title: M145
-
-P2:
-  id: 18
-  organism: Sulfolobus solfataricus
-  title: P2
-
-YJM789:
-  id: 19
-  organism: Saccharomyces cerevisiae
-  title: YJM789
-
-FY2:
-  id: 20
-  organism: Saccharomyces cerevisiae
-  title: FY2 diploid
-
-FY3:
-  id: 21
-  organism: Saccharomyces cerevisiae
-  title: FY3 diploid
-
-YSBN1:
-  id: 22
-  organism: Saccharomyces cerevisiae
-  title: YSBN1 diploid
-
-YSBN2:
-  id: 23
-  organism: Saccharomyces cerevisiae
-  title: YSBN2 diploid
-
-CENPK113-7D:
-  id: 24
-  organism: Saccharomyces cerevisiae
-  title: CEN.PK113-7D haploid
-
-BY4741:
-  id: 25
-  organism: Saccharomyces cerevisiae
-  title: BY4741
-
-
+---
+- id: 52
+  title: C57BL/6N
+  organism_id: 448538968
+  parent_id: 
+  synonym: 
+  comment: 
+  provider_id: 
+  provider_name: 
+  is_dummy: false
+  contributor_type: 
+  contributor_id: 
+  policy_id: 2023
+  uuid: 
+  first_letter: 
+- id: 53
+  title: C57/BL6N
+  organism_id: 448538968
+  parent_id: 
+  synonym: 
+  comment: 
+  provider_id: 
+  provider_name: 
+  is_dummy: false
+  contributor_type: 
+  contributor_id: 
+  policy_id: 2024
+  uuid: 
+  first_letter: 
+- id: 54
+  title: default
+  organism_id: 887518578
+  parent_id: 
+  synonym: 
+  comment: 
+  provider_id: 
+  provider_name: 
+  is_dummy: true
+  contributor_type: 
+  contributor_id: 
+  policy_id: 2025
+  uuid: 
+  first_letter: 
+- id: 55
+  title: new strain
+  organism_id: 448538968
+  parent_id: 
+  synonym: 
+  comment: 
+  provider_id: 
+  provider_name: 
+  is_dummy: false
+  contributor_type: 
+  contributor_id: 
+  policy_id: 2026
+  uuid: 
+  first_letter: 
+- id: 56
+  title: BL6/N
+  organism_id: 448538968
+  parent_id: 
+  synonym: 
+  comment: 
+  provider_id: 
+  provider_name: 
+  is_dummy: false
+  contributor_type: 
+  contributor_id: 
+  policy_id: 2027
+  uuid: 
+  first_letter: 
+- id: 57
+  title: default
+  organism_id: 448538968
+  parent_id: 
+  synonym: 
+  comment: 
+  provider_id: 
+  provider_name: 
+  is_dummy: true
+  contributor_type: User
+  contributor_id: 308
+  policy_id: 2028
+  uuid: 
+  first_letter: 
+- id: 58
+  title: Teststrain
+  organism_id: 614935680
+  parent_id: 
+  synonym: Test2
+  comment: ''
+  provider_id: ''
+  provider_name: ''
+  is_dummy: false
+  contributor_type: User
+  contributor_id: 2
+  policy_id: 2029
+  uuid: 
+  first_letter: 
+- id: 60
+  title: C57BL/6
+  organism_id: 448538968
+  parent_id: 
+  synonym: ''
+  comment: ''
+  provider_id: '29'
+  provider_name: GÃ¼lce GÃ¼lcÃ¼ler
+  is_dummy: false
+  contributor_type: User
+  contributor_id: 430
+  policy_id: 2221
+  uuid: 
+  first_letter: 
+- id: 61
+  title: C57/BL6J
+  organism_id: 448538968
+  parent_id: 55
+  synonym: ''
+  comment: ''
+  provider_id: ''
+  provider_name: ''
+  is_dummy: false
+  contributor_type: User
+  contributor_id: 365
+  policy_id: 2388
+  uuid: 
+  first_letter: 
+- id: 62
+  title: Sprague-Dawley rat
+  organism_id: 614935680
+  parent_id: 
+  synonym: ''
+  comment: high reproduction rate and low incidence of spontaneous tumor.
+  provider_id: '9'
+  provider_name: ''
+  is_dummy: false
+  contributor_type: User
+  contributor_id: 430
+  policy_id: 2487
+  uuid: 98dcdd78-df33-4ea9-bc19-b3d7b6b9f2d2
+  first_letter: 
+- id: 63
+  title: default
+  organism_id: 614935680
+  parent_id: 
+  synonym: 
+  comment: 
+  provider_id: 
+  provider_name: 
+  is_dummy: true
+  contributor_type: User
+  contributor_id: 231
+  policy_id: 2696
+  uuid: e97ce313-b7c0-4c98-b53a-9eff10081172
+  first_letter: 
+- id: 65
+  title: C57BL/6X
+  organism_id: 448538968
+  parent_id: 
+  synonym: 
+  comment: 
+  provider_id: 
+  provider_name: 
+  is_dummy: false
+  contributor_type: User
+  contributor_id: 2
+  policy_id: 2925
+  uuid: 31605151-678d-477c-b2ca-7f764e21a574
+  first_letter: 
+- id: 73
+  title: APC loxP (neo)
+  organism_id: 448538968
+  parent_id: 
+  synonym: APC flox
+  comment: transgene for loxP sites + neomycin casette in APC gene
+  provider_id: ''
+  provider_name: MEZ Leipzig
+  is_dummy: false
+  contributor_type: User
+  contributor_id: 259
+  policy_id: 3211
+  uuid: 1e3201ed-5fda-4f8e-80ee-964c0b96c266
+  first_letter: 
+- id: 74
+  title: C57BL/6J
+  organism_id: 448538968
+  parent_id: 
+  synonym: 
+  comment: 
+  provider_id: 
+  provider_name: 
+  is_dummy: false
+  contributor_type: User
+  contributor_id: 363
+  policy_id: 3219
+  uuid: 87f5447d-e3d9-4507-920f-f35d47cefc1e
+  first_letter: C

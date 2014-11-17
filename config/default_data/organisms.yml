@@ -1,41 +1,7 @@
-Bacillus subtilis:
-  title: Bacillus subtilis
-
-Bos taurus:
-  title: Bos taurus
-
-Homo sapiens:
-  title: Homo sapiens
-
-Mus musculus:
+---
+- id: 448538968
   title: Mus musculus
-
-Oryctolagus cuniculus:
-  title: Oryctolagus cuniculus
-
-Ovis aries:
-  title: Ovis aries
-
-Rattus norvegicus:
+- id: 614935680
   title: Rattus norvegicus
-
-Sus scrofa:
-  title: Sus scrofa
-
-Pseudomonas fluorescens:
-  title: Pseudomonas fluorescens
-
-Saccharomyces cerevisiae:
-  title: Saccharomyces cerevisiae
-
-Streptomyces coelicolor:
-  title: Streptomyces coelicolor
-
-Sulfolobus solfataricus:
-  title: Sulfolobus solfataricus
-
-Trypanosoma brucei:
-  title: Trypanosoma brucei
-
-Lactobacillus plantarum:
-  title: Lactobacillus plantarum
+- id: 887518578
+  title: Homo sapiens
