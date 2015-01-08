@@ -15,6 +15,7 @@ class WorkflowsController < ApplicationController
 
   include Seek::Publishing::PublishingCommon
   include Seek::BreadCrumbs
+  include Seek::DataciteDoi
 
   def index
     respond_to do |format|
@@ -143,19 +144,6 @@ class WorkflowsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to(workflows_path) }
         format.xml  { head :forbidden }
-      end
-    end
-  end
-
-  def preview
-    element=params[:element]
-    workflow=Workflow.find_by_id(params[:id])
-
-    render :update do |page|
-      if workflow.try :can_view?
-        page.replace_html element,:partial=>"assets/resource_preview",:locals=>{:resource=>workflow}
-      else
-        page.replace_html element,:text=>"Nothing is selected to preview."
       end
     end
   end

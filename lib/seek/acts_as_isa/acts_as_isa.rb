@@ -1,9 +1,8 @@
 require 'title_trimmer'
 require 'grouped_pagination'
 
-
-module Acts #:nodoc:
-  module Isa #:nodoc:
+module Seek
+  module ActsAsISA
     def self.included(mod)
       mod.extend(ClassMethods)
     end
@@ -30,25 +29,25 @@ module Acts #:nodoc:
                  :as        => :resource,
                  :dependent => :destroy
 
-        has_many :activity_logs, :as => :activity_loggable
-
         grouped_pagination
 
         acts_as_uniquely_identifiable
 
+        include Seek::Stats::ActivityCounts
+
         include Seek::Search::CommonFields
 
         class_eval do
-          extend Acts::Isa::SingletonMethods
+          extend Seek::ActsAsISA::SingletonMethods
         end
-        include Acts::Isa::InstanceMethods
+        include Seek::ActsAsISA::InstanceMethods
         include BackgroundReindexing
         include Subscribable
         include Seek::ProjectHierarchies::ItemsProjectsExtension if Seek::Config.project_hierarchy_enabled
       end
 
       def is_isa?
-        include?(Acts::Isa::InstanceMethods)
+        include?(Seek::ActsAsISA::InstanceMethods)
       end
     end
 
@@ -69,10 +68,10 @@ module Acts #:nodoc:
 
     end
   end
-
 end
 
 
+
 ActiveRecord::Base.class_eval do
-  include Acts::Isa
+  include Seek::ActsAsISA
 end

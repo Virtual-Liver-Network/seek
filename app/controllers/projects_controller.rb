@@ -4,10 +4,12 @@ class ProjectsController < ApplicationController
   include WhiteListHelper
   include IndexPager
   include CommonSweepers
+  include Seek::DestroyHandling
 
   before_filter :find_requested_item, :only=>[:show,:admin, :edit,:update, :destroy,:asset_report,:admin_members,:update_members]
   before_filter :find_assets, :only=>[:index]
-  before_filter :is_user_admin_auth, :except=>[:index, :show, :edit, :update, :request_institutions, :admin, :asset_report,:admin_members,:update_members,:resource_in_tab]
+  #before_filter :is_user_admin_auth, :except=>[:index, :show, :edit, :update, :request_institutions, :admin, :asset_report,:admin_members,:update_members,:resource_in_tab]
+  before_filter :is_user_admin_auth, :only => [:new, :create, :manage, :destroy]
   before_filter :editable_by_user, :only=>[:edit,:update]
   before_filter :administerable_by_user, :only =>[:admin,:admin_members,:update_members]
   before_filter :auth_params,:only=>[:update]
@@ -19,10 +21,6 @@ class ProjectsController < ApplicationController
   include Seek::BreadCrumbs
 
   respond_to :html
-
-  def auto_complete_for_organism_name
-    render :json => Project.organism_counts.map(&:name).to_json
-  end  
 
   def asset_report
     @no_sidebar=true
@@ -214,22 +212,7 @@ class ProjectsController < ApplicationController
       format.xml{render :xml=>@projects}
     end
   end
-  # DELETE /projects/1
-  # DELETE /projects/1.xml
-  def destroy
-    respond_to do |format|
-      if @project.can_delete?
-        @project.destroy
-        format.html { redirect_to(projects_path) }
-        format.xml { head :ok }
-      else
-        flash.now[:error]="Unable to delete #{t('project')} with children"
-        format.html { redirect_to(@project) }
-        format.xml { render :xml=>@project.errors, :status=>:unprocessable_entity }
-      end
-    end
-  end
-  
+
   
   # returns a list of institutions for a project in JSON format
   def request_institutions
@@ -267,8 +250,12 @@ class ProjectsController < ApplicationController
     groups_to_remove = params[:group_memberships_to_remove] || []
     people_and_institutions_to_add = params[:people_and_institutions_to_add] || []
     groups_to_remove.each do |group|
-      g = GroupMembership.find(group)
-      g.destroy unless g.nil?
+      group_membership = GroupMembership.find(group)
+      if group_membership && !group_membership.person.me?
+        #this slightly strange bit of code is required to trigger and after_remove callback, which should be revisted
+        group_membership.person.group_memberships.delete(group_membership)
+        group_membership.destroy
+      end
     end
 
     people_and_institutions_to_add.each do |new_info|
@@ -278,11 +265,8 @@ class ProjectsController < ApplicationController
       person = Person.find(person_id)
       institution = Institution.find(institution_id)
       unless person.nil? || institution.nil?
-        work_group = WorkGroup.where(:project_id=>@project.id,:institution_id => institution_id).first
-        work_group ||= WorkGroup.new(:project=>@project,:institution=>institution)
-        group_membership = GroupMembership.new :work_group=>work_group,:person=>person
-        work_group.save!
-        group_membership.save!
+        person.add_to_project_and_institution(@project,institution)
+        person.save!
       end
     end
 

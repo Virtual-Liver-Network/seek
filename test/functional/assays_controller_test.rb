@@ -1361,6 +1361,14 @@ class AssaysControllerTest < ActionController::TestCase
     end
   end
 
+  test "filtered assays for non existent study" do
+    Factory :assay #needs an assay to be sure that the problem being fixed is triggered
+    study_id=999
+    assert_nil Study.find_by_id(study_id)
+    get :index,:study_id=>study_id
+    assert_response :not_found
+  end
+
   test "logged out user can't see new" do
     logout
     get :new
@@ -1405,7 +1413,7 @@ class AssaysControllerTest < ActionController::TestCase
   test 'faceted browsing config for Assay' do
     Factory(:assay, :policy => Factory(:public_policy))
     with_config_value :faceted_browsing_enabled,true do
-      get :index
+      get :index, :user_enable_facet => 'true'
       assert_select "div[data-ex-facet-class='TextSearch']", :count => 1
       assert_select "div[data-ex-role='facet'][data-ex-expression='.organism']", :count => 1
       assert_select "div[data-ex-role='facet'][data-ex-expression='.assay_type'][data-ex-facet-class='Exhibit.HierarchicalFacet']", :count => 1
@@ -1417,7 +1425,7 @@ class AssaysControllerTest < ActionController::TestCase
 
   test 'content config for Assay' do
     with_config_value :faceted_browsing_enabled,true do
-      get :index
+      get :index, :user_enable_facet => 'true'
       assert_select "div[data-ex-role='exhibit-view'][data-ex-label='Tiles'][data-ex-paginate='true']", :count => 1
     end
   end

@@ -18,6 +18,7 @@ class ModelsController < ApplicationController
   include Seek::Publishing::PublishingCommon
   include Seek::BreadCrumbs
   include Bives
+  include Seek::DataciteDoi
 
   def find_other_version
     version = params[:other_version]
@@ -285,32 +286,6 @@ class ModelsController < ApplicationController
       end
     end
   end
-
-  # DELETE /models/1
-  # DELETE /models/1.xml
-  def destroy
-    @model.destroy
-
-    respond_to do |format|
-      format.html { redirect_to(models_path) }
-      format.xml { head :ok }
-    end
-  end
-
-  def preview
-
-    element = params[:element]
-    model = Model.find_by_id(params[:id])
-
-    render :update do |page|
-      if model.try :can_view?
-        page.replace_html element, :partial => "assets/resource_preview", :locals => {:resource => model}
-      else
-        page.replace_html element, :text => "Nothing is selected to preview."
-      end
-    end
-  end
-
 
   def matching_data
     #FIXME: should use the correct version
