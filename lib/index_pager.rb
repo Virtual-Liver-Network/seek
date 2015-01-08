@@ -22,9 +22,9 @@ module IndexPager
 
   end
 
-  def find_assets
+  def find_assets action="view"
     begin
-      fetch_and_filter_assets
+      fetch_and_filter_assets(action)
     rescue ActiveRecord::RecordNotFound
       respond_to do |format|
         format.html do
@@ -34,15 +34,15 @@ module IndexPager
     end
   end
 
-  def fetch_and_filter_assets
-    found = apply_filters(fetch_all_viewable_assets)
+  def fetch_and_filter_assets action
+    found = apply_filters(fetch_all_authorised_assets(action))
     instance_variable_set("@#{self.controller_name.downcase}",found)
   end
 
-  def fetch_all_viewable_assets
+  def fetch_all_authorised_assets action
     model_class=self.controller_name.classify.constantize
     if model_class.respond_to? :all_authorized_for
-      found = model_class.all_authorized_for "view", User.current_user
+      found = model_class.all_authorized_for action, User.current_user
     else
       found = model_class.respond_to?(:default_order) ? model_class.default_order : model_class.all
     end
