@@ -17,8 +17,6 @@ class ProgrammesController < ApplicationController
   end
 
   def update
-    avatar_id = params[:programme].delete(:avatar_id).to_i
-    @programme.avatar_id = ((avatar_id.kind_of?(Numeric) && avatar_id > 0) ? avatar_id : nil)
 
     flash[:notice] = "The #{t('programme').capitalize} was successfully updated." if @programme.update_attributes(params[:programme])
     respond_with(@programme)
@@ -26,6 +24,12 @@ class ProgrammesController < ApplicationController
 
   def edit
     respond_with(@programme)
+  end
+
+  def destroy
+    @programme.destroy
+    flash[:notice]="The #{t('programme').capitalize} was successfully deleted."
+    redirect_to programmes_path
   end
 
   def new

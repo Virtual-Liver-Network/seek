@@ -58,10 +58,6 @@ class ApplicationController < ActionController::Base
     request.host_with_port
   end
 
-  def application_root
-    return  "http://#{base_host}"
-  end
-  helper_method :application_root
   
   #Overridden from restful_authentication
   #Does a second check that there is a profile assigned to the user, and if not goes to the profile
@@ -71,13 +67,6 @@ class ApplicationController < ActionController::Base
       redirect_to(select_people_path) if current_user.person.nil?
       true
     else
-      false
-    end
-  end
-
-  def is_user_activated
-    if Seek::Config.activation_required_enabled && current_user && !current_user.active?
-      error("Activation of this account it required for gaining full access", "Activation required?")
       false
     end
   end
@@ -228,6 +217,17 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def filter_protected_update_params(params)
+    if params
+      [:contributor_id, :contributor_type, :original_filename, :content_type, :content_blob_id, :created_at, :updated_at, :last_used_at].each do |column_name|
+        params.delete(column_name)
+      end
+
+      params[:last_used_at] = Time.now
+    end
+    params
+  end
+
   def currently_logged_in
     current_user.person
   end
@@ -246,16 +246,10 @@ class ApplicationController < ActionController::Base
     User.admin_logged_in?
   end
 
-  def email_enabled?
-    Seek::Config.email_enabled
-  end
-
   def profile_for_login_required
-    if User.current_user
-      if User.current_user.person.nil?
-        flash[:notice]="You have successfully registered your account, but now must select a profile, or create your own."
-        redirect_to main_app.select_people_path
-      end
+    if User.logged_in? && !User.logged_in_and_registered?
+      flash[:notice]="You have successfully registered your account, but now must select a profile, or create your own."
+      redirect_to main_app.select_people_path
     end
   end
 
@@ -268,7 +262,7 @@ class ApplicationController < ActionController::Base
 
       when 'download', 'named_download', 'launch', 'submit_job', 'data', 'execute','plot', 'explore','visualise' ,
           'export_as_xgmml', 'download_log', 'download_results', 'input', 'output', 'download_output', 'download_input',
-          'view_result','compare_versions'
+          'view_result','compare_versions','simulate'
         'download'
 
       when 'edit', 'new', 'create', 'update', 'new_version', 'create_version',
@@ -279,7 +273,7 @@ class ApplicationController < ActionController::Base
       when 'destroy', 'destroy_item', 'cancel'
         'delete'
 
-      when 'manage', 'notification', 'read_interaction', 'write_interaction'
+      when 'manage', 'notification', 'read_interaction', 'write_interaction', 'report_problem'
           'manage'
       else
         nil
@@ -318,24 +312,17 @@ class ApplicationController < ActionController::Base
         params.delete :sharing unless object.can_manage?(current_user)
       else
         respond_to do |format|
-
-          #remember the location to return to if somebody immediately logs in next
-          store_return_to_location
-
-          if User.current_user.nil?
-            flash[:error] = "You are not authorized to #{action} this #{name.humanize}, you may need to login first."
-          else
-            flash[:error] = "You are not authorized to #{action} this #{name.humanize}."
-          end
-
           format.html do
             case action
-              when 'publish'   then redirect_to object
-              when 'manage'   then redirect_to object
-              when 'edit'     then redirect_to object
-              when 'download' then redirect_to object
-              when 'delete' then redirect_to object
-              else                 redirect_to eval "#{self.controller_name}_path"
+              when 'publish', 'manage', 'edit', 'download', 'delete'
+                if User.current_user.nil?
+                  flash[:error] = "You are not authorized to #{action} this #{name.humanize}, you may need to login first."
+                else
+                  flash[:error] = "You are not authorized to #{action} this #{name.humanize}."
+                end
+                redirect_to(eval("#{self.controller_name.singularize}_path(#{object.id})"))
+              else
+                render :template => "general/landing_page_for_hidden_item", :locals => {:item => object}, :status => :forbidden
             end
           end
           format.rdf { render :text => "You may not #{action} #{name}:#{params[:id]}", :status => :forbidden }
@@ -346,15 +333,17 @@ class ApplicationController < ActionController::Base
       end
     rescue ActiveRecord::RecordNotFound
       respond_to do |format|
-        if eval("@#{name}").nil?
-          flash[:error] = "The #{name.humanize.downcase} does not exist!"
-        else
-          flash[:error] = "You are not authorized to view #{name.humanize}"
+        format.html do
+          if eval("@#{name}").nil?
+            render :template => "general/landing_page_for_not_found_item", :status => :not_found
+          else
+            render :template => "general/landing_page_for_hidden_item", :locals => {:item => object}, :status => :forbidden
+          end
         end
+
         format.rdf { render  :text=>"Not found",:status => :not_found }
         format.xml { render  :text=>"<error>404 Not found</error>",:status => :not_found }
         format.json { render :text=>"Not found", :status => :not_found }
-        format.html { redirect_to eval "#{self.controller_name}_path" }
       end
       return false
     end
@@ -382,7 +371,6 @@ class ApplicationController < ActionController::Base
       #don't log if the object is not valid or has not been saved, as this will a validation error on update or create
       return if object.nil? || (object.respond_to?("new_record?") && object.new_record?) || (object.respond_to?("errors") && !object.errors.empty?)
 
-
       case c
         when "sessions"
           if ["create", "destroy"].include?(a)
@@ -392,19 +380,23 @@ class ApplicationController < ActionController::Base
                                :activity_loggable => object,
                                :user_agent => request.env["HTTP_USER_AGENT"])
           end
-        when "investigations", "studies", "assays", "specimens", "samples"
-          if ["show", "create", "update", "destroy"].include?(a)
-            check_log_exists(a, c, object)
-            ActivityLog.create(:action => a,
-                               :culprit => current_user,
-                               :referenced => object.projects.first,
-                               :controller_name => c,
-                               :activity_loggable => object,
-                               :data => object.title,
-                               :user_agent => request.env["HTTP_USER_AGENT"])
-
+        when "sweeps", "runs"
+          if ["show", "update", "destroy", "download"].include?(a)
+            ref = object.projects.first
+          elsif a == "create"
+            ref = object.workflow
           end
-        when "data_files", "models", "sops", "publications", "presentations", "events"
+
+          check_log_exists(a, c, object)
+          ActivityLog.create(:action => a,
+                             :culprit => current_user,
+                             :referenced => ref,
+                             :controller_name => c,
+                             :activity_loggable => object,
+                             :data => object.title,
+                             :user_agent => request.env["HTTP_USER_AGENT"])
+          break
+        when *Seek::Util.authorized_types.map { |t| t.name.underscore.pluralize.split('/').last } # TODO: Find a nicer way of doing this...
           a = "create" if a == "upload_for_tool"
           a = "update" if a == "new_version"
           a = "inline_view" if a == "explore"
@@ -548,6 +540,20 @@ class ApplicationController < ActionController::Base
       else
         false
     end
+  end
+
+  #checks if a captcha has been filled out correctly, if enabled, and returns false if not
+  def check_captcha
+    if Seek::Config.recaptcha_setup?
+      verify_recaptcha
+    else
+      true
+    end
+  end
+
+  def append_info_to_payload(payload)
+    super
+    payload[:user_agent] = request.user_agent
   end
 
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140911131032) do
+ActiveRecord::Schema.define(:version => 20141120160953) do
 
   create_table "activity_logs", :force => true do |t|
     t.string   "action"
@@ -147,15 +147,6 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
   add_index "assay_organisms", ["assay_id"], :name => "index_assay_organisms_on_assay_id"
   add_index "assay_organisms", ["organism_id"], :name => "index_assay_organisms_on_organism_id"
 
-  create_table "assay_types", :force => true do |t|
-    t.string   "title"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "term_uri"
-    t.string   "source_path"
-    t.integer  "contributor_id"
-  end
-
   create_table "assay_types_edges", :id => false, :force => true do |t|
     t.integer "parent_id"
     t.integer "child_id"
@@ -170,20 +161,31 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
     t.integer  "technology_type_id"
     t.integer  "study_id"
     t.integer  "owner_id"
-    t.string   "first_letter",          :limit => 1
+    t.string   "first_letter",                 :limit => 1
     t.integer  "assay_class_id"
     t.string   "uuid"
     t.integer  "policy_id"
     t.integer  "institution_id"
     t.string   "assay_type_uri"
     t.string   "technology_type_uri"
-    t.string   "technology_type_label"
-    t.string   "assay_type_label"
+    t.integer  "suggested_assay_type_id"
+    t.integer  "suggested_technology_type_id"
   end
 
   create_table "assays_samples", :id => false, :force => true do |t|
     t.integer "assay_id"
     t.integer "sample_id"
+  end
+
+  create_table "asset_doi_logs", :force => true do |t|
+    t.string   "asset_type"
+    t.integer  "asset_id"
+    t.integer  "asset_version"
+    t.integer  "action"
+    t.text     "comment"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+    t.integer  "user_id"
   end
 
   create_table "assets", :force => true do |t|
@@ -250,7 +252,6 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
   end
 
   create_table "content_blobs", :force => true do |t|
-    t.binary  "data_old",          :limit => 2147483647
     t.string  "md5sum"
     t.string  "url"
     t.string  "uuid"
@@ -259,7 +260,7 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
     t.integer "asset_id"
     t.string  "asset_type"
     t.integer "asset_version"
-    t.boolean "is_webpage",                              :default => false
+    t.boolean "is_webpage",        :default => false
     t.boolean "external_link"
   end
 
@@ -291,7 +292,7 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
     t.boolean "can_delete",   :default => false
   end
 
-  add_index "data_file_auth_lookup", ["user_id", "asset_id", "can_view"], :name => "index_data_file_auth_lookup_on_user_id_and_asset_id_and_can_view"
+  add_index "data_file_auth_lookup", ["user_id", "asset_id", "can_view"], :name => "index_data_file_auth_lookup_user_asset_view"
   add_index "data_file_auth_lookup", ["user_id", "can_view"], :name => "index_data_file_auth_lookup_on_user_id_and_can_view"
 
   create_table "data_file_versions", :force => true do |t|
@@ -312,9 +313,10 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
     t.integer  "policy_id"
     t.boolean  "is_with_sample"
     t.string   "template_name",                  :default => "none"
+    t.string   "doi"
   end
 
-  add_index "data_file_versions", ["contributor_id", "contributor_type"], :name => "index_data_file_versions_on_contributor_id_and_contributor_type"
+  add_index "data_file_versions", ["contributor_id", "contributor_type"], :name => "index_data_file_versions_contributor"
   add_index "data_file_versions", ["data_file_id"], :name => "index_data_file_versions_on_data_file_id"
 
   create_table "data_file_versions_projects", :id => false, :force => true do |t|
@@ -338,6 +340,7 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
     t.integer  "policy_id"
     t.boolean  "is_with_sample"
     t.string   "template_name",                 :default => "none"
+    t.string   "doi"
   end
 
   add_index "data_files", ["contributor_id", "contributor_type"], :name => "index_data_files_on_contributor_id_and_contributor_type"
@@ -356,7 +359,7 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
   add_index "data_files_projects", ["project_id"], :name => "index_data_files_projects_on_project_id"
 
   create_table "db_files", :force => true do |t|
-    t.binary "data", :limit => 2147483647
+    t.binary "data"
   end
 
   create_table "delayed_jobs", :force => true do |t|
@@ -609,7 +612,7 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
     t.integer "investigation_id"
   end
 
-  add_index "investigations_projects", ["investigation_id", "project_id"], :name => "index_investigations_projects_on_investigation_id_and_project_id"
+  add_index "investigations_projects", ["investigation_id", "project_id"], :name => "index_investigations_projects_inv_proj_id"
   add_index "investigations_projects", ["project_id"], :name => "index_investigations_projects_on_project_id"
 
   create_table "mapping_links", :force => true do |t|
@@ -916,7 +919,7 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
     t.integer "presentation_id"
   end
 
-  add_index "presentations_projects", ["presentation_id", "project_id"], :name => "index_presentations_projects_on_presentation_id_and_project_id"
+  add_index "presentations_projects", ["presentation_id", "project_id"], :name => "index_presentations_projects_pres_proj_id"
   add_index "presentations_projects", ["project_id"], :name => "index_presentations_projects_on_project_id"
 
   create_table "programmes", :force => true do |t|
@@ -1468,32 +1471,34 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
 
   create_table "suggested_assay_types", :force => true do |t|
     t.string   "label"
-    t.string   "uri"
-    t.string   "parent_uri"
+    t.string   "ontology_uri"
     t.integer  "contributor_id"
-    t.boolean  "is_for_modelling"
-    t.datetime "created_at",       :null => false
-    t.datetime "updated_at",       :null => false
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
+    t.integer  "parent_id"
   end
 
   create_table "suggested_technology_types", :force => true do |t|
     t.string   "label"
-    t.string   "uri"
-    t.string   "parent_uri"
+    t.string   "ontology_uri"
     t.integer  "contributor_id"
     t.datetime "created_at",     :null => false
     t.datetime "updated_at",     :null => false
+    t.integer  "parent_id"
   end
 
   create_table "sweep_auth_lookup", :force => true do |t|
     t.integer "user_id"
     t.integer "asset_id"
-    t.integer "can_view",     :limit => 1
-    t.integer "can_manage",   :limit => 1
-    t.integer "can_edit",     :limit => 1
-    t.integer "can_download", :limit => 1
-    t.integer "can_delete",   :limit => 1
+    t.boolean "can_view"
+    t.boolean "can_manage"
+    t.boolean "can_edit"
+    t.boolean "can_download"
+    t.boolean "can_delete"
   end
+
+  add_index "sweep_auth_lookup", ["user_id", "asset_id", "can_view"], :name => "index_sweep_auth_lookup_on_user_id_and_asset_id_and_can_view"
+  add_index "sweep_auth_lookup", ["user_id", "can_view"], :name => "index_sweep_auth_lookup_on_user_id_and_can_view"
 
   create_table "sweeps", :force => true do |t|
     t.string   "name"
@@ -1556,12 +1561,15 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
   create_table "taverna_player_run_auth_lookup", :force => true do |t|
     t.integer "user_id"
     t.integer "asset_id"
-    t.integer "can_view",     :limit => 1
-    t.integer "can_manage",   :limit => 1
-    t.integer "can_edit",     :limit => 1
-    t.integer "can_download", :limit => 1
-    t.integer "can_delete",   :limit => 1
+    t.boolean "can_view"
+    t.boolean "can_manage"
+    t.boolean "can_edit"
+    t.boolean "can_download"
+    t.boolean "can_delete"
   end
+
+  add_index "taverna_player_run_auth_lookup", ["user_id", "asset_id", "can_view"], :name => "tav_player_run_user_asset_view_index"
+  add_index "taverna_player_run_auth_lookup", ["user_id", "can_view"], :name => "tav_player_run_user_view_index"
 
   create_table "taverna_player_run_ports", :force => true do |t|
     t.string   "name"
@@ -1576,6 +1584,8 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
     t.datetime "file_updated_at"
     t.integer  "depth",             :default => 0
     t.text     "metadata"
+    t.integer  "data_file_id"
+    t.integer  "data_file_version"
   end
 
   add_index "taverna_player_run_ports", ["run_id", "name"], :name => "index_taverna_player_run_ports_on_run_id_and_name"
@@ -1610,6 +1620,7 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
     t.text     "description"
     t.integer  "user_id"
     t.integer  "workflow_version",                :default => 1
+    t.boolean  "reported",                        :default => false
   end
 
   add_index "taverna_player_runs", ["parent_id"], :name => "index_taverna_player_runs_on_parent_id"
@@ -1627,15 +1638,6 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
   end
 
   add_index "taverna_player_service_credentials", ["uri"], :name => "index_taverna_player_service_credentials_on_uri"
-
-  create_table "technology_types", :force => true do |t|
-    t.string   "title"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "term_uri"
-    t.string   "source_path"
-    t.integer  "contributor_id"
-  end
 
   create_table "technology_types_edges", :id => false, :force => true do |t|
     t.integer "parent_id"
@@ -1760,12 +1762,15 @@ ActiveRecord::Schema.define(:version => 20140911131032) do
   create_table "workflow_auth_lookup", :force => true do |t|
     t.integer "user_id"
     t.integer "asset_id"
-    t.integer "can_view",     :limit => 1
-    t.integer "can_manage",   :limit => 1
-    t.integer "can_edit",     :limit => 1
-    t.integer "can_download", :limit => 1
-    t.integer "can_delete",   :limit => 1
+    t.boolean "can_view"
+    t.boolean "can_manage"
+    t.boolean "can_edit"
+    t.boolean "can_download"
+    t.boolean "can_delete"
   end
+
+  add_index "workflow_auth_lookup", ["user_id", "asset_id", "can_view"], :name => "index_workflow_auth_lookup_on_user_id_and_asset_id_and_can_view"
+  add_index "workflow_auth_lookup", ["user_id", "can_view"], :name => "index_workflow_auth_lookup_on_user_id_and_can_view"
 
   create_table "workflow_categories", :force => true do |t|
     t.string "name"

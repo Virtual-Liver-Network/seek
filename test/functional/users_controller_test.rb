@@ -20,17 +20,100 @@ class UsersControllerTest < ActionController::TestCase
     get :new
     assert_select "title",:text=>/The Sysmo SEEK.*/, :count=>1
   end
+
+  test "cancel registration" do
+    user = Factory :brand_new_user
+    refute user.person
+    login_as user
+    assert_equal user.id,session[:user_id]
+    assert_difference("User.count",-1) do
+      post :cancel_registration
+    end
+
+    assert_redirected_to :root
+    assert_nil session[:user_id]
+  end
+
+  test "cancel registration doesnt destroy user with profile" do
+    person = Factory :person
+
+    login_as person.user
+    assert_equal person.user.id,session[:user_id]
+    assert_no_difference("User.count") do
+      post :cancel_registration
+    end
+
+    assert_redirected_to :root
+    assert_equal person.user.id,session[:user_id]
+  end
   
   def test_activation_required_link
     get :activation_required
     assert_response :success
   end
-  
+
+  test "should destroy only by admin" do
+    user_without_profile = Factory :brand_new_user
+    user = Factory :user
+    login_as user
+    assert_difference("User.count",0) do
+      delete :destroy, id: user_without_profile
+    end
+    logout
+    admin = Factory(:user, :person_id => Factory(:admin).id)
+    login_as admin
+    assert_difference("User.count",-1) do
+      delete :destroy, id: user_without_profile
+    end
+  end
+
+  test "should not destroy user with profile" do
+    person = Factory :person
+    admin = Factory(:user, :person_id => Factory(:admin).id)
+    login_as admin
+    assert_no_difference("User.count") do
+      delete :destroy, id: person.user
+    end
+  end
+
+  test "resend activation email only by admin" do
+    user = Factory :brand_new_user, :person_id => Factory(:person).id
+    assert !user.active?
+    login_as Factory(:user)
+    post :resend_activation_email, id: user
+    assert_not_nil flash[:error]
+    flash.clear
+    logout
+    admin = Factory(:user, :person_id => Factory(:admin).id)
+    login_as admin
+    post :resend_activation_email, id: user
+    assert_nil flash[:error]
+  end
+
+  test "bulk destroy" do
+    user1 = Factory :user
+    user2 = Factory :user
+    Factory :favourite_group, :user => user1
+    Factory :favourite_group, :user => user2
+    #destroy also dependencies
+    assert_difference("User.count", -2) do
+      assert_difference("FavouriteGroup.count", -2) do
+        post :bulk_destroy, ids: [user1.id, user2.id]
+      end
+    end
+  end
+
+  test "should not bulk destroy without ids param" do
+    assert_difference("User.count", 0) do
+          post :bulk_destroy
+    end
+  end
+
   def test_system_message_on_signup_no_users
     get :new
     assert_response :success
     assert_select "p.system_message",:count=>0
-    
+
     User.destroy_all
     get :new
     assert_response :success

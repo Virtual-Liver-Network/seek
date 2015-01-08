@@ -3,14 +3,10 @@
                       ["Content Statistics","contents"],
 					  ["Activity Statistics","activity"],
 					  ["Search Statistics","search"],
-                      ["PALs", "pals"],
-                      ["Administrators","admins"],
-                      ["Invalid Users/Profiles", "invalid"],
-                      ["Users Requiring Activation", "not_activated"],
-                      ["Non-#{t('project')} Members", "projectless"],
                       ["Job queue","job_queue"],
                       ["Auth table consistency","auth_consistency"],
-                      ["Monthly User Statistics", "monthly_stats"]
+                      ["Monthly User Statistics", "monthly_stats"],
+                      ["Workflow Statistics", "workflow_stats"]
                      ],:length=>10),
     {:style=>"",
      :onchange=>remote_function(:url=>get_stats_admin_path(:element=>"stats_list"),

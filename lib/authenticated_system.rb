@@ -84,13 +84,14 @@ module AuthenticatedSystem
   def clear_return_to
     session.delete(:return_to)
   end
-  
+
   # Redirect to the URI stored by the most recent store_return_to_location call or
   # to the passed default.
   def redirect_back_or_default(default)
     redirect_to(session[:return_to] || default)
     clear_return_to
   end
+
 
   def redirect_back
     if request.env['HTTP_REFERER']

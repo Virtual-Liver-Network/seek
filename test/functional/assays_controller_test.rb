@@ -195,8 +195,8 @@ class AssaysControllerTest < ActionController::TestCase
 
   test "should show item" do
     assay = Factory(:experimental_assay,:policy=>Factory(:public_policy),
-                    :assay_type_label=>"Metabolomics",
-                    :technology_type_label=>"Gas chromatography")
+                    :assay_type_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Catabolic_response",
+                    :technology_type_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Binding")
     assert_difference('ActivityLog.count') do
       get :show, :id=>assay.id
     end
@@ -205,8 +205,8 @@ class AssaysControllerTest < ActionController::TestCase
 
     assert_not_nil assigns(:assay)
 
-    assert_select "p#assay_type", :text=>/Metabolomics/, :count=>1
-    assert_select "p#technology_type", :text=>/Gas chromatography/, :count=>1
+    assert_select "p#assay_type", :text=>/Catabolic response/, :count=>1
+    assert_select "p#technology_type", :text=>/Binding/, :count=>1
   end
 
   test "should not show tagging when not logged in" do
@@ -228,6 +228,8 @@ class AssaysControllerTest < ActionController::TestCase
   end
 
   test "should show new" do
+    #adding a suggested type tests the assay type tree handles inclusion of suggested type
+    Factory :suggested_assay_type,:ontology_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Catabolic_response"
     get :new
     assert_response :success
     assert_not_nil assigns(:assay)
@@ -322,76 +324,6 @@ class AssaysControllerTest < ActionController::TestCase
   end
 
 
-  test "should create experimental assay with/without organisms" do
-
-    #cannot create experimental assay if neither samples nor organisms are associated
-   as_virtualliver do
-     assert_no_difference("Assay.count") do
-       post :create, :assay=>{:title=>"test",
-                              :technology_type_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography",
-                              :assay_type_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Metabolomics",
-                              :study_id=>studies(:metabolomics_study).id,
-                              :assay_class_id=>assay_classes(:experimental_assay_class).id
-       }, :sharing => valid_sharing
-     end
-   end
-
-    #can create with only samples
-    sample = Factory(:sample)
-    assert_difference("Assay.count") do
-      post :create, :assay=>{:title=>"test",
-                             :technology_type_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography",
-                             :assay_type_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Metabolomics",
-                             :study_id=>studies(:metabolomics_study).id,
-                             :assay_class_id=>assay_classes(:experimental_assay_class).id,
-                             :sample_ids => [sample]}, :sharing => valid_sharing
-    end
-    assay = assigns(:assay)
-    refute_nil assay
-    assert assay.organisms.empty?
-    assert assay.strains.empty?
-    assert_include assay.samples,sample
-
-    #can create with only organisms
-    organism = Factory(:organism,:title=>"Frog")
-    strain = Factory(:strain, :title=>"UUU", :organism=>organism)
-    growth_type = Factory(:culture_growth_type, :title=>"ssdfkhsdfkh")
-    tissue_and_cell_type = Factory(:tissue_and_cell_type)
-
-    assert_difference("Assay.count") do
-      post :create, :assay=>{:title=>"test",
-                             :technology_type_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography",
-                             :assay_type_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Metabolomics",
-                             :study_id=>studies(:metabolomics_study).id,
-                             :assay_class_id=>assay_classes(:experimental_assay_class).id,
-                             :sample_ids => [Factory(:sample)] },
-                             :assay_organism_ids => [organism.id, strain.title,strain.id, growth_type.title,tissue_and_cell_type.id, tissue_and_cell_type.title].join(","), :sharing => valid_sharing
-    end
-    a=assigns(:assay)
-    assert_redirected_to assay_path(a)
-    assert_include a.organisms, organism
-    assert_include a.strains,strain
-    assert_equal 1,a.assay_organisms.count
-    assert_equal growth_type,a.assay_organisms.last.culture_growth_type
-     assert_equal tissue_and_cell_type,a.assay_organisms.last.tissue_and_cell_type
-
-    #create assay with both samples and organisms, but not strain
-    sample = Factory(:sample)
-    assert_difference('ActivityLog.count') do
-      assert_difference("Assay.count") do
-        post :create,:assay=>{:title=>"test",
-                              :study_id=>studies(:metabolomics_study).id,
-                              :assay_class_id=>assay_classes(:experimental_assay_class).id,
-                              :sample_ids=>[sample.id]
-        },:assay_organism_ids=>[organism.id.to_s,"","",""].join(","), :sharing => valid_sharing
-      end
-    end
-    a=assigns(:assay)
-    assert_include a.organisms, organism
-    assert_include a.samples,sample
-    assert_empty a.strains
-    assert_redirected_to assay_path(a)
-  end
 
   test "should create modelling assay with/without organisms" do
 
@@ -444,8 +376,6 @@ class AssaysControllerTest < ActionController::TestCase
     as_virtualliver do
       assert_difference("Assay.count") do
         post :create, :assay => {:title => "test",
-                                 :technology_type_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography",
-                                 :assay_type_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Metabolomics",
                                  :study_id => studies(:metabolomics_study).id,
                                  :assay_class_id => assay_classes(:modelling_assay_class).id,
                                  :sample_ids => [Factory(:sample, :policy=>Factory(:public_policy)).id, Factory(:sample,:policy=>Factory(:public_policy)).id]},
@@ -458,6 +388,64 @@ class AssaysControllerTest < ActionController::TestCase
 
     end
 
+  end
+
+  test "should create assay with ontology assay and tech type" do
+    assert_difference("Assay.count") do
+      post :create, :assay => {:title => "test",
+                               :technology_type_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography",
+                               :assay_type_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Metabolomics",
+                               :study_id => Factory(:study).id,
+                               :assay_class_id => Factory(:experimental_assay_class).id},
+           :sharing => valid_sharing
+    end
+    assert assigns(:assay)
+    assay = assigns(:assay)
+    assert_equal "http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography",assay.technology_type_uri
+    assert_equal "http://www.mygrid.org.uk/ontology/JERMOntology#Metabolomics",assay.assay_type_uri
+    assert_equal "Gas chromatography",assay.technology_type_label
+    assert_equal "Metabolomics",assay.assay_type_label
+  end
+
+  test "should create assay with suggested assay and tech type" do
+    assay_type=Factory(:suggested_assay_type,:ontology_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Metabolomics",:label=>"fish")
+    tech_type=Factory(:suggested_technology_type,:ontology_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography",:label=>"carrot")
+    assert_difference("Assay.count") do
+      post :create, :assay => {:title => "test",
+                               :technology_type_uri=>tech_type.uri,
+                               :assay_type_uri=>assay_type.uri,
+                               :study_id => Factory(:study).id,
+                               :assay_class_id => Factory(:experimental_assay_class).id},
+           :sharing => valid_sharing
+    end
+    assert assigns(:assay)
+    assay = assigns(:assay)
+    assert_equal assay_type,assay.suggested_assay_type
+    assert_equal tech_type,assay.suggested_technology_type
+    assert_equal "http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography",assay.technology_type_uri
+    assert_equal "http://www.mygrid.org.uk/ontology/JERMOntology#Metabolomics",assay.assay_type_uri
+    assert_equal "carrot",assay.technology_type_label
+    assert_equal "fish",assay.assay_type_label
+  end
+
+  test "should update assay with suggested assay and tech type" do
+    assay = Factory(:experimental_assay,:contributor=>User.current_user.person)
+    assay_type=Factory(:suggested_assay_type,:ontology_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Metabolomics",:label=>"fish")
+    tech_type=Factory(:suggested_technology_type,:ontology_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography",:label=>"carrot")
+
+    post :update, :id=>assay.id,:assay => {
+                             :technology_type_uri=>tech_type.uri,
+                             :assay_type_uri=>assay_type.uri
+                             },
+         :sharing => valid_sharing
+
+    assay.reload
+    assert_equal assay_type,assay.suggested_assay_type
+    assert_equal tech_type,assay.suggested_technology_type
+    assert_equal "http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography",assay.technology_type_uri
+    assert_equal "http://www.mygrid.org.uk/ontology/JERMOntology#Metabolomics",assay.assay_type_uri
+    assert_equal "fish",assay.assay_type_label
+    assert_equal "carrot",assay.technology_type_label
   end
 
   test "should delete assay with study" do
@@ -1289,8 +1277,7 @@ class AssaysControllerTest < ActionController::TestCase
     assay = Factory(:assay,:policy=>Factory(:private_policy),:title=>"the assay")
     refute assay.can_view?
     get :new_object_based_on_existing_one,:id=>assay.id
-    assert_redirected_to assays_path
-    refute_nil flash[:error]
+    assert_response :forbidden
   end
 
   test "new object based on existing one when can view but not logged in" do

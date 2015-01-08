@@ -24,11 +24,53 @@ module Seek
         @class_hierarchy ||= process_ontology_hierarchy
       end
 
+      #resets the loaded ontology, stored hierarchy and classes and clears the cache
+      def reset
+        clear_cache
+        @class_hierarchy=nil
+        @ontology=nil
+        @known_classes=nil
+      end
+
       def clear_cache
         Rails.cache.delete(cache_key)
       end
 
+      def class_for_uri uri
+        class_hierarchy.hash_by_uri[uri]
+      end
+
+      def label_exists? label
+        all_labels.include?(label && label.downcase)
+      end
+
+      def all_labels
+        class_hierarchy.hash_by_label.keys
+      end
+
+      def fetch_label_for uri
+        result = ontology.query(:subject=>uri,:predicate=>RDF::RDFS.label).first
+        result.nil? ? result : result.object.to_s
+      end
+
+      def fetch_description_for uri
+        result = ontology.query(:subject=>uri,:predicate=>RDF::DC11.description).first
+        result.nil? ? result : result.object.to_s
+      end
+
       private
+
+      def default_parent_class_uri
+        raise NotImplementedError, "Subclasses must implement a default_parent_class_uri method"
+      end
+
+      def ontology_file
+        raise NotImplementedError, "Subclasses must implement a ontology_file method"
+      end
+
+      def ontology_term_type
+        nil
+      end
 
       def process_ontology_hierarchy
         parent_uri = default_parent_class_uri
@@ -63,21 +105,11 @@ module Seek
         @known_classes[uri] || begin
           label ||= fetch_label_for(uri)
           description ||= fetch_description_for(uri)
-          result = OntologyClass.new(uri, label, description, subclasses)
+          result = OntologyClass.new(uri, label, description, subclasses, [], ontology_term_type)
           @known_classes[uri]=result
           result
         end
 
-      end
-
-      def fetch_label_for uri
-        result = ontology.query(:subject=>uri,:predicate=>RDF::RDFS.label).first
-        result.nil? ? result : result.object.to_s
-      end
-
-      def fetch_description_for uri
-        result = ontology.query(:subject=>uri,:predicate=>RDF::DC11.description).first
-        result.nil? ? result : result.object.to_s
       end
 
 

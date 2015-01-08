@@ -20,10 +20,14 @@ class SuggestedTechnologyTypesControllerTest < ActionController::TestCase
   end
 
 
-  test "should popup new" do
+  test "should new" do
     get :new
     assert_response :success
-    assert_not_nil assigns(:suggested_technology_type)
+  end
+
+  test "should new with ajax" do
+     xhr :get, "new"
+     assert_response :success
   end
 
   test "should show edit own technology types" do
@@ -32,47 +36,80 @@ class SuggestedTechnologyTypesControllerTest < ActionController::TestCase
     assert_not_nil assigns(:suggested_technology_type)
   end
 
-  test "should create" do
+  test "should edit with ajax" do
+     xhr :get, "edit", id: Factory(:suggested_technology_type, :contributor_id => User.current_user.person.try(:id)).id
+     assert_response :success
+   end
+
+  test "should create with suggested parent" do
+    login_as Factory(:admin)
+    suggested = Factory(:suggested_technology_type,:ontology_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography")
+    assert suggested.children.empty?
+    assert_difference("SuggestedTechnologyType.count") do
+      post :create, :suggested_technology_type => {:label => "test tech type",:parent_uri=>"suggested_technology_type:#{suggested.id}"}
+    end
+    assert_redirected_to :action => :manage
+    assert suggested.children.count==1
+    get :manage
+    assert_select "li a", :text => /test tech type/
+
+  end
+
+  test "should create with ontology parent" do
+    login_as Factory(:admin)
 
     assert_difference("SuggestedTechnologyType.count") do
-      post :create, :suggested_technology_type => {:label => "test_technology_type", :link_from => "suggested_technology_types"}
+      post :create, :suggested_technology_type => {:label => "test tech type",:parent_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography"}
     end
-    suggested_technology_type = assigns(:suggested_technology_type)
-    assert suggested_technology_type.valid?
-    assert_equal 1, suggested_technology_type.parents.size
+    assert_redirected_to :action => :manage
+    assert_equal "http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography",SuggestedTechnologyType.last.parent.uri
+    get :manage
+    assert_select "li a", :text => /test tech type/
+
+  end
+
+  test "should create for ajax request" do
+     assert_difference("SuggestedTechnologyType.count") do
+       xhr :post,  :create, :suggested_technology_type => {:label => "test_technology_type", :parent_uri=>"http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography"}
+     end
+     assert_select "select option[selected='selected']",  :text=>/test_technology_type/
+   end
+
+  test "should update for ajax request" do
+     suggested_technology_type = Factory(:suggested_technology_type, :contributor_id => User.current_user.person.try(:id))
+     xhr :put,  :update,  id: suggested_technology_type.id, suggested_technology_type: {:label => "child_technology_type_a"}
+     assert_select "select option[value=?][selected='selected']",suggested_technology_type.uri, :text=>/child_technology_type_a/
   end
 
   test "should update label" do
-    put :update, id: @suggested_technology_type, suggested_technology_type: {:label => "child_technology_type_a"}
-    assert assigns(:suggested_technology_type)
-    assert_equal "child_technology_type_a", assigns(:suggested_technology_type).label
+    login_as Factory(:admin)
+    put :update, id: @suggested_technology_type, suggested_technology_type: {:label => "new label"}
+    assert_redirected_to :action => :manage
+    get :manage
+    suggested_technology_type = SuggestedTechnologyType.find @suggested_technology_type
+    assert_select "li a[href=?]", ERB::Util.html_escape(technology_types_path(uri: suggested_technology_type.uri, label: "new label")), :text => /new label/
   end
 
   test "should update parent" do
+    login_as Factory(:admin)
     suggested_parent1 = Factory(:suggested_technology_type)
     suggested_parent2 = Factory(:suggested_technology_type)
     ontology_parent_uri = "http://www.mygrid.org.uk/ontology/JERMOntology#Gas_chromatography"
-    ontology_parent = Factory(:suggested_technology_type).ontology_reader.class_hierarchy.hash_by_uri[ontology_parent_uri]
-    suggested_technology_type = Factory(:suggested_technology_type, :contributor_id => User.current_user.person.try(:id), :parent_uri => suggested_parent1.uri)
+
+    suggested_technology_type = Factory(:suggested_technology_type, :contributor_id => User.current_user.person.try(:id), :parent_id => suggested_parent1.id)
     assert_equal 1, suggested_technology_type.parents.size
     assert_equal suggested_parent1, suggested_technology_type.parents.first
     assert_equal suggested_parent1.uri, suggested_technology_type.parent.uri.to_s
 
     #update to other parent suggested
-    put :update, :id => suggested_technology_type.id, :suggested_technology_type => {:parent_uri => suggested_parent2.uri}
-    suggested = assigns(:suggested_technology_type)
-    assert suggested
-    assert_equal 1, suggested.parents.size
-    assert_equal suggested_parent2, suggested.parents.first
-    assert_equal suggested_parent2.uri, suggested.parent.uri.to_s
+    put :update, :id => suggested_technology_type.id, :suggested_technology_type => {:parent_id => suggested_parent2.id}
+    assert_redirected_to :action => :manage
+    suggested_parent2.reload
+    assert_includes suggested_parent2.children,suggested_technology_type
 
     #update to other parent from ontology
-    put :update, id: suggested_technology_type.id, suggested_technology_type: {:parent_uri => ontology_parent_uri}
-    suggested = assigns(:suggested_technology_type)
-    assert suggested
-    assert_equal 1, suggested.parents.size
-    assert_equal ontology_parent, suggested.parents.first
-    assert_equal ontology_parent.uri.to_s, suggested.parent.uri.to_s
+    put :update, id: suggested_technology_type.id, suggested_technology_type: {:ontology_uri => ontology_parent_uri}
+    assert_redirected_to :action => :manage
 
   end
 
@@ -107,7 +144,7 @@ class SuggestedTechnologyTypesControllerTest < ActionController::TestCase
     login_as Factory(:user, :person_id => Factory(:admin).id)
 
     parent = Factory :suggested_technology_type
-    child = Factory :suggested_technology_type, :parent_uri => parent.uri
+    child = Factory :suggested_technology_type, :parent_id => parent.id
 
     assert_no_difference('SuggestedTechnologyType.count') do
       delete :destroy, id: parent.id
@@ -120,7 +157,7 @@ class SuggestedTechnologyTypesControllerTest < ActionController::TestCase
     login_as Factory(:user, :person_id => Factory(:admin).id)
 
     suggested = Factory :suggested_technology_type
-    Factory(:experimental_assay, :technology_type_uri => suggested.uri)
+    Factory(:experimental_assay, :suggested_technology_type => suggested)
     assert_no_difference('SuggestedTechnologyType.count') do
       delete :destroy, id: suggested.id
     end

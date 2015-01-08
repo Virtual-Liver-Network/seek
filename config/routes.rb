@@ -1,6 +1,6 @@
 SEEK::Application.routes.draw do
 
-  mount TavernaPlayer::Engine, :at => "/"
+  mount TavernaPlayer::Engine, :at => (SEEK::Application.config.relative_url_root || "/")
 
   resources :scales do
     collection do
@@ -107,9 +107,12 @@ SEEK::Application.routes.draw do
       post :forgot_password
       post :hide_guide_box
       post :impersonate
+      post :cancel_registration
+      post :bulk_destroy
     end
     member do
       put :set_openid
+      post :resend_activation_email
     end
   end
 
@@ -133,6 +136,7 @@ SEEK::Application.routes.draw do
       post :userless_project_selected_ajax
       post :items_for_result
       post :resource_in_tab
+      post :bulk_destroy
     end
     member do
       post :check_related_items
@@ -252,21 +256,19 @@ SEEK::Application.routes.draw do
   resources :suggested_assay_types do
       collection do
         get :manage
-        get :new_popup
-        put :set_is_modelling
       end
 
+  end
+  resources :suggested_modelling_analysis_types, :path => :suggested_assay_types, :controller => :suggested_assay_types do
+     collection do
+        get :manage
+      end
   end
   resources :suggested_technology_types do
     collection do
       get :manage
-      get :new_popup
     end
   end
-
-  #MERGENOTE - why are these hard-coded routes?
-  get '/assay_types/',:to=>"assay_types#show",:as=>"assay_types"
-  get '/technology_types/',:to=>"technology_types#show",:as=>"technology_types"
 
 
   ### ASSETS ###
@@ -297,6 +299,9 @@ SEEK::Application.routes.draw do
       post :new_version
       #MERGENOTE - this is a destroy, and should be the destory method, not post since we are not updating or creating something.
       post :destroy_version
+      get :mint_doi_preview
+      get :minted_doi
+      post :mint_doi
     end
     resources :studied_factors do
       collection do
@@ -330,7 +335,7 @@ SEEK::Application.routes.draw do
       post :request_resource
       post :update_annotations_ajax
       post :new_version
-      post :destroy_version
+      delete :destroy_version
     end
     resources :content_blobs do
       member do
@@ -344,7 +349,6 @@ SEEK::Application.routes.draw do
 
   resources :models do
     collection do
-      get :build
       get :preview
       post :test_asset_url
       post :items_for_result
@@ -353,7 +357,6 @@ SEEK::Application.routes.draw do
     member do
       get :compare_versions
       post :compare_versions
-      get :builder
       post :check_related_items
       get :visualise
       post :check_gatekeeper_required
@@ -361,16 +364,15 @@ SEEK::Application.routes.draw do
       get :matching_data
       get :published
       post :publish_related_items
-      post :submit_to_jws
       post :new_version
       post :submit_to_sycamore
       post :export_as_xgmml
       post :update_annotations_ajax
-      post :simulate
       post :publish
       post :execute
       post :request_resource
-      post :destroy_version
+      post :simulate
+      delete :destroy_version
     end
     resources :model_images do
       collection do
@@ -408,7 +410,7 @@ SEEK::Application.routes.draw do
       post :request_resource
       post :update_annotations_ajax
       post :new_version
-      post :destroy_version
+      delete :destroy_version
     end
     resources :experimental_conditions do
       collection do
@@ -558,10 +560,14 @@ SEEK::Application.routes.draw do
       delete :favourite_delete
     end
 
-    resources :runs, :controller => 'TavernaPlayer::Runs'
+    resources :runs, :controller => 'taverna_player/runs'
   end
 
-  resources :runs, :controller => 'TavernaPlayer::Runs', :only => ['edit', 'update']
+  resources :runs, :controller => 'taverna_player/runs', :only => ['edit', 'update'] do
+    member do
+      post :report_problem
+    end
+  end
 
   resources :group_memberships
 
@@ -577,6 +583,7 @@ SEEK::Application.routes.draw do
   ### ASSAY AND TECHNOLOGY TYPES ###
 
   get '/assay_types/',:to=>"assay_types#show",:as=>"assay_types"
+  get '/modelling_analysis_types/',:to=>"assay_types#show",:as=>"modelling_analysis_types"
   get '/technology_types/',:to=>"technology_types#show",:as=>"technology_types"
 
 

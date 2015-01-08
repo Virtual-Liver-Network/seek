@@ -198,19 +198,19 @@ end
 
   Factory.define(:suggested_technology_type) do |f|
     f.sequence(:label) {|n| "A TechnologyType#{n}"}
-    f.parent_uri "http://www.mygrid.org.uk/ontology/JERMOntology#Technology_type"
+    f.ontology_uri "http://www.mygrid.org.uk/ontology/JERMOntology#Technology_type"
   end
 
   Factory.define(:suggested_assay_type) do |f|
     f.sequence(:label) {|n| "An AssayType#{n}"}
-    f.is_for_modelling false
-    f.parent_uri "http://www.mygrid.org.uk/ontology/JERMOntology#Experimental_assay_type"
+    f.ontology_uri "http://www.mygrid.org.uk/ontology/JERMOntology#Experimental_assay_type"
+    f.after_build{|type| type.term_type = "assay"}
   end
 
    Factory.define(:suggested_modelling_analysis_type, :class=> SuggestedAssayType) do |f|
     f.sequence(:label) {|n| "An Modelling Analysis Type#{n}"}
-    f.is_for_modelling true
-    f.parent_uri "http://www.mygrid.org.uk/ontology/JERMOntology#Model_analysis_type"
+    f.ontology_uri "http://www.mygrid.org.uk/ontology/JERMOntology#Model_analysis_type"
+    f.after_build{|type| type.term_type = "modelling_analysis"}
   end
 
   #Assay
@@ -243,9 +243,7 @@ end
   Factory.define(:experimental_assay, :parent => :assay_base) do |f|
     f.association :assay_class, :factory => :experimental_assay_class
     f.assay_type_uri "http://www.mygrid.org.uk/ontology/JERMOntology#Experimental_assay_type"
-    f.assay_type_label "experimental assay type"
     f.technology_type_uri "http://www.mygrid.org.uk/ontology/JERMOntology#Technology_type"
-    f.technology_type_label "Technology type"
     f.samples {[Factory.build(:sample, :policy => Factory(:public_policy))]}
   end
 
@@ -622,6 +620,12 @@ end
     f.original_filename "small-test-spreadsheet.xls"
   end
 
+  Factory.define(:tiff_content_blob,:parent=>:content_blob) do |f|
+    f.content_type "image/tiff"
+    f.data  File.new("#{Rails.root}/test/fixtures/files/tiff_image_test.tif","rb").read
+    f.original_filename 'tiff_image_test.tif'
+  end
+
   Factory.define(:xlsx_content_blob,:parent=>:content_blob) do |f|
     f.content_type "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     f.data  File.new("#{Rails.root}/test/fixtures/files/lihua_column_index_error.xlsx","rb").read
@@ -972,4 +976,9 @@ end
         Factory.build(:taverna_player_run, :sweep => sweep)
       end
     end
+  end
+
+  Factory.define(:failed_run, :parent => :taverna_player_run) do |f|
+    f.status_message_key 'failed'
+    f.state :failed
   end

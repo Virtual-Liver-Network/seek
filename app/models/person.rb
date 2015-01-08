@@ -269,8 +269,7 @@ class Person < ActiveRecord::Base
 
   def locations
     # infer all person's locations from the institutions where the person is member of
-    locations = self.institutions.collect(&:country).select { |l| !l.blank? }
-    return locations
+    self.institutions.collect(&:country).compact.uniq
   end
 
   def email_with_name
@@ -339,8 +338,9 @@ class Person < ActiveRecord::Base
 
   #admin can administer other people, project manager can administer other people except other admins and themself
   def can_be_administered_by?(user)
-    return false if user.nil? || user.person.nil?
-    user.is_admin? || (user.person.is_project_manager_of_any_project? && (self.is_admin? || self!=user.person))
+    person = user.try(:person)
+    return false unless user && person
+    user.is_admin? || (person.is_project_manager_of_any_project? && (self.is_admin? || self!=person))
   end
 
   def can_view? user = User.current_user
@@ -442,6 +442,18 @@ class Person < ActiveRecord::Base
         end
       end
     end
+  end
+
+  #a utitlity method to simply add a person to a project and institution
+  #will automatically handle the WorkGroup and GroupMembership, and avoid creating duplicates
+  def add_to_project_and_institution project, institution
+    group = WorkGroup.where(:project_id=>project.id,:institution_id=>institution.id).first
+    group ||= WorkGroup.new :project=>project, :institution=>institution
+
+    membership = GroupMembership.where(:person_id=>id,:work_group_id=>group.id).first
+    membership ||= GroupMembership.new :person=>self,:work_group=>group
+
+    self.group_memberships << membership
   end
 
   private

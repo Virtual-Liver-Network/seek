@@ -76,7 +76,7 @@ class DataFilesControllerTest < ActionController::TestCase
     assert_response :success
     assert_select "#simple_sharing" do
       assert_select "select#access_type_select_4" do
-        assert_select "option[value=?]",1,:text=>/#{I18n.t('access.visible_downloadable')}/i
+        assert_select "option[value=?]",1,:text=>/#{Regexp.escape(I18n.t('access.visible_downloadable'))}/i
         assert_select "option[value=?][selected='selected']",2,:text=>/#{I18n.t('access.accessible_downloadable')}/i
       end
     end
@@ -368,6 +368,30 @@ end
     assert_equal "text/plain", assigns(:data_file).content_blob.content_type
   end
 
+  test "should create data file and store with url even with http protocol missing" do
+    mock_http
+    data,blob = valid_data_file_with_http_url
+    blob[:data_url]="mockedlocation.com/txt_test.txt"
+    blob[:make_local_copy]="1"
+
+    assert_difference('ActivityLog.count') do
+      assert_difference('DataFile.count') do
+        assert_difference('ContentBlob.count') do
+          post :create, :data_file=>data,:content_blob=>blob,
+               :sharing=>valid_sharing
+        end
+      end
+    end
+
+    assert_redirected_to data_file_path(assigns(:data_file))
+    assert_equal users(:datafile_owner),assigns(:data_file).contributor
+    assert !assigns(:data_file).content_blob.url.blank?
+    assert !assigns(:data_file).content_blob.data_io_object.read.nil?
+    assert assigns(:data_file).content_blob.file_exists?
+    assert_equal "txt_test.txt", assigns(:data_file).content_blob.original_filename
+    assert_equal "text/plain", assigns(:data_file).content_blob.content_type
+  end
+
   test "should correctly handle 404 url" do
     mock_http
     df={:title=>"Test"}
@@ -408,7 +432,6 @@ end
     assert assay.related_asset_ids('DataFile').include? assigns(:data_file).id
   end
 
-  #MERGENOTE - VLN's upload tool will need rebuilding to match the changed parameters.
   test "upload_for_tool inacessible with normal login" do
     post :upload_for_tool, :data_file => { :title=>"Test",:data=>fixture_file_upload('files/file_picture.png'),:project_id=>projects(:sysmo_project).id}, :recipient_id => people(:quentin_person).id
     assert_redirected_to root_url
@@ -539,6 +562,29 @@ end
 
     data_file = { :title=>"Test HTTP",:project_ids=>[projects(:sysmo_project).id]}
     blob = {:data_url=>"http://webpage.com"}
+
+    assert_difference('DataFile.count') do
+      assert_difference('ContentBlob.count') do
+        post :create, :data_file => data_file,:content_blob=>blob, :sharing=>valid_sharing
+      end
+    end
+
+    assert_redirected_to data_file_path(assigns(:data_file))
+    assert_equal users(:datafile_owner),assigns(:data_file).contributor
+    assert !assigns(:data_file).content_blob.url.blank?
+    assert assigns(:data_file).content_blob.data_io_object.nil?
+    assert !assigns(:data_file).content_blob.file_exists?
+    assert_equal "", assigns(:data_file).content_blob.original_filename
+    assert assigns(:data_file).content_blob.is_webpage?
+    assert_equal "http://webpage.com", assigns(:data_file).content_blob.url
+    assert_equal "text/html", assigns(:data_file).content_blob.content_type
+  end
+
+  test "should add link to a webpage with http protocol missing" do
+    mock_remote_file "#{Rails.root}/test/fixtures/files/html_file.html","http://webpage.com",{'Content-Type' => 'text/html'}
+
+    data_file = { :title=>"Test HTTP",:project_ids=>[projects(:sysmo_project).id]}
+    blob = {:data_url=>"webpage.com"}
 
     assert_difference('DataFile.count') do
       assert_difference('ContentBlob.count') do
@@ -1162,8 +1208,7 @@ end
 
   test "fail gracefullly when trying to access a missing data file" do
     get :show,:id=>99999
-    assert_redirected_to data_files_path
-    assert_not_nil flash[:error]
+    assert_response :not_found
   end
 
   test "owner should be able to update sharing" do
@@ -1562,18 +1607,14 @@ end
     df=Factory :data_file
     logout
     get :show, :id=>df
-    assert_redirected_to data_files_path
-    assert_not_nil flash[:error]
-    assert_equal "You are not authorized to view this #{I18n.t('data_file')}, you may need to login first.",flash[:error]
+    assert_response :forbidden
   end
 
   test "should not show private data file to another user" do
 
     df=Factory :data_file,:contributor=>Factory(:user)
     get :show, :id=>df
-    assert_redirected_to data_files_path
-    assert_not_nil flash[:error]
-    assert_equal "You are not authorized to view this #{I18n.t('data_file')}.",flash[:error]
+    assert_response :forbidden
   end
 
   test "should show error for the user who doesn't login or is not the project member, when the user specify the version and this version is not the latest version" do
@@ -1829,6 +1870,284 @@ end
     end
   end
 
+  test "get data_file as json" do
+    df = Factory(:data_file,:policy=>Factory(:public_policy),:title=>"fish flop",:description=>"testing json description")
+    get :show,:id=>df,:format=>"json"
+    assert_response :success
+    json = JSON.parse(response.body)
+    assert_equal df.id,json["id"]
+    assert_equal "fish flop",json["title"]
+    assert_equal "testing json description",json["description"]
+    assert_equal df.version,json["version"]
+  end
+
+  test "landing page for hidden item" do
+    df = Factory(:data_file,:policy=>Factory(:private_policy),:title=>"fish flop",:description=>"testing json description")
+    assert !df.can_view?
+
+    get :show,:id=>df
+    assert_response :forbidden
+    assert_select "h1", :text=>'403'
+    assert_select "h2",:text=>/The #{I18n.t('data_file')} is not visible to you./
+
+    assert !df.can_see_hidden_item?(User.current_user.person)
+    contributor_person = df.contributor.person
+    assert_select "a[href=?]", person_path(contributor_person), :count => 0
+  end
+
+  test "landing page for hidden item with the contributor contact" do
+    df = Factory(:data_file,:policy=>Factory(:private_policy),:title=>"fish flop",:description=>"testing json description")
+
+    project = df.projects.first
+    work_group = Factory(:work_group, project: project)
+    person = Factory(:person_in_project, group_memberships: [Factory(:group_membership, work_group: work_group)])
+    user = Factory(:user, person: person)
+
+    login_as(user)
+
+    assert !df.can_view?
+    assert df.can_see_hidden_item?(user.person)
+
+    get :show,:id=>df
+    assert_response :forbidden
+    assert_select "h1", :text=>'403'
+    assert_select "h2",:text=>/The #{I18n.t('data_file')} is not visible to you./
+
+    contributor_person = df.contributor.person
+    assert_select "a[href=?]", person_path(contributor_person)
+  end
+
+  test "landing page for hidden item which DOI was minted" do
+    df = Factory(:data_file,:policy=>Factory(:private_policy),:title=>"fish flop",:description=>"testing json description")
+    comment = 'the paper was restracted'
+    AssetDoiLog.create(:asset_type => df.class.name, :asset_id=> df.id, :asset_version => df.version, :action => AssetDoiLog::MINT)
+    AssetDoiLog.create(:asset_type => df.class.name, :asset_id=> df.id, :asset_version => df.version, :action => AssetDoiLog::UNPUBLISH, :comment => comment)
+
+    assert !df.can_view?
+    assert AssetDoiLog.was_doi_minted_for?(df.class.name, df.id, df.version)
+
+    get :show,:id=>df
+    assert_response :forbidden
+    assert_select "p[class=comment]",:text=>/#{comment}/
+  end
+
+  test "landing page for non-existing item" do
+    get :show,:id=>123
+    assert_response :not_found
+    assert_select "h1", :text=>'404'
+    assert_select "h2",:text=>/The #{I18n.t('data_file')} does not exist./
+  end
+
+  test "landing page for deleted item which DOI was minted" do
+    comment = 'the paper was restracted'
+    klass = 'DataFile'
+    id = 123
+    version = 1
+    AssetDoiLog.create(:asset_type => klass, :asset_id=> id, :asset_version => version, :action => AssetDoiLog::MINT)
+    AssetDoiLog.create(:asset_type => klass, :asset_id=> id, :asset_version => version, :action => AssetDoiLog::DELETE, :comment => comment)
+    assert AssetDoiLog.was_doi_minted_for?(klass, id, version)
+    get :show,:id=>id, :version=>version
+    assert_response :not_found
+    assert_select "p[class=comment]",:text=>/#{comment}/
+  end
+
+  test 'mint a DOI button' do
+    df = Factory(:data_file,:policy=>Factory(:public_policy))
+    assert df.is_doiable?(1)
+
+    get :show, :id => df.id, :version => df.version
+    assert_response :success
+
+    assert_select "ul.sectionIcons > li > span.icon" do
+      assert_select "a[href=?]", mint_doi_data_file_path(df, :version => 1), :text=>/Generate a DOI/
+    end
+  end
+
+  test "get mint_doi_preview" do
+    skip("get mint_doi_preview")
+    df = Factory(:data_file,:policy=>Factory(:public_policy))
+    assert df.is_published?
+    assert df.can_manage?
+
+    df.creators = [Factory(:person)]
+    df.save
+
+    get :mint_doi_preview, :id => df.id, :version => df.version
+    assert_response :success
+
+    creator = df.creators.first
+    assert_select "input[type=text][name=?][value=?]", "metadata[creators][][creatorName]", (creator.last_name + ', ' + creator.first_name)
+    assert_select "textarea[name=?]", "metadata[titles][]", :text => df.title
+    assert_select "input[type=text][name=?]", "metadata[publisher]"
+
+  end
+
+  test "should have 5 mandatory fields of metadata" do
+    skip("should have 5 mandatory fields of metadata")
+    df = Factory(:data_file,:policy=>Factory(:public_policy))
+    assert df.is_published?
+    assert df.can_manage?
+
+    get :mint_doi_preview, :id => df.id, :version => df.version
+    assert_response :success
+
+    assert_select "span[class=required]", :count => 5
+  end
+
+  test "should validate 5 mandatory fields of metadata" do
+    skip("should validate 5 mandatory fields of metadata")
+    mock_datacite_request
+
+    df = Factory(:data_file,:policy=>Factory(:public_policy))
+
+    valid_metadata = {:identifier => '10.5072/my_test',
+                      :creators => [{:creatorName => 'Last, First'}],
+                      :titles => ['A title'],
+                      :publisher => 'System Biology',
+                      :publicationYear => '2014'
+    }
+    post :mint_doi, :id => df.id, :metadata => valid_metadata
+    assert_redirected_to  minted_doi_data_file_path(df, :doi => '10.5072/my_test', :url => asset_url(df))
+    assert_nil flash[:error]
+
+    #lack of fields
+    invalid_metadata = {:creators => [:creatorName => 'Last, First'],
+                        :titles => ['A title']
+    }
+    post :mint_doi, :id => df.id, :metadata => invalid_metadata
+    assert_response :bad_request
+    assert_not_nil flash[:error]
+
+    #lack of value
+    invalid_metadata = {:identifier => '10.5072/my_test',
+                        :creators => [],
+                        :titles => ['A title'],
+                        :publisher => 'System Biology',
+                        :publicationYear => '2014'
+    }
+    post :mint_doi, :id => df.id, :metadata => invalid_metadata
+    assert_response :bad_request
+    assert_not_nil flash[:error]
+
+    #blank value
+    invalid_metadata = {:identifier => '10.5072/my_test',
+                        :creators => [{:creatorName => ''}],
+                        :titles => [' '],
+                        :publisher => 'System Biology',
+                        :publicationYear => '2014'
+    }
+    post :mint_doi, :id => df.id, :metadata => invalid_metadata
+    assert_response :bad_request
+    assert_not_nil flash[:error]
+  end
+
+  test "authorization for mint_doi_preview" do
+    skip('authorization for doi')
+    df = Factory(:data_file, :policy=>Factory(:private_policy), :contributor => User.current_user)
+    assert !df.is_published?
+    assert df.can_manage?
+
+    get :mint_doi_preview, :id => df.id, :version => df.version
+    assert_response :forbidden
+
+    df.publish!
+    assert df.reload.is_published?
+    login_as(Factory :user)
+    assert !df.can_manage?
+
+    get :mint_doi_preview, :id => df.id, :version => df.version
+    assert_response :forbidden
+  end
+
+  test "generate_metadata_in_xml" do
+    metadata_param = datacite_metadata_param
+
+    metadata_in_xml = DataFilesController.new().generate_metadata_in_xml(metadata_param)
+    metadata_from_file = open("#{Rails.root}/test/fixtures/files/doi_metadata.xml").read
+
+    assert_equal metadata_from_file, metadata_in_xml
+  end
+
+  test "generate_metadata_in_xml does not contain empty node" do
+    metadata_param = {:identifier => '',
+                      :creators => [],
+                      :titles => ['test title'],
+                      :publisher => 'Fairdom',
+                      :publicationYear => '2014'
+    }
+
+    metadata_in_xml = DataFilesController.new().generate_metadata_in_xml(metadata_param)
+
+    assert !metadata_in_xml.include?('identifier')
+    assert !metadata_in_xml.include?('creators')
+    assert !metadata_in_xml.include?('creator')
+    assert !metadata_in_xml.include?('descriptions')
+
+    assert metadata_in_xml.include?('title')
+    assert metadata_in_xml.include?('titles')
+    assert metadata_in_xml.include?('publisher')
+    assert metadata_in_xml.include?('publicationYear')
+  end
+
+  test "mint_doi" do
+    mock_datacite_request
+
+    df = Factory(:data_file,:policy=>Factory(:public_policy))
+    metadata_param = datacite_metadata_param
+
+    post :mint_doi, :id => df.id, :metadata => metadata_param
+    assert_redirected_to data_file_path(df, :version => df.version)
+    assert_not_nil flash[:notice]
+
+    #TODO add this assert after adding log
+    #assert AssetDoiLog.was_doi_minted_for?('DataFile', df.id, df.version)
+  end
+
+  test "handle error when mint_doi" do
+    mock_datacite_request
+
+    df = Factory(:data_file,:policy=>Factory(:public_policy))
+    metadata_param = datacite_metadata_param
+
+    with_config_value :datacite_username, 'invalid' do
+      post :mint_doi, :id => df.id, :metadata => metadata_param
+      assert_not_nil flash[:error]
+      #TODO add this assert after adding log
+      #assert !AssetDoiLog.was_doi_minted_for?('DataFile', df.id, df.version)
+    end
+  end
+
+  test 'minted_doi' do
+    skip("minted_doi")
+    df = Factory(:data_file,:policy=>Factory(:public_policy))
+    assert df.is_published?
+    assert df.can_manage?
+
+    doi = '10.5072/my_test'
+    url = "#{root_url}data_files/#{df.id}?version=#{df.version}"
+
+    get :minted_doi, :id => df.id, :version => df.version,
+        :doi => doi, :url => url
+    assert_response :success
+
+    assert_select "li", :text => /#{doi}/
+    assert_select "li", :text => "Resolved URL: http://test.host/data_files/#{df.id}?version=1"
+    assert_select "li", :text => /#{df.title}/
+  end
+
+  test 'should show doi attribute for asset which doi is minted' do
+    df = Factory(:data_file,:policy=>Factory(:public_policy))
+    doi = '10.5072/my_test'
+    df.doi = doi
+    assert df.save
+
+    get :show, :id => df.id, :version => df.version
+    assert_response :success
+
+    assert_select "p", :text => /#{doi}/
+  end
+
+
   private
 
   def mock_http
@@ -1880,5 +2199,27 @@ end
     return { :title=>"Test HTTP",:project_ids=>[projects(:sysmo_project).id]},{:data_url=>"https://mockedlocation.com/txt_test.txt",:make_local_copy=>"0"}
   end
 
-  
+  def mock_datacite_request
+    stub_request(:post, "https://test:test@test.datacite.org/mds/metadata").to_return(:body => 'OK (10.5072/my_test)', :status => 201)
+    stub_request(:post, "https://test:test@test.datacite.org/mds/doi").to_return(:body => 'OK', :status => 201)
+    stub_request(:post, "https://invalid:test@test.datacite.org/mds/metadata").to_return(:body => '401 Bad credentials', :status => 401)
+  end
+
+  def datacite_metadata_param
+    {:identifier => '10.5072/my_test',
+     :creators => [{:creatorName => 'Last1, First1'}, {:creatorName => 'Last2, First2'}],
+     :titles => ['test title'],
+     :publisher => 'Fairdom',
+     :publicationYear => '2014',
+     :subjects => ['System Biology', 'Bioinformatic'],
+     :language => 'eng',
+     :resourceType => 'Dataset',
+     :version => '1.0',
+     :descriptions => ['test description']
+    }
+  end
+
+  def asset_url asset
+    "#{root_url}data_files/#{asset.id}?version=#{asset.version}"
+  end
 end

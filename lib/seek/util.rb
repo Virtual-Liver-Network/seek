@@ -20,8 +20,8 @@ module Seek
 
     def self.ensure_models_loaded
       @@models_loaded ||= begin
-        Dir.glob("#{Rails.root}/app/models/*.rb").each do |file|
-          model_name = file.gsub(".rb", "").split(File::SEPARATOR).last
+        Dir.glob("#{Rails.root}/app/models/**/*.rb").each do |file|
+          model_name = file.gsub(".rb", "").gsub(File::SEPARATOR, '/').gsub("#{Rails.root}/app/models/",'')
           model_name.camelize.constantize
         end
         true
@@ -87,6 +87,10 @@ module Seek
 
     def self.multi_files_asset_types
       [Model]
+    end
+
+    def self.doiable_asset_types
+      [DataFile, Model, Sop, Workflow]
     end
   end
 end
