@@ -41,6 +41,7 @@ module Seek
         when /^do_bcat_ko.*/i then "dortmund_bcat_ko"
         when /^due_bode.*/i then "duesseldorf_bode"
         when /^due_bode_surgical.*/i then "duesseldorf_bode_surgical"
+        when /^sysmodb.*/i then "sysmodb"
         else "unknown"
       end
     end
@@ -99,7 +100,9 @@ module Seek
               :"treatment.type" => mapping_entry("FIXED", proc {"concentration"}),
               :"treatment.comments" => mapping_entry("FIXED", proc {""}),
               :"treatment.substance" => mapping_entry("Substance"),
-              :"treatment.concentration" => mapping_entry("Concentration"),
+              :"treatment.start_value" => mapping_entry("Concentration"),
+              :"treatment.end_value" => mapping_entry("FIXED", proc{""}),
+              :"treatment.standard_deviation" => mapping_entry("FIXED", proc{""}),
               :"treatment.unit" => mapping_entry("Unit"),
               :"treatment.incubation_time" => mapping_entry("FIXED", proc {nil}),
               :"treatment.incubation_time_unit" => mapping_entry("FIXED", proc {""}),
@@ -198,13 +201,15 @@ module Seek
               :"specimens.genotype.title" => mapping_entry("FIXED", proc {"none"}),
               :"specimens.genotype.modification" => mapping_entry("FIXED", proc{""}),
 
-              :"treatment.concentration" => mapping_entry("Treatment", proc do |data|
+              :"treatment.start_value" => mapping_entry("Treatment", proc do |data|
                 if data =~ treatment_regex
                   $1 ? $1 : ""
                 else
                   ""
                 end
               end),
+              :"treatment.end_value" => mapping_entry("FIXED", proc{""}),
+              :"treatment.standard_deviation" => mapping_entry("FIXED", proc{""}),
               :"treatment.unit" => mapping_entry("Treatment", proc do |data|
                 if data =~ treatment_regex
                   $2 ? $2 : ""
@@ -386,13 +391,15 @@ module Seek
                   ""
                 end
               end),
-              :"treatment.concentration" => mapping_entry("Dose/route of adminstration", proc do |data|
+              :"treatment.start_value" => mapping_entry("Dose/route of adminstration", proc do |data|
                 if data =~ treatment_concentration_unit_regex
                   $1 ? $1 : nil
                 else
                   nil
                 end
               end),
+              :"treatment.end_value" => mapping_entry("FIXED", proc{""}),
+              :"treatment.standard_deviation" => mapping_entry("FIXED", proc{""}),
               :"treatment.unit" => mapping_entry("Dose/route of adminstration", proc do |data|
                 if data =~ treatment_concentration_unit_regex
                   $2 ? $2 : ""
@@ -485,13 +492,15 @@ module Seek
                   :"treatment.type" => mapping_entry("FIXED", proc {"concentration"}),
                   :"treatment.comments" => mapping_entry("FIXED", proc {""}),
                   :"treatment.substance" => mapping_entry("FIXED", proc {"LPS"}),
-                  :"treatment.concentration" => mapping_entry("LPS (µg/g KG)", proc do |data|
+                  :"treatment.start_value" => mapping_entry("LPS (µg/g KG)", proc do |data|
                     if data =~ concentration_regex
                       $1.gsub(/,/, ".")
                     else
                       ""
                     end
                   end),
+                  :"treatment.end_value" => mapping_entry("FIXED", proc{""}),
+                  :"treatment.standard_deviation" => mapping_entry("FIXED", proc{""}),
                   :"treatment.unit" => mapping_entry("FIXED", proc {"µg/g KG"}),
                   :"treatment.incubation_time" => mapping_entry("Incubation period x Std."),
                   :"treatment.incubation_time_unit" => mapping_entry("FIXED", proc {"hour"}),
@@ -586,7 +595,9 @@ module Seek
               :"treatment.type" => mapping_entry("FIXED", proc {"surgical procedure"}),
               :"treatment.comments" => mapping_entry("Treatment"),
               :"treatment.substance" => mapping_entry("FIXED", proc {""}),
-              :"treatment.concentration" => mapping_entry("FIXED", proc {""}),
+              :"treatment.start_value" => mapping_entry("FIXED", proc {""}),
+              :"treatment.end_value" => mapping_entry("FIXED", proc{""}),
+              :"treatment.standard_deviation" => mapping_entry("FIXED", proc{""}),
               :"treatment.unit" => mapping_entry("FIXED", proc {""}),
               :"treatment.incubation_time" => mapping_entry("Incubation period (hours)"),
               :"treatment.incubation_time_unit" => mapping_entry("FIXED", proc {"hour"}),

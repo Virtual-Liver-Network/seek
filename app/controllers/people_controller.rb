@@ -4,6 +4,7 @@ class PeopleController < ApplicationController
   include Seek::Publishing::PublishingCommon
   include Seek::Publishing::GatekeeperPublish
   include Seek::FacetedBrowsing
+  include Seek::BulkAction
 
   before_filter :find_and_authorize_requested_item, :only => [:show, :edit, :update, :destroy]
   before_filter :current_user_exists,:only=>[:select,:userless_project_selected_ajax,:create,:new]
@@ -223,9 +224,7 @@ class PeopleController < ApplicationController
     @person.disciplines.clear if params[:discipline_ids].nil?
 
     # extra check required to see if any avatar was actually selected (or it remains to be the default one)
-    
-    avatar_id = params[:person].delete(:avatar_id).to_i
-    @person.avatar_id = ((avatar_id.kind_of?(Numeric) && avatar_id > 0) ? avatar_id : nil)
+
     
     set_tools_and_expertise(@person,params)    
 

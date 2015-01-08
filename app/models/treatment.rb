@@ -11,11 +11,12 @@ class Treatment < ActiveRecord::Base
 
   validates :sample, presence: true
 
-  def incubation_time_with_unit
-    incubation_time ? "#{incubation_time} (#{incubation_time_unit.symbol}s)" : ''
+  def time_after_treatment_with_unit
+    time_after_treatment.nil? ? "" : "#{time_after_treatment} (#{time_after_treatment_unit.symbol}s)"
   end
 
   def value_with_unit
-    start_value ? start_value.to_s + ' ' + (end_value.nil? ? '' : '- ' + end_value.to_s + ' ') + unit.symbol : ''
+    start_value.nil? ? "" : start_value.to_s + " " + (end_value.nil? ? "" : "- " + end_value.to_s + " ") + unit.symbol
   end
+
 end

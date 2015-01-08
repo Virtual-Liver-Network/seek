@@ -3,8 +3,7 @@
 class Assay < ActiveRecord::Base
 
   include Seek::Rdf::RdfGeneration
-  include Seek::Ontologies::OntologyTypeHandling
-  include Seek::Ontologies::OntologyExtensionWithSuggestedType
+  include Seek::Ontologies::AssayOntologyTypes
   include Seek::Taggable
   include Seek::ProjectHierarchies::ItemsProjectsExtension if Seek::Config.project_hierarchy_enabled
 
@@ -68,19 +67,6 @@ class Assay < ActiveRecord::Base
     end
   end if Seek::Config.solr_enabled
 
-  ##### assay and tech type related stuff. probably to be moved to a module #####
-  belongs_to :suggested_assay_type
-  belongs_to :suggested_technology_type
-
-  #provides either the label of a suggested type, or if missing the label from the ontology
-  def assay_type_label
-    suggested_assay_type.try(:label) || assay_type_reader.class_hierarchy.hash_by_uri[assay_type_uri].try(:label)
-  end
-
-  #provides either the label of a suggested type, or if missing the label from the ontology
-  def technology_type_label
-    suggested_technology_type.try(:label) || technology_type_reader.class_hierarchy.hash_by_uri[technology_type_uri].try(:label)
-  end
 
   def project_ids
     projects.map(&:id)
@@ -129,7 +115,7 @@ class Assay < ActiveRecord::Base
 
   #returns true if this is a modelling class of assay
   def is_modelling?
-    return !assay_class.nil? && assay_class.key=="MODEL"
+    return assay_class && assay_class.is_modelling?
   end
 
   #returns true if this is an experimental class of assay

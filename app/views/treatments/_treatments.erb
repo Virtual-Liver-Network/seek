@@ -20,7 +20,7 @@
       <% if show_substance %>
       <td><%= text_or_not_specified(treatment.compound.nil? ? nil : treatment.compound.name.capitalize)%></td>
       <% end %>
-      <td><%= text_or_not_specified(treatment.incubation_time_with_unit) %></td>
+      <td><%= text_or_not_specified(treatment.time_after_treatment_with_unit) %></td>
       <td><%= text_or_not_specified(treatment.treatment_protocol) %></td>
       <td><%= text_or_not_specified(treatment.comments) %></td>
     </tr>

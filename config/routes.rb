@@ -108,9 +108,11 @@ SEEK::Application.routes.draw do
       post :hide_guide_box
       post :impersonate
       post :cancel_registration
+      post :bulk_destroy
     end
     member do
       put :set_openid
+      post :resend_activation_email
     end
   end
 
@@ -134,6 +136,7 @@ SEEK::Application.routes.draw do
       post :userless_project_selected_ajax
       post :items_for_result
       post :resource_in_tab
+      post :bulk_destroy
     end
     member do
       post :check_related_items
@@ -294,7 +297,11 @@ SEEK::Application.routes.draw do
       post :convert_to_presentation
       post :update_annotations_ajax
       post :new_version
-      delete :destroy_version
+      #MERGENOTE - this is a destroy, and should be the destory method, not post since we are not updating or creating something.
+      post :destroy_version
+      get :mint_doi_preview
+      get :minted_doi
+      post :mint_doi
     end
     resources :studied_factors do
       collection do
@@ -308,7 +315,7 @@ SEEK::Application.routes.draw do
         get :download
       end
     end
-    resources :people,:projects,:investigations,:assays,:studies,:publications,:events,:only=>[:index]
+    resources :people,:projects,:investigations,:assays,:studies,:publications,:events, :samples,:only=>[:index]
   end
 
   resources :presentations do

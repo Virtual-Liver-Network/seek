@@ -48,6 +48,8 @@ module Seek
       @num_rows = 1000 # bittkomk: this value is used for the creation of vectors of fixed or not-mapped entries; it gets actualized with the number of rows of mapped entries during parsing
       @start_row = 1
 
+      @header_labels = []
+
       @mock_json_import = {}
       @assay_json = {}
 
@@ -67,7 +69,7 @@ module Seek
           Rails.logger.warn "Template = #{template}, Institution name = " + @institution_title
           filename = @file.content_blob.original_filename
           parser_mapper = Seek::ParserMapper.new
-          @parser_mapping = parser_mapper.mapping(template.downcase != "autodetect by filename" && template.downcase != "none" ? template.downcase : parser_mapper.filename_to_mapping_name(filename))
+          @parser_mapping = parser_mapper.mapping(template.downcase != "autodetect by filename" ? template.downcase : parser_mapper.filename_to_mapping_name(filename))
 
           if @parser_mapping
             @samples_mapping = @parser_mapping[:samples_mapping]
@@ -112,7 +114,7 @@ module Seek
 
       if template_sheet
         @assay_json = build_assay_mock_json template_sheet
-        #set_creator @assay_json
+        set_creator @assay_json
         #@file.creators << @creator unless @file.creators.include?(@creator) || @creator.nil?
         #populate_assay , filename if @to_populate
       #else
@@ -121,6 +123,8 @@ module Seek
       end
 
       if samples_sheet
+        @header_labels = get_header_labels samples_sheet
+        Rails.logger.warn "HEADERS: #{@header_labels}"
         build_all_bio_sample_json samples_sheet
       else
         @errors << "No samples sheet is found."
@@ -136,6 +140,8 @@ module Seek
       end
 
     end
+
+
 
     def find_template_sheet doc
       #sheet = doc.find_first("//ss:sheet[@name='IDF']")
@@ -280,7 +286,9 @@ module Seek
 
       if @samples_mapping[:add_treatments]
 
-        treatment_concentrations = hunt_for_field_values_mapped sheet, :"treatment.concentration", @samples_mapping
+        treatment_start_values = hunt_for_field_values_mapped sheet, :"treatment.start_value", @samples_mapping
+        treatment_end_values = hunt_for_field_values_mapped sheet, :"treatment.end_value", @samples_mapping
+        treatment_standard_deviations = hunt_for_field_values_mapped sheet, :"treatment.standard_deviation", @samples_mapping
         treatment_substances = hunt_for_field_values_mapped sheet, :"treatment.substance", @samples_mapping
         treatment_units = hunt_for_field_values_mapped sheet, :"treatment.unit", @samples_mapping
         treatment_protocols = hunt_for_field_values_mapped sheet, :"treatment.treatment_protocol", @samples_mapping
@@ -290,7 +298,9 @@ module Seek
         treatment_comments = hunt_for_field_values_mapped sheet, :"treatment.comments", @samples_mapping
 
 
-        Rails.logger.warn "$$$$$$$$$$$$$$ treatment_concentrations #{treatment_concentrations}"
+        #Rails.logger.warn "$$$$$$$$$$$$$$ treatment_concentrations #{treatment_concentrations}"
+
+        Rails.logger.warn "$$$$$$$$$$$$$$ treatment_start_values #{treatment_start_values}"
         Rails.logger.warn "$$$$$$$$$$$$$$ treatment_substances  #{treatment_substances}"
         Rails.logger.warn "$$$$$$$$$$$$$$ treatment_units  #{treatment_units}"
         Rails.logger.warn "$$$$$$$$$$$$$$ treatment_protocols  #{treatment_protocols}"
@@ -299,17 +309,20 @@ module Seek
         Rails.logger.warn "$$$$$$$$$$$$$$ treatment_type #{treatment_type}"
         Rails.logger.warn "$$$$$$$$$$$$$$ treatment_comments #{treatment_comments}"
 
-        treatment_data = treatment_protocols.zip(treatment_substances, treatment_concentrations, treatment_units, treatment_incubation_time, treatment_incubation_time_unit,
-                          treatment_type, treatment_comments).map do
-          |protocol, substance, concentration, unit, incubation_time, incubation_time_unit, type, comments|
-            {:protocol => protocol, :substance => substance, :concentration => concentration, :unit => unit, :incubation_time => incubation_time, :incubation_time_unit => incubation_time_unit,
-             :type => type, :comments => comments}
-        end
+               
 
+          treatment_data = treatment_protocols.zip(treatment_substances, treatment_start_values, treatment_end_values, treatment_standard_deviations, treatment_units, treatment_incubation_time, treatment_incubation_time_unit,
+                            treatment_type, treatment_comments).map do
+            |protocol, substance, start_value, end_value, standard_deviation, unit, incubation_time, incubation_time_unit, type, comments|
+              {:protocol => protocol, :substance => substance, :start_value => start_value, :end_value => end_value, :standard_deviation => standard_deviation, :unit => unit, :incubation_time => incubation_time, :incubation_time_unit => incubation_time_unit,
+               :type => type, :comments => comments}
+          end
 
+        
         Rails.logger.warn "$$$$$$$$$$$$ TREATMENT DATA (#{treatment_data.length}) #{treatment_data}"
 
         build_all_treatment_mock_json treatment_data
+
 
         unless @to_populate
           treatment_data.each do |t|
@@ -494,7 +507,7 @@ module Seek
         if assay_json["investigation title"] &&
            assay_json["assay type title"] &&
            assay_json["study title"]
-            assay = populate_assay data["assay"], @file.content_blob.original_filename
+           assay = populate_assay data["assay"], @file.content_blob.original_filename
         end
       else
         @creator = Person.find(User.current_user.person_id)
@@ -605,7 +618,9 @@ module Seek
 
         treatment_protocol = treatment_data[:protocol][:value]
         substance = treatment_data[:substance][:value]
-        concentration = treatment_data[:concentration][:value]
+        start_value = treatment_data[:start_value][:value]
+        end_value = treatment_data[:end_value][:value]
+        standard_deviation = treatment_data[:standard_deviation][:value]
         unit = treatment_data[:unit][:value]
         incubation_time = treatment_data[:incubation_time][:value]
         incubation_time_unit = treatment_data[:incubation_time_unit][:value]
@@ -615,10 +630,10 @@ module Seek
         row = treatment_data[:protocol][:row]
 
         treatment = {"type" => type,
-                     "start value" => concentration,
-                     "end value" => nil,
+                     "start value" => start_value,
+                     "end value" => end_value,
                      "unit" => unit,
-                     "standard deviation" => nil,
+                     "standard deviation" => standard_deviation,
                      "comments" => comments,
                      "protocol" => treatment_protocol,
                      "incubation time" => incubation_time,
@@ -627,7 +642,7 @@ module Seek
 
 
         @treatments[row] = treatment
-        @treatments_text[row] = "Treatment Protocol:#{treatment_protocol}, Unit:#{unit}, Concentration:#{concentration}, Substance:#{substance}"
+        @treatments_text[row] = "Treatment Protocol:#{treatment_protocol}, Unit:#{unit}, Concentration:#{start_value}, Substance:#{substance}"
         Rails.logger.warn "add treatment, row = #{row} : #{treatment}"
       
         treatment
@@ -660,12 +675,12 @@ module Seek
           end
 
           incubation_time = treatment_json["incubation time"]
-          incubation_time_unit = nil
+          #incubation_time_unit = nil
 
-          if incubation_time && incubation_time != ""
-            incubation_time_unit = Unit.find_by_symbol treatment_json["incubation time unit"]
-            incubation_time_unit = Unit.create :symbol => treatment_json["incubation time unit"], :factors_studied => false unless incubation_time_unit
-          end
+          #if incubation_time && incubation_time != ""
+          incubation_time_unit = Unit.find_by_symbol treatment_json["incubation time unit"]
+          incubation_time_unit = Unit.create :symbol => treatment_json["incubation time unit"], :factors_studied => false unless incubation_time_unit
+          #end
 
           unit = Unit.find_by_symbol treatment_json["unit"]
           unit = Unit.create :symbol => treatment_json["unit"], :factors_studied => false unless unit
@@ -680,12 +695,14 @@ module Seek
           #rails 3
            #treatment = Treatment.where(["treatment_protocol = ? and unit_id = ? and substance = ? and cast(concentration as char) = ?", treatment_protocol, unit.id, substance, concentration]).first
 
-          treatment = Treatment.find(:first, :conditions => ["unit_id <=> ? and treatment_protocol <=> ? and treatment_type_id <=> ? and cast(start_value as char) <=> ? and cast(end_value as char) <=> ? and
-              cast(standard_deviation as char) <=> ? and comments <=> ? and cast(incubation_time as char) <=> ? and incubation_time_unit_id <=> ? and compound_id <=> ? and specimen_id <=> ?",
-              unit, protocol, treatment_type, nil_or_float(start_value), nil_or_float(end_value), nil_or_float(standard_deviation), comments, nil_or_float(incubation_time), incubation_time_unit, compound, specimen])
+          treatment = Treatment.where(["unit_id = ? and treatment_protocol = ? and measured_item_id = ? and cast(start_value as char) = ? and cast(end_value as char) = ? and
+              cast(standard_deviation as char) = ? and comments = ? and cast(time_after_treatment as char) = ? and time_after_treatment_unit_id = ? and compound_id = ? and specimen_id = ?",
+              unit, protocol, treatment_type.try(:id), nil_or_float(start_value), nil_or_float(end_value), nil_or_float(standard_deviation), comments, nil_or_float(incubation_time), incubation_time_unit.try(:id), compound, specimen]).first
 
-          treatment = Treatment.new :treatment_type => treatment_type, :start_value => start_value, :end_value => end_value, :unit => unit, :standard_deviation => standard_deviation,
-              :comments => comments, :treatment_protocol => protocol, :incubation_time => incubation_time, :incubation_time_unit => incubation_time_unit,
+          Rails.logger.error "§§§§§§§§§§ TREATMENT FOUND: #{treatment}"
+
+          treatment = Treatment.new :measured_item_id => treatment_type.try(:id), :start_value => nil_or_float(start_value), :end_value => nil_or_float(end_value), :unit => unit, :standard_deviation => nil_or_float(standard_deviation),
+              :comments => comments, :treatment_protocol => protocol, :time_after_treatment => nil_or_float(incubation_time), :time_after_treatment_unit_id => incubation_time_unit.try(:id),
               :compound => compound, :specimen => specimen, :sample => sample unless treatment
 
           treatment.save!
@@ -821,15 +838,15 @@ module Seek
               new_sp.created_at = now
               new_sp.policy = @file.policy.deep_copy
               new_sp.save!
-              @warnings << "Warning: #{t('biosamples.sample_parent_term')} with the name '#{h(specimen_title)}' in row #{row} is already created in SEEK.<br/>".html_safe
-              @warnings << "It is renamed and saved as '#{h(new_sp.title)}'.<br/>".html_safe
+              @warnings << "Warning: #{t('biosamples.sample_parent_term')} with the name '#{specimen_title}' in row #{row} is already created in SEEK.<br/>".html_safe
+              @warnings << "It is renamed and saved as '#{new_sp.title}'.<br/>".html_safe
               @warnings << "You may rename it and upload the file as new version!<br/>".html_safe
               Rails.logger.warn @warnings
               specimen = new_sp
           else
             if !specimen.can_view?(User.current_user)
-                @warnings << "Warning: #{t('biosamples.sample_parent_term')} with the name '#{h(specimen_title)}' in row #{row_num} is already created in SEEK.<br/>".html_safe
-                @warnings << "But you are not authorized to view it. You can contact '#{h(specimen.contributor.person.name)} for authorizations'<br/>".html_safe
+                @warnings << "Warning: #{t('biosamples.sample_parent_term')} with the name '#{specimen_title}' in row #{row_num} is already created in SEEK.<br/>".html_safe
+                @warnings << "But you are not authorized to view it. You can contact '#{specimen.contributor.person.name} for authorizations'<br/>".html_safe
             end
           end
         end
@@ -902,7 +919,7 @@ module Seek
         tissue_and_cell_type_title = sample_json["tissue and cell type"]
         sop_title = sample_json["sop"]
         donation_date = sample_json["donation date"] + " UTC +00.00"
-        institution_title = sample_json["institution"]
+        institution_name = sample_json["institution"]
         comments = sample_json["comments"]
         organism_part = sample_json["organism part"]
 
@@ -951,6 +968,7 @@ module Seek
           sample.comments = comments
           sample.treatment = treatment
           sample.policy = @file.policy.deep_copy
+          #sample.creators << @creator
           sample.save!
         else
           unless sample.specimen == specimen &&
@@ -1034,6 +1052,11 @@ module Seek
       field_cell.nil? ? nil : field_cell.content
     end
 
+    def get_header_labels sheet, header_row=1
+      sheet_name=sheet.attributes["name"]
+      sheet.find("//ss:sheet[@name='#{sheet_name}']/ss:rows/ss:row/ss:cell[@row=#{header_row}]").collect{ |cell| {:header => cell.content.downcase, :col => cell.attributes["column"].to_i} }
+    end
+
 
     # hunts for a vector of field values given a field name (= header of a column)
     # offset of the first data row in respect of header row is calculated using :data_row_offset given in @parser_mapping
@@ -1069,7 +1092,21 @@ module Seek
     end
 
     def hunt_for_horizontal_field_value_mapped sheet, field_name, mapping
-      Array(mapping[field_name][:value].call((hunt_for_horizontal_field_value(sheet, mapping[field_name][:column])))).map { |it| {:value => it}}
+      #Array(mapping[field_name][:value].call((hunt_for_horizontal_field_value(sheet, mapping[field_name][:column])))).map { |it| {:value => it}}
+      mapping[field_name][:value].call((hunt_for_horizontal_field_value(sheet, mapping[field_name][:column]))).map { |it| {:value => it}}
+    end
+
+
+    def hunt_for_field_values_mapped_multitreatment sheet, field_name, mapping, probing_num_rows = false
+      if mapping[field_name][:column].class == Regexp
+
+      else #
+         if field_name.to_s.downcase.include? 'treatment' # standard case for single treatments
+           {'treatment1' => hunt_for_field_values_mapped(sheet, field_name, mapping, probing_num_rows)}
+         else # standard case for non-treatments
+          hunt_for_field_values_mapped sheet, field_name, mapping, probing_num_rows
+         end
+      end
     end
 
     # this is the most important method to get data out of the spreadsheet
@@ -1164,6 +1201,5 @@ module Seek
       return table_names[index+1].content
     end
   end
-
   end
 end
