@@ -29,7 +29,9 @@ function updateFirstPage() {
                         decodeValueTooltip();
                         selectedFacets();
                         grayingTechnologyTypeOfModellingAnalysis();
-                        internationalAssetType();
+                        if (location.pathname !== '/search'){
+                            internationalizeAssetType();
+                        }
                     });
         }, 0);
     }
@@ -155,15 +157,14 @@ function grayingTechnologyTypeOfModellingAnalysis(){
 
 <% environment.context_class.instance_eval { include ApplicationHelper } %>
 
-function internationalAssetType(){
+function internationalizeAssetType(){
 
     var result_summary = $j('.exhibit-collectionSummaryWidget-results').children().contents();
-    var international_asset_type = ' <%= internationalized_resource_name(controller_name.singlularize, true) %>';
 
     if (result_summary.length == 3){
-        result_summary[1].nodeValue = international_asset_type;
+        result_summary[1].nodeValue = ' ' + internationalized_resource_name;
     }else{
-        result_summary[1].nodeValue = international_asset_type;
-        result_summary[3].nodeValue = international_asset_type;
+        result_summary[1].nodeValue = ' ' + internationalized_resource_name;
+        result_summary[3].nodeValue = ' ' + internationalized_resource_name;
     }
 }

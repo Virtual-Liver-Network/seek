@@ -7,5 +7,27 @@ div.exhibit-viewPanel {
 div.faceted_browsing {
     width: 99%;
     margin-left: 1em;
+    margin-right: 1em;
+    margin-top: 2em;
+}
+
+div.ajax_loading {
+    display:none;
+    text-align:center;
+}
+
+ul.reset_button {
+    text-align:left;
+}
+
+.hidden {
+    display: none;
+}
+
+div.facet_list {
+    margin-top: 2em;
+}
+
+div.faceted_search {
     margin-top: 2em;
 }
