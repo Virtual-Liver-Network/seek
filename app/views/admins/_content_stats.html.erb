@@ -81,7 +81,7 @@
         <% stats.each do |stat| %>
             <tr>
 
-              <td><%= link_to stat.project.name, stat.project -%></td>
+              <td><%= link_to stat.project.title, stat.project -%></td>
               <% registered_people = stat.registered_people.count %>
               <td><%= stat.people.count -%></td>
               <% authorised_types.each do |type| %>
