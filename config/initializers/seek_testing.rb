@@ -57,6 +57,14 @@ SEEK::Application.configure do
       Settings.defaults[:modelling_analysis_type_ontology_file] = "file:#{Rails.root}/test/fixtures/files/JERM-test.rdf"
       Settings.defaults[:assay_type_ontology_file] = "file:#{Rails.root}/test/fixtures/files/JERM-test.rdf"
 
+      Settings.defaults[:doi_minting_enabled]=true
+      Settings.defaults[:doi_prefix] = "10.5072"
+      Settings.defaults[:doi_suffix] = "Sysmo.SEEK"
+      Settings.defaults[:datacite_url] = "https://test.datacite.org/mds/"
+      Settings.defaults[:datacite_username] = 'test'
+      Seek::Config.datacite_password_encrypt('test')
+      Settings.defaults[:time_lock_doi_for] = 0
+
       Seek::Config.fixed :css_prepended,''
       Seek::Config.fixed :css_appended,''
       Seek::Config.fixed :main_layout,'application'
@@ -73,15 +81,13 @@ SEEK::Application.configure do
       Settings.defaults[:facet_enable_for_pages] = {:specimens => false,:samples => false, :people => true, :projects => false, :institutions => false, :programmes => false, :investigations => false,:studies => false, :assays => true, :data_files => true, :models => true,:sops => true, :publications => true,:events => false, :strains => false, :presentations => false}
       Settings.defaults[:faceted_search_enabled] =  false
 
+      Settings.defaults[:recaptcha_enabled] = true
+
       #enable solr for testing, but use mockup sunspot session
-      Seek::Config.solr_enabled = true
+      Settings.defaults[:solr_enabled] = true
       Sunspot.session = SunspotMatchers::SunspotSessionSpy.new(Sunspot.session)
 
-      Seek::Config.doi_prefix = "10.5072"
-      Seek::Config.doi_suffix = "Sysmo.SEEK"
-      Seek::Config.datacite_url = "https://test.datacite.org/mds/"
-      Seek::Config.datacite_username = 'test'
-      Seek::Config.datacite_password_encrypt('test')
+
     end
   end
 end

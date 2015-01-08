@@ -19,7 +19,9 @@ module Seek
       end
 
       def model_simulate_url_from_slug(slug)
-        URI.join(Seek::Config.jws_online_root, '/models/', slug + '/', 'simulate').to_s
+        uri = URI.join(Seek::Config.jws_online_root, '/models/', slug + '/', 'simulate')
+        uri.query="embedded=1"
+        uri.to_s
       end
 
       def upload_payload(filepath)
@@ -30,6 +32,7 @@ module Seek
         token = determine_csrf_token
         { :cookies => { 'csrftoken' => token },
           'X-CSRFToken' => token,
+          referer:Seek::Config.jws_online_root
         }
       end
 

@@ -10,8 +10,19 @@ module ApplicationHelper
   include Recaptcha::ClientHelper
 
 
+  def no_items_to_list_text
+    content_tag :div,:id=>"no-index-items-text" do
+      "There are no #{resource_text_from_controller.pluralize} found that are visible to you."
+    end
+  end
+
+  #e.g. SOP for sops_controller, taken from the locale based on the controller name
+  def resource_text_from_controller
+    internationalized_resource_name(controller_name.singularize.camelize, false)
+  end
+
   def index_title title=nil
-    show_title(title || self.controller_name.humanize.capitalize)
+    show_title(title || resource_text_from_controller.pluralize)
   end
 
   def is_front_page?
@@ -468,15 +479,7 @@ module ApplicationHelper
     "Effect.toggle('#{block_id}','slide',{duration:0.5})".html_safe
   end
 
-  def count_actions(object, actions=nil)
-    count = 0
-    if actions.nil?
-      count = ActivityLog.count(:conditions => {:activity_loggable_type => object.class.name, :activity_loggable_id => object.id})
-    else
-      count = ActivityLog.no_spider.count(:conditions => {:action => actions, :activity_loggable_type => object.class.name, :activity_loggable_id => object.id})
-    end
-    count
-  end
+
 
   def set_parameters_for_sharing_form object=nil
     object ||= eval "@#{controller_name.singularize}"
@@ -548,9 +551,9 @@ module ApplicationHelper
   def internationalized_resource_name resource_type,pluralize=true
     resource_type = resource_type.singularize
     if resource_type == "Speciman"
-      result = t('biosamples.sample_parent_term')
+      result = I18n.t('biosamples.sample_parent_term')
     elsif resource_type == "Assay"
-      result = t('assays.assay')
+      result = I18n.t('assays.assay')
     elsif resource_type == "TavernaPlayer::Run"
       result = "Run"
     else
@@ -561,7 +564,7 @@ module ApplicationHelper
   end
 
   def translate_resource_type resource_type
-    t("#{resource_type.underscore}")
+    I18n.t("#{resource_type.underscore}")
   end
 
   def add_return_to_search
@@ -630,16 +633,16 @@ module ApplicationHelper
   def describe_visibility(model)
     text = '<strong>Visibility:</strong> '
 
-    if model.policy.sharing_scope == 0
+    if model.policy.sharing_scope == Policy::PRIVATE
       css_class = 'private'
       text << "Private "
       text << "with some exceptions " unless model.policy.permissions.empty?
       text << image('lock', :style => 'vertical-align: middle')
-    elsif model.policy.sharing_scope == 2 && model.policy.access_type == 0
+    elsif model.policy.sharing_scope == Policy::ALL_SYSMO_USERS && model.policy.access_type == Policy::NO_ACCESS
       css_class = 'group'
       text << "Only visible to members of "
       text << model.policy.permissions.select {|p| p.contributor_type == 'Project'}.map {|p| p.contributor.title}.to_sentence
-    else
+    elsif model.policy.sharing_scope == Policy::EVERYONE
       css_class = 'public'
       text << "Public #{image('world', :style => 'vertical-align: middle')}"
     end

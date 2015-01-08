@@ -206,14 +206,7 @@ module Seek
     def smtp_settings(field)
       value = smtp[field.to_sym]
       if field == :password || field == 'password'
-        unless value.blank?
-          begin
-            value = decrypt(value, generate_key(GLOBAL_PASSPHRASE))
-          rescue => e
-            value = ''
-            Rails.logger.error 'ERROR DETERIMINING THE SMTP EMAIL PASSWORD - USING BLANK'
-          end
-        end
+        value=decrypt_value(value)
       end
       value
     end
@@ -239,15 +232,18 @@ module Seek
 
     def datacite_password_decrypt
       datacite_password = Seek::Config.datacite_password
-      unless datacite_password.blank?
+      decrypt_value(datacite_password)
+    end
+
+    def decrypt_value(value)
+      unless value.blank?
         begin
-          datacite_password = decrypt(datacite_password, generate_key(GLOBAL_PASSPHRASE))
-        rescue => e
-          datacite_password = ''
-          Rails.logger.error 'ERROR DETERIMINING THE DATACITE PASSWORD - USING BLANK'
+          decrypt(value, generate_key(GLOBAL_PASSPHRASE))
+        rescue => exception
+          Rails.logger.error 'ERROR decrypting value - reverting to a blank string'
+          ''
         end
       end
-      datacite_password
     end
 
     def datacite_password_encrypt(password)
@@ -363,6 +359,7 @@ module Seek
     setting :project_news_number_of_entries, convert: 'to_i'
     setting :community_news_number_of_entries, convert: 'to_i'
     setting :home_feeds_cache_timeout, convert: 'to_i'
+    setting :time_lock_doi_for, convert: 'to_ig'
 
     read_setting_attributes.each do |sym|
       setting sym

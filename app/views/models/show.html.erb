@@ -82,13 +82,11 @@
 
             <%= render :partial=>"model_visualisation" -%>
 
-            <br/>
-
             <%= render :partial => "assets/special_auth_code_display", :locals => {:resource => @model} %>
 
-
-
             <%= render :partial=>"import_details", :object=>@display_model %>
+
+            <%= render :partial => "assets/asset_doi", :locals => {:displayed_resource=>@display_model} %>
 
         </div>
     </div>

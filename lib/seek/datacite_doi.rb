@@ -1,22 +1,24 @@
 module Seek
   module DataciteDoi
     def self.included(base)
-      base.before_filter :set_asset_version, :only=>[:mint_doi_preview,:mint_doi,:minted_doi]
-      base.before_filter :mint_doi_auth, :only=>[:mint_doi_preview,:mint_doi,:minted_doi]
+      base.before_filter :set_asset_version, :only=>[:mint_doi_confirm,:mint_doi,:minted_doi,:new_version,:update]
+      base.before_filter :mint_doi_auth, :only=>[:mint_doi_confirm,:mint_doi,:minted_doi]
       base.before_filter :set_doi, :only=>[:mint_doi]
-      base.after_filter :log_minting_doi, :only=>[:mint_doi]
+      base.before_filter :new_version_auth, :only=>[:new_version]
+      base.before_filter :unpublish_auth, :only=>[:update]
     end
 
-    def mint_doi_preview
+    def mint_doi_confirm
       respond_to do |format|
-        format.html { render :template => "datacite_doi/mint_doi_preview"}
+        format.html { render :template => "datacite_doi/mint_doi_confirm"}
       end
     end
 
     def mint_doi
       respond_to do |format|
         if mint
-          add_doi_to_asset
+          add_doi_to_asset_version
+          add_log
           flash[:notice] = "The DOI is successfully generated: #{@doi}"
         end
         format.html { redirect_to polymorphic_path(@asset_version.parent, :version => @asset_version.version)}
@@ -29,12 +31,12 @@ module Seek
       end
     end
 
-    def generate_metadata_in_xml metadata_param
-      if metadata_param
+    def generate_metadata_xml hash=metadata_hash
+      if hash
         xml = "<resource xmlns='http://datacite.org/schema/kernel-3'
           xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
           xsi:schemaLocation='http://datacite.org/schema/kernel-3 http://schema.datacite.org/meta/kernel-3/metadata.xsd'>"
-        metadata_in_xml = metadata_param.to_xml(:skip_types => true, :skip_instruct => true)
+        metadata_in_xml = hash.to_xml(:skip_types => true, :skip_instruct => true)
         modified_xml = remove_empty_nodes(metadata_in_xml)
         modified_xml = concat_attribute_to('identifier', 'identifierType', 'DOI', modified_xml)
         modified_xml = concat_attribute_to('resourceType', 'resourceTypeGeneral', 'Dataset', modified_xml)
@@ -65,30 +67,10 @@ module Seek
     end
 
     def mint_doi_auth
-      @asset_version.parent.is_doiable?(@asset_version.version)
-    end
-
-    def log_minting_doi
-
-    end
-
-    def metadata_validated?
-      metadata = params[:metadata]
-      if metadata
-        identifier = metadata[:identifier]
-        creators = metadata[:creators] ? metadata[:creators].collect{|creator| creator['creatorName']}.join('') : nil
-        title = metadata[:titles] ? metadata[:titles].join('') : nil
-        publisher = metadata[:publisher]
-        publicationYear = metadata[:publicationYear]
-        if identifier.blank? || creators.blank? || title.blank? || publisher.blank? || publicationYear.blank?
-          validated = false
-        else
-          validated = true
-        end
-      else
-        validated = false
+      unless @asset_version.parent.is_doiable?(@asset_version.version)
+        error("Creating a DOI is not possible", "is invalid")
+        return false
       end
-      validated
     end
 
     def mint
@@ -97,9 +79,8 @@ module Seek
       url = Seek::Config.datacite_url.blank? ? nil : Seek::Config.datacite_url
       endpoint = Datacite.new(username, password, url)
 
-      metadata_in_hash = metadata_hash
-      metadata = generate_metadata_in_xml metadata_in_hash
-      upload_response = endpoint.upload_metadata metadata
+      metadata_xml = generate_metadata_xml
+      upload_response = endpoint.upload_metadata metadata_xml
       return false unless validate_response(upload_response)
 
       url = asset_url
@@ -119,9 +100,9 @@ module Seek
 
     def concat_attribute_to(node, attribute, value, xml)
       doc = Nokogiri::XML(xml)
-      doc.xpath("//#{node}").select do |n|
-        n["#{attribute}"] = value
-        n
+      doc.xpath("//#{node}").select do |node|
+        node["#{attribute}"] = value
+        node
       end
       doc.to_xml
     end
@@ -135,43 +116,60 @@ module Seek
     end
 
     def asset_url
-      "#{Seek::Config.site_base_host}#{controller_name}/#{@asset_version.parent.id}?version=#{@asset_version.version}"
+      base_host_url = "#{Seek::Config.site_base_host}"
+      relative_url = "#{controller_name}/#{@asset_version.parent.id}?version=#{@asset_version.version}"
+      if base_host_url.end_with?('/')
+        base_host_url + relative_url
+      else
+        base_host_url + '/' + relative_url
+      end
     end
 
     def metadata_hash
       creators = @asset_version.creators.collect{|creator| creator.last_name.capitalize + ', ' + creator.first_name.capitalize}
-      metadata_hash = {:identifier => @doi,
-                       :creators => creators.collect{|creator| {:creatorName => creator}},
+      uploader = @asset_version.contributor.try(:person)
+      unless uploader.nil?
+        creators << uploader.last_name.capitalize + ', ' + uploader.first_name.capitalize
+      end
+      {:identifier => @doi,
+                       :creators => creators.uniq.collect{|creator| {:creatorName => creator}},
                        :titles => [@asset_version.title],
                        :publisher => Seek::Config.project_name,
                        :publicationYear => Time.now.year
       }
-      metadata_hash
     end
 
     def set_doi
       asset = @asset_version.parent
-      @doi = generate_doi_for(asset.class.name, asset.id, @asset_version.version)
+      @doi = asset.generated_doi(@asset_version.version)
     end
 
-    def generate_doi_for klass, id,  version=nil
-      prefix = Seek::Config.doi_prefix.to_s + '/'
-      suffix = Seek::Config.doi_suffix.to_s + '.'
-      suffix << klass + '.' + id.to_s
-      if version
-        suffix << '.' + version.to_s
-      end
-      doi = prefix + suffix
-      doi
-    end
 
-    def add_doi_to_asset
+
+    def add_doi_to_asset_version
       @asset_version.doi = @doi
       @asset_version.save
+    end
+
+    def add_log
       asset = @asset_version.parent
-      if (asset.version == @asset_version.version)
-        asset.doi = @doi
-        asset.save
+      AssetDoiLog.create(asset_type: asset.class.name, asset_id: asset.id, asset_version: @asset_version.version, doi: @doi, action: 1, user_id: current_user.id)
+    end
+
+    def new_version_auth
+      asset = @asset_version.parent
+      if asset.is_any_doi_minted?
+        error("Uploading new version is not possible", "is invalid")
+        return false
+      end
+    end
+
+    def unpublish_auth
+      asset = @asset_version.parent
+      is_unpublish_request = asset.is_published? && params[:sharing] && params[:sharing][:sharing_scope].to_i != Policy::EVERYONE
+      if  is_unpublish_request && asset.is_any_doi_minted?
+        error("Un-publishing this asset is not possible", "is invalid")
+        return false
       end
     end
   end
