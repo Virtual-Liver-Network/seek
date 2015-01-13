@@ -14,7 +14,7 @@
 
       <%= image_tag(icon_filename_for_key('arrow_down_small'), :onclick => "toggleDynamicMenu('my_profile_menu');") %>
 
-      <ul id="my_profile_menu" class='dynamic_menu with_smaller_shadow' style="display:none;">
+      <ul id="my_profile_menu" class='dynamic_menu with_smaller_shadow' style="display:none; background-color: #015D8E;">
         <li class="my_profile_menu_header">Your details:</li>
         <li class='dynamic_menu_li' onclick="javascript:location.href='<%= person_path(current_person) -%>';">Your
           profile

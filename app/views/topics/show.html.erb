@@ -43,7 +43,7 @@
   </div>
 
   <div class="contribution_title">
-    <h1 id="topic-title" <%= %( onmouseover="$('topic_mod').show();" onmouseout="$('topic_mod').hide();") if logged_in? %>>
+    <h1 id="topic-title"  class="content_sg" <%= %( onmouseover="$('topic_mod').show();" onmouseout="$('topic_mod').hide();") if logged_in? %>>
 
       <%= h @topic.title %>
       <% if @topic.locked? %>

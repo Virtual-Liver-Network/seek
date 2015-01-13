@@ -8,7 +8,7 @@
     </div>
   <% end -%>
 
-  <div class="contribution_title"><h1><%= 'Forums'[:forums_title] %></h1></div>
+  <div class="contribution_title"><h1 class="content_sg"><%= 'Forums'[:forums_title] %></h1></div>
   <p class="subtitle">
     <%= feed_icon_tag "Recent Posts"[:recent_posts], all_posts_path(:format => 'rss') %>
     <%= '{count} topic(s)'[(count=Topic.count)==1 ? :topic_count : :topics_count, number_with_delimiter(count)] %>,

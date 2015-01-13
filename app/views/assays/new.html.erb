@@ -15,7 +15,7 @@
         </ul>
     <% else %>
         <div class="contribution_title">
-          <h1><%=  @assay.is_modelling? ? "#{t('assays.modelling_analysis')} creation" : "#{t('assays.assay')} creation" -%></h1>
+          <h1 class="content_sg"><%=  @assay.is_modelling? ? "#{t('assays.modelling_analysis')} creation" : "#{t('assays.assay')} creation" -%></h1>
         </div>
 
         <% unless @assay.assay_class %>
