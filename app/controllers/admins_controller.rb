@@ -140,9 +140,9 @@ class AdminsController < ApplicationController
     Seek::Config.application_title = params[:application_title]
 
     Seek::Config.header_image_enabled = string_to_boolean params[:header_image_enabled]
-    Seek::Config.header_image = params[:header_image]
     Seek::Config.header_image_link = params[:header_image_link]
     Seek::Config.header_image_title = params[:header_image_title]
+    header_image_file
 
     Seek::Config.copyright_addendum_enabled = string_to_boolean params[:copyright_addendum_enabled]
     Seek::Config.copyright_addendum_content = params[:copyright_addendum_content]
@@ -338,6 +338,49 @@ class AdminsController < ApplicationController
     end
   end
 
+  def get_user_stats
+    partial = nil
+    collection = []
+    action = nil
+    title = nil
+    @page = params[:id]
+    case @page
+      when 'invalid_users_profiles'
+        partial = 'invalid_user_stats_list'
+        invalid_users = {}
+        pal_role = ProjectRole.pal_role
+        invalid_users[:pal_mismatch] = Person.all.select { |p| p.is_pal? != p.project_roles.include?(pal_role) }
+        invalid_users[:duplicates] = Person.duplicates
+        invalid_users[:no_person] = User.without_profile
+        invalid_users[:no_user] = Person.userless_people
+        collection = invalid_users
+      when 'users_requiring_activation'
+        partial = 'user_stats_list'
+        collection = User.not_activated
+        action = "activate"
+        title = "Users have not yet activated their account"
+      when 'non_project_members'
+        partial = 'user_stats_list'
+        collection = Person.without_group.registered
+        title = "Users are not in a #{Seek::Config.project_name} #{t('project')}"
+      when 'pals'
+        partial = 'user_stats_list'
+        collection = Person.pals
+        title = 'List of PALs'
+      when 'administrators'
+        partial = 'admin_selection'
+      when "none"
+        partial = "none"
+    end
+    respond_to do |format|
+      if partial == "none"
+        format.html { render :text=>"" }
+      else
+        format.html { render :partial => partial, :locals => {:collection => collection, :action => action, :title => title} }
+      end
+    end
+  end
+
   def get_monthly_stats
     first_month = User.all.sort_by(&:created_at).first.created_at
     number_of_months_since_first = (Date.today.year * 12 + Date.today.month) - (first_month.year * 12 + first_month.month)
@@ -377,6 +420,23 @@ class AdminsController < ApplicationController
           ActionMailer::Base.smtp_settings = smtp_hash_old
           ActionMailer::Base.raise_delivery_errors = raise_delivery_errors_setting
         end
+  end
+
+  def header_image_file
+    file_io = params[:header_image_file]
+    location = Seek::Config.rebranding_filestore_path
+    if file_io
+      unless File.exist?(location)
+        FileUtils.mkdir_p(location)
+      end
+      filename = file_io.original_filename
+      file_path = File.join(location,filename)
+      File.open(file_path, 'wb') do |file|
+        file.write(file_io.read)
+      end
+
+      Seek::Config.header_image = view_context.public_header_image_url(filename)
+    end
   end
 
   private
