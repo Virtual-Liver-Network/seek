@@ -6,6 +6,7 @@ module Seek
 
       def handle_upload_data
         blob_params = content_blob_params
+        blob_params =  blob_params.symbolize_keys
         # MERGENOTE - the manipulation and validation of the params still needs a bit of cleaning up
         blob_params = update_params_for_batch(blob_params)
         allow_empty_content_blob = model_image_present?
