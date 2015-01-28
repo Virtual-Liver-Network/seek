@@ -10,7 +10,7 @@ module Seek
     IMAGE_VIEWABLE_FORMAT = %w[gif jpeg png jpg bmp svg]
 
     def is_excel? blob=self
-      is_xls?(blob) || is_xlsx?(blob)
+      is_xls?(blob) || is_xlsx?(blob) || is_xlsm?(blob)
     end
 
     def is_extractable_spreadsheet? blob=self
@@ -19,6 +19,10 @@ module Seek
 
     def is_in_simulatable_size_limit? blob=self
       !blob.filesize.nil? && blob.filesize < MAX_SIMULATABLE_SIZE
+    end
+
+    def is_xlsm? blob=self
+      mime_extensions(blob.content_type).include?("xlsm")
     end
 
     def is_xlsx? blob=self
