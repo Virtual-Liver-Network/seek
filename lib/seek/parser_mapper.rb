@@ -42,6 +42,7 @@ module Seek
         when /^due_bode.*/i then "duesseldorf_bode"
         when /^due_bode_surgical.*/i then "duesseldorf_bode_surgical"
         when /^sysmodb.*/i then "sysmodb"
+        when /^funginet.*/i then "jena_new"
         else "unknown"
       end
     end
@@ -143,6 +144,90 @@ module Seek
 
     end
 
+    def jena_new_mapping
+      {
+          :name => "jena_new",
+          :data_row_offset => 1,
+
+
+
+          :samples_mapping => {
+
+              :samples_sheet_name => "SDRF_example",
+
+              :add_specimens => true,
+              :add_treatments => true,
+              :add_samples => true,
+
+              :probing_column => :"specimens.title",
+
+
+              :"organisms.title" => mapping_entry("Organism"),
+
+              :"strains.title" => mapping_entry("Strain or Line"),
+
+              :"specimens.sex" => mapping_entry("Sex"),
+              :"specimens.title" => mapping_entry("# Specimen"),
+              :"specimens.lab_internal_number" => mapping_entry("# Specimen"),
+              :"specimens.age" => mapping_entry("Age"),
+              :"specimens.age_unit" => mapping_entry("Age Time Unit"),
+
+
+              :"specimens.comments" => mapping_entry("FIXED", proc {""}),
+              :"specimens.genotype.title" => mapping_entry("FIXED", proc {"none"}),
+              :"specimens.genotype.modification" => mapping_entry("Mutation", proc{""}),
+
+              :"treatment.treatment_protocol" => mapping_entry("Treatment Protocol"),
+              :"treatment.type" => mapping_entry("FIXED", proc {"concentration"}),
+              :"treatment.comments" => mapping_entry("FIXED", proc {""}),
+              :"treatment.substance" => mapping_entry("Substance"),
+              :"treatment.start_value" => mapping_entry("Concentration"),
+              :"treatment.end_value" => mapping_entry("FIXED", proc{""}),
+              :"treatment.standard_deviation" => mapping_entry("FIXED", proc{""}),
+              :"treatment.unit" => mapping_entry("Unit"),
+              :"treatment.incubation_time" => mapping_entry("FIXED", proc {nil}),
+              :"treatment.incubation_time_unit" => mapping_entry("FIXED", proc {""}),
+
+              :"samples.comments" => mapping_entry("Additional Information"),
+              :"samples.title" => mapping_entry("# Specimen", proc{|data| "#{data}_sample"}),
+              :"samples.sample_type" => mapping_entry("Material Type"),
+              :"samples.donation_date" => mapping_entry("Storage Date", proc  {|data| data != "" ? data : Time.now}), # the default value is certainly wrong -- but we need some donation_date
+              :"samples.organism_part"  => mapping_entry("FIXED", proc {""}),
+
+              :"tissue_and_cell_types.title" => mapping_entry("Organism Part"),
+
+              :"sop.title" => mapping_entry("Storage Protocol"),
+              :"institution.title" => mapping_entry("Storage Location"),
+
+              #new fields
+              :"specimens.temperature" => mapping_entry("Temperature"),
+              :"specimens.temperature_unit" => mapping_entry("Temperature Unit"),
+              :"specimens.ph" => mapping_entry("pH"),
+             
+
+          },
+
+          :assay_mapping => {
+
+              :assay_sheet_name => "IDF_example",
+              :parsing_direction => "horizontal",
+              :probing_column => "",
+
+              :"investigation.title" => mapping_entry("Investigation Title"),
+              :"assay_type.title" => mapping_entry("Experiment Class"),
+              :"study.title" => mapping_entry("Experiment Description", proc  {|data| data != "" ? data : "dummy study"}),
+
+              :"creator.email" => mapping_entry("Person Email"),
+              :"creator.last_name" => mapping_entry("Person Last Name"),
+              :"creator.first_name" => mapping_entry("Person First Name")
+
+          }
+
+
+
+      }
+
+    end
     # mapping for dortmund excel sheets (I)
     # example file: do_hengstler_Sample Data Hengstler_corrected.xls
     def dortmund_hengstler_mapping
