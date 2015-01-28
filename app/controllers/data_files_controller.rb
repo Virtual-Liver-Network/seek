@@ -74,7 +74,7 @@ class DataFilesController < ApplicationController
           flash[:notice] = "New version uploaded - now on version #{@data_file.version}"
           if @data_file.is_with_sample?
             bio_samples = @data_file.bio_samples_population @data_file.samples.first.institution_id if @data_file.samples.first
-            unless bio_samples.errors.blank?
+            if bio_samples && !bio_samples.errors.blank?
               flash[:notice] << "<br/> However, Sample database population failed."
               flash[:error] = bio_samples.errors.html_safe
             end
@@ -180,15 +180,13 @@ class DataFilesController < ApplicationController
               bio_samples = @data_file.bio_samples_population params[:institution_id]
               #@bio_samples = bio_samples
               #Rails.logger.warn "BIO SAMPLES ::: " + @bio_samples.treatments_text
-              unless  bio_samples.errors.blank?
+              if bio_samples && bio_samples.errors.blank?
+                 params[:assay_ids] = Array(params[:assay_ids]) | Array(bio_samples.instance_values["assay"].try(:id).try(:to_s))
+              else
                 flash[:notice] << "<br/> However, Sample database population failed."
                 flash[:error] = bio_samples.errors.html_safe
-                #respond_to do |format|
-                #  format.html{
-                #    render :action => "new"
-                #  }
-                # end
               end
+
             end
             #the assay_id param can also contain the relationship type
             assay_ids, relationship_types = determine_related_assay_ids_and_relationship_types(params)

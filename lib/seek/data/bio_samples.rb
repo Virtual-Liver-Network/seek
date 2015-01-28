@@ -69,7 +69,7 @@ module Seek
           Rails.logger.warn "Template = #{template}, Institution name = " + @institution_title
           filename = @file.content_blob.original_filename
           parser_mapper = Seek::ParserMapper.new
-          @parser_mapping = parser_mapper.mapping(template.downcase != "autodetect by filename" ? template.downcase : parser_mapper.filename_to_mapping_name(filename))
+          @parser_mapping = parser_mapper.mapping(template.downcase != "autodetect by filename" && template.downcase != "none" ? template.downcase : parser_mapper.filename_to_mapping_name(filename))
 
           if @parser_mapping
             @samples_mapping = @parser_mapping[:samples_mapping]
@@ -256,7 +256,6 @@ module Seek
       @assay.lock!
       @assay.assay_class = assay_class
       @assay.assay_type_uri = assay_type.uri.try(:to_s)
-      @assay.assay_type_label = assay_type_title
       ### unknown technology type
       #@assay.technology_type_uri = Seek::Ontologies::TechnologyTypeReader.instance.class_hierarchy.hash_by_label
       @assay.study = study
@@ -1092,8 +1091,8 @@ module Seek
     end
 
     def hunt_for_horizontal_field_value_mapped sheet, field_name, mapping
-      #Array(mapping[field_name][:value].call((hunt_for_horizontal_field_value(sheet, mapping[field_name][:column])))).map { |it| {:value => it}}
-      mapping[field_name][:value].call((hunt_for_horizontal_field_value(sheet, mapping[field_name][:column]))).map { |it| {:value => it}}
+      Array(mapping[field_name][:value].call((hunt_for_horizontal_field_value(sheet, mapping[field_name][:column])))).map { |it| {:value => it}}
+     # mapping[field_name][:value].call((hunt_for_horizontal_field_value(sheet, mapping[field_name][:column]))).map { |it| {:value => it}}
     end
 
 
