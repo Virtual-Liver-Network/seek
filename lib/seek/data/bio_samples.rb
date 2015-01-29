@@ -763,7 +763,7 @@ module Seek
 
       specimen_title = specimen_json["title"]
       sex = specimen_json["sex"]
-      age = specimen_json["age"]
+      age = specimen_json["age"] <=0 ? nil : specimen_json["age"]
       age_unit = specimen_json["age unit"]
       organism_title = specimen_json["organism"]
       strain_title = specimen_json["strain"]
