@@ -166,7 +166,7 @@ module Seek
 
               :"strains.title" => mapping_entry("Strain or Line"),
 
-              :"specimens.sex" => mapping_entry("Sex"),
+              :"specimens.sex" => mapping_entry("Sex (only for mice)"),
               :"specimens.title" => mapping_entry("# Specimen"),
               :"specimens.lab_internal_number" => mapping_entry("# Specimen"),
               :"specimens.age" => mapping_entry("Age"),
@@ -175,11 +175,11 @@ module Seek
 
               :"specimens.comments" => mapping_entry("FIXED", proc {""}),
               :"specimens.genotype.title" => mapping_entry("FIXED", proc {"none"}),
-              :"specimens.genotype.modification" => mapping_entry("Mutation", proc{""}),
+              :"specimens.genotype.modification" => mapping_entry("FIXED", proc{""}),
 
               :"treatment.treatment_protocol" => mapping_entry("Treatment Protocol"),
               :"treatment.type" => mapping_entry("FIXED", proc {"concentration"}),
-              :"treatment.comments" => mapping_entry("FIXED", proc {""}),
+              :"treatment.comments" => mapping_entry("Atmosphere"),
               :"treatment.substance" => mapping_entry("Substance"),
               :"treatment.start_value" => mapping_entry("Concentration"),
               :"treatment.end_value" => mapping_entry("FIXED", proc{""}),
@@ -189,10 +189,10 @@ module Seek
               :"treatment.incubation_time_unit" => mapping_entry("FIXED", proc {""}),
 
               :"samples.comments" => mapping_entry("Additional Information"),
-              :"samples.title" => mapping_entry("# Specimen", proc{|data| "#{data}_sample"}),
-              :"samples.sample_type" => mapping_entry("Material Type"),
+              :"samples.title" => mapping_entry("Extract Name"),
+              :"samples.sample_type" => mapping_entry("Material Type Source"),
               :"samples.donation_date" => mapping_entry("Storage Date", proc  {|data| data != "" ? data : Time.now}), # the default value is certainly wrong -- but we need some donation_date
-              :"samples.organism_part"  => mapping_entry("FIXED", proc {""}),
+              :"samples.organism_part"  => mapping_entry("Material Type Sample"),
 
               :"tissue_and_cell_types.title" => mapping_entry("Organism Part"),
 
@@ -201,10 +201,15 @@ module Seek
 
               #new fields
               :"specimens.temperature" => mapping_entry("Temperature"),
-              :"specimens.temperature_unit" => mapping_entry("Temperature Unit"),
+             # :"specimens.temperature_unit" => mapping_entry("Temperature Unit"),
               :"specimens.ph" => mapping_entry("pH"),
-             
-
+              :"samples.sampling_date" => mapping_entry("Extraction Date"),
+              :"samples.age_at_sampling_unit" => mapping_entry("Sampling Time Point Unit", proc{|data| data == "" || data == "other"} ? nil : data.split("(").first),
+              :"samples.age_at_sampling" => mapping_entry("Sampling Time Point"),
+              # two treatments to specimen
+              :"compounds.name.nutrients" => mapping_entry("Nutrients", proc  {|data| data == "none" || data == "" ? nil : data}),
+              :"compounds.name.compound" => mapping_entry("Compound", proc  {|data| data == "none" || data == "" ? nil : data}),
+              :"treatment.medium_title" => mapping_entry("Media"),
           },
 
           :assay_mapping => {

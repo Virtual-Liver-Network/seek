@@ -296,7 +296,9 @@ module Seek
         treatment_type = hunt_for_field_values_mapped sheet, :"treatment.type", @samples_mapping
         treatment_comments = hunt_for_field_values_mapped sheet, :"treatment.comments", @samples_mapping
 
-
+        treatment_medium_title = hunt_for_field_values_mapped sheet, :"treatment.medium_title", @samples_mapping
+        treatment_compound_one = hunt_for_field_values_mapped sheet, :"compounds.name.nutrients", @samples_mapping
+        treatment_compound_two = hunt_for_field_values_mapped sheet, :"compounds.name.compound", @samples_mapping
         #Rails.logger.warn "$$$$$$$$$$$$$$ treatment_concentrations #{treatment_concentrations}"
 
         Rails.logger.warn "$$$$$$$$$$$$$$ treatment_start_values #{treatment_start_values}"
@@ -307,14 +309,15 @@ module Seek
         Rails.logger.warn "$$$$$$$$$$$$$$ treatment_incubation_time_unit  #{treatment_incubation_time_unit}"
         Rails.logger.warn "$$$$$$$$$$$$$$ treatment_type #{treatment_type}"
         Rails.logger.warn "$$$$$$$$$$$$$$ treatment_comments #{treatment_comments}"
+        Rails.logger.warn "$$$$$$$$$$$$$$ treatment_medium_title #{treatment_medium_title}"
 
                
 
           treatment_data = treatment_protocols.zip(treatment_substances, treatment_start_values, treatment_end_values, treatment_standard_deviations, treatment_units, treatment_incubation_time, treatment_incubation_time_unit,
-                            treatment_type, treatment_comments).map do
-            |protocol, substance, start_value, end_value, standard_deviation, unit, incubation_time, incubation_time_unit, type, comments|
+                            treatment_type, treatment_comments,treatment_medium_title, treatment_compound_one,treatment_compound_two).map do
+            |protocol, substance, start_value, end_value, standard_deviation, unit, incubation_time, incubation_time_unit, type, comments, medium_title, compound_one, compound_two|
               {:protocol => protocol, :substance => substance, :start_value => start_value, :end_value => end_value, :standard_deviation => standard_deviation, :unit => unit, :incubation_time => incubation_time, :incubation_time_unit => incubation_time_unit,
-               :type => type, :comments => comments}
+               :type => type, :comments => comments, :medium_title => medium_title, :compound_one => compound_one, :compound_two => compound_two}
           end
 
         
@@ -372,6 +375,10 @@ module Seek
         specimen_ages = hunt_for_field_values_mapped sheet, :"specimens.age", @samples_mapping
         specimen_age_units = hunt_for_field_values_mapped sheet, :"specimens.age_unit", @samples_mapping
         specimen_comments = hunt_for_field_values_mapped sheet, :"specimens.comments", @samples_mapping
+
+        specimen_phs = hunt_for_field_values_mapped sheet, :"specimens.ph", @samples_mapping
+
+
         organism_titles = hunt_for_field_values_mapped sheet, :"organisms.title", @samples_mapping
         strain_titles = hunt_for_field_values_mapped sheet, :"strains.title", @samples_mapping
         genotype_titles = hunt_for_field_values_mapped sheet, :"specimens.genotype.title", @samples_mapping
@@ -388,11 +395,11 @@ module Seek
 
         specimen_data = specimen_titles.
         zip(specimen_sexes, specimen_ages, specimen_age_units,
-            specimen_comments, organism_titles, strain_titles, genotype_titles, genotype_modifications).
+            specimen_comments, specimen_phs, organism_titles, strain_titles, genotype_titles, genotype_modifications).
         map do |specimen_title, specimen_sex, specimen_age, specimen_age_unit,
-            specimen_comment, organism_title, strain_title, genotype_title, genotype_modification |
+            specimen_comment, specimen_ph, organism_title, strain_title, genotype_title, genotype_modification |
           {:specimen_title => specimen_title, :specimen_sex => specimen_sex, :specimen_age => specimen_age, :specimen_age_unit => specimen_age_unit,
-           :specimen_comment => specimen_comment, :organism_title => organism_title, :strain_title => strain_title,
+           :specimen_comment => specimen_comment, :specimen_ph => specimen_ph,:organism_title => organism_title, :strain_title => strain_title,
            :genotype_title => genotype_title, :genotype_modification => genotype_modification}
         end
 
@@ -416,14 +423,19 @@ module Seek
           sample_donation_dates = hunt_for_field_values_mapped sheet, :"samples.donation_date", @samples_mapping
           sample_comments = hunt_for_field_values_mapped sheet, :"samples.comments", @samples_mapping
           sample_organism_parts = hunt_for_field_values_mapped sheet, :"samples.organism_part", @samples_mapping
+
+          sample_sampling_date = hunt_for_field_values_mapped sheet, :"samples.sampling_date", @samples_mapping
+          sample_age_at_sampling_unit = hunt_for_field_values_mapped sheet, :"samples.age_at_sampling_unit", @samples_mapping
+          sample_age_at_sampling = hunt_for_field_values_mapped sheet, :"samples.age_at_sampling", @samples_mapping
+
           tissue_and_cell_types = hunt_for_field_values_mapped sheet, :"tissue_and_cell_types.title", @samples_mapping
           sop_titles = hunt_for_field_values_mapped sheet, :"sop.title", @samples_mapping
           institution_titles = hunt_for_field_values_mapped sheet, :"institution.title", @samples_mapping
 
 
-          samples_data = sample_titles.zip(sample_types, sample_donation_dates, sample_comments, sample_organism_parts, tissue_and_cell_types, sop_titles, institution_titles, specimen_titles).map do |sample_title, sample_type, sample_donation_date, sample_comment, sample_organism_part, tissue_and_cell_type, sop_title, institution_title, specimen_title|
+          samples_data = sample_titles.zip(sample_types, sample_donation_dates, sample_comments, sample_organism_parts, tissue_and_cell_types, sop_titles, institution_titles, specimen_titles, sample_sampling_date, sample_age_at_sampling_unit, sample_age_at_sampling).map do |sample_title, sample_type, sample_donation_date, sample_comment, sample_organism_part, tissue_and_cell_type, sop_title, institution_title, specimen_title, sampling_date, age_at_sampling_unit, age_at_sampling|
             {:sample_title => sample_title, :sample_type => sample_type, :sample_donation_date => sample_donation_date, :sample_comment => sample_comment, :sample_organism_part => sample_organism_part,
-             :tissue_and_cell_type => tissue_and_cell_type, :sop_title => sop_title, :institution_title => institution_title, :specimen_title => specimen_title}
+             :tissue_and_cell_type => tissue_and_cell_type, :sop_title => sop_title, :institution_title => institution_title, :specimen_title => specimen_title, :sampling_date=> sampling_date, :age_at_sampling_unit=> age_at_sampling_unit, :age_at_sampling=> age_at_sampling}
           end
 
           Rails.logger.warn "$$$$$$$$$$$$$$ samples_comments #{sample_comments}"
@@ -626,6 +638,10 @@ module Seek
         type = treatment_data[:type][:value]
         comments = treatment_data[:comments][:value]
 
+        medium_title = treatment_data[:medium_title][:value]
+        compound_one = treatment_data[:compound_one][:value]
+        compound_two = treatment_data[:compound_two][:value]
+
         row = treatment_data[:protocol][:row]
 
         treatment = {"type" => type,
@@ -637,7 +653,8 @@ module Seek
                      "protocol" => treatment_protocol,
                      "incubation time" => incubation_time,
                      "incubation time unit" => incubation_time_unit,
-                     "compound" => substance}
+                     "medium_title" => medium_title,
+                     "compounds" => [substance, compound_one, compound_two]}
 
 
         @treatments[row] = treatment
@@ -655,22 +672,27 @@ module Seek
         standard_deviation = treatment_json["standard deviation"]
         comments = treatment_json["comments"]
         protocol = treatment_json["protocol"]
-
-        treatment = nil
+        medium_title = treatment_json["medium_title"]
 
         #if start_value && start_value != ""
 
           treatment_type = MeasuredItem.find_by_title(treatment_json["type"].downcase)
           treatment_type = MeasuredItem.create :title => treatment_json["type"].downcase, :factors_studied => false unless treatment_type
 
-          compound = nil
-
+          compounds = []
+          treatments = []
           if treatment_type.title == "concentration"
-            compound_name = treatment_json["compound"]
-            if compound_name != "" && compound_name != "none"
-              compound = Compound.find_by_name(treatment_json["compound"].downcase)
-              compound = Compound.create :name => treatment_json["compound"].downcase unless compound
+            compound_names = treatment_json["compounds"]
+
+            Rails.logger.error "§§§§§§§§§§ compounds: #{compound_names}"
+            unless compound_names.blank?
+              compound_names.each do |compound_name|
+                if compound_name && compound_name != "" && compound_name != "none"
+                  compounds << Compound.where(name: compound_name.downcase).first_or_create
+                end
+              end
             end
+
           end
 
           incubation_time = treatment_json["incubation time"]
@@ -684,39 +706,50 @@ module Seek
           unit = Unit.find_by_symbol treatment_json["unit"]
           unit = Unit.create :symbol => treatment_json["unit"], :factors_studied => false unless unit
 
-          #treatment = Treatment.find(:first, :conditions => ["treatment_protocol = ? and unit_id = ? and substance = ? and cast(concentration as char) = ?", treatment_json["protocol"], unit.id, treatment_json["compound"], treatment_json["start value"]])
+          #treatment = Treatment.find(:first, :conditions => ["treatment_protocol = ? and unit_id = ? and substance = ? and cast(concentration as char) = ?", treatment_json["protocol"], unit.id, treatment_json["compounds"], treatment_json["start value"]])
 
-          #treatment = Treatment.new :substance => treatment_json["compound"], :concentration =>  treatment_json["start value"], :unit_id => unit.id, :treatment_protocol =>  treatment_json["protocol"] unless treatment
-          def nil_or_float o
-            o.nil? ? nil : o.to_f
-          end
+          #treatment = Treatment.new :substance => treatment_json["compounds"], :concentration =>  treatment_json["start value"], :unit_id => unit.id, :treatment_protocol =>  treatment_json["protocol"] unless treatment
+
 
           #rails 3
            #treatment = Treatment.where(["treatment_protocol = ? and unit_id = ? and substance = ? and cast(concentration as char) = ?", treatment_protocol, unit.id, substance, concentration]).first
+          #
+          # treatment = Treatment.where(["unit_id = ? and treatment_protocol = ? and measured_item_id = ? and cast(start_value as char) = ? and cast(end_value as char) = ? and
+          #     cast(standard_deviation as char) = ? and comments = ? and cast(time_after_treatment as char) = ? and time_after_treatment_unit_id = ? and compound_id = ? and specimen_id = ?",
+          #     unit, protocol, treatment_type.try(:id), nil_or_float(start_value), nil_or_float(end_value), nil_or_float(standard_deviation), comments, nil_or_float(incubation_time), incubation_time_unit.try(:id), compound, specimen]).first
 
-          treatment = Treatment.where(["unit_id = ? and treatment_protocol = ? and measured_item_id = ? and cast(start_value as char) = ? and cast(end_value as char) = ? and
-              cast(standard_deviation as char) = ? and comments = ? and cast(time_after_treatment as char) = ? and time_after_treatment_unit_id = ? and compound_id = ? and specimen_id = ?",
-              unit, protocol, treatment_type.try(:id), nil_or_float(start_value), nil_or_float(end_value), nil_or_float(standard_deviation), comments, nil_or_float(incubation_time), incubation_time_unit.try(:id), compound, specimen]).first
+          compounds.each do |compound|
 
-          Rails.logger.error "§§§§§§§§§§ TREATMENT FOUND: #{treatment}"
+            treatment = Treatment.where(:measured_item_id => treatment_type.try(:id),
+                                        :start_value => nil_or_float(start_value),
+                                        :end_value => nil_or_float(end_value),
+                                        :unit_id => unit.try(:id),
+                                        :standard_deviation => nil_or_float(standard_deviation),
+                                        :comments => comments,
+                                        :treatment_protocol => protocol,
+                                        :time_after_treatment => nil_or_float(incubation_time),
+                                        :time_after_treatment_unit_id => incubation_time_unit.try(:id),
+                                        :compound_id => compound.try(:id),
+                                        :specimen_id => specimen.try(:id),
+                                        :medium_title => medium_title,
+                                        :sample_id => sample.try(:id)).first_or_initialize
 
-          treatment = Treatment.new :measured_item_id => treatment_type.try(:id), :start_value => nil_or_float(start_value), :end_value => nil_or_float(end_value), :unit => unit, :standard_deviation => nil_or_float(standard_deviation),
-              :comments => comments, :treatment_protocol => protocol, :time_after_treatment => nil_or_float(incubation_time), :time_after_treatment_unit_id => incubation_time_unit.try(:id),
-              :compound => compound, :specimen => specimen, :sample => sample unless treatment
+            Rails.logger.error "§§§§§§§§§§ TREATMENT FOUND: #{treatment}" unless treatment.new_record?
 
-          treatment.save!
+            treatment.save! if treatment.new_record?
+            treatments << treatment
+            if specimen and !specimen.treatments.include? treatment
+              specimen.treatments << treatment
+            end
 
-          if specimen and !specimen.treatments.include? treatment
-            specimen.treatments << treatment
-          end
-
-          if sample and !sample.treatments.include? treatment
-            sample.treatments << treatment
+            if sample and !sample.treatments.include? treatment
+              sample.treatments << treatment
+            end
           end
 
         #end
 
-        treatment
+        treatments
       
     end
     
@@ -735,6 +768,7 @@ module Seek
       age = specimen_data[:specimen_age][:value].to_i
       age_unit = specimen_data[:specimen_age_unit][:value]
       comments = specimen_data[:specimen_comment][:value]
+      ph = specimen_data[:specimen_ph][:value]
       genotype_title = specimen_data[:genotype_title][:value]
       genotype_modification = specimen_data[:genotype_modification][:value]
 
@@ -748,6 +782,7 @@ module Seek
                   "age" => age,
                   "age unit" => age_unit,
                   "comments" => comments,
+                  "ph" => ph,
                   "genotype title" => genotype_title,
                   "genotype modification" =>  genotype_modification}
 
@@ -768,6 +803,7 @@ module Seek
       organism_title = specimen_json["organism"]
       strain_title = specimen_json["strain"]
       comments = specimen_json["comments"]
+      ph = specimen_json["ph"]
       genotype_title = specimen_json["genotype title"]
       genotype_modification = specimen_json["genotype modification"]
 
@@ -820,6 +856,7 @@ module Seek
           specimen.policy = @file.policy.deep_copy
           specimen.projects = @file.projects
           specimen.comments = comments
+          specimen.ph = ph
           specimen.creators << @creator
           specimen.save!
         else
@@ -889,6 +926,10 @@ module Seek
       comments = sample_data[:sample_comment][:value]
       organism_part = sample_data[:sample_organism_part][:value]
 
+      sampling_date  = sample_data[:sampling_date][:value]
+      age_at_sampling_unit = sample_data[:age_at_sampling_unit][:value]
+      age_at_sampling = sample_data[:age_at_sampling][:value]
+
       row = sample_data[:sample_title][:row]
       
       sample = {"title" => sample_title,
@@ -898,7 +939,11 @@ module Seek
                 "donation date" => donation_date.to_s,
                 "institution" => institution_title,
                 "comments" => comments,
-                "organism part" => organism_part}
+                "organism part" => organism_part,
+                "sampling_date" => sampling_date,
+                "age_at_sampling_unit" => age_at_sampling_unit,
+                "age_at_sampling" => age_at_sampling
+                }
 
 
       @samples[row] = sample
@@ -922,6 +967,12 @@ module Seek
         comments = sample_json["comments"]
         organism_part = sample_json["organism part"]
 
+        sampling_date  = sample_json["sampling_date"]
+        age_at_sampling_unit = sample_json["age_at_sampling_unit"]
+        age_at_sampling = sample_json["age_at_sampling"]
+
+
+
         sop_title = nil if sop_title=="NO STORAGE"
         institution_title = @institution_title if (institution_title=="" || institution_title.nil?)
 
@@ -943,6 +994,8 @@ module Seek
         #specimen = Specimen.find_by_title specimen_title
 
         #comments = @sample_comments.detect { |comments| comments.attributes["row"].to_i == row }.try(:content)
+        age_at_sampling_unit = Unit.where(symbol: age_at_sampling_unit).first_or_initialize
+        age_at_sampling_unit.save! if age_at_sampling_unit.new_record?
 
         sample = Sample.find_by_title sample_title
         unless sample
@@ -955,7 +1008,7 @@ module Seek
           #  treatment << "," unless k == @treatments_text[row].keys.last
           #end
           #treatment = @treatments_text[row] ? @treatments_text[row] : ""
-          treatment =  "" # will be linked to 0 ... n treatments anyway
+         # treatment =  "" # will be linked to 0 ... n treatments anyway
 
           sample.sample_type = sample_type
           sample.donation_date = Time.zone.parse(donation_date).utc
@@ -965,7 +1018,12 @@ module Seek
           sample.specimen = specimen if specimen
           sample.organism_part = organism_part if organism_part != ""
           sample.comments = comments
-          sample.treatment = treatment
+          #sample.treatment = treatment
+          sample.sampling_date  = Time.zone.parse(sampling_date).utc
+
+          sample.age_at_sampling_unit = age_at_sampling_unit
+          sample.age_at_sampling = age_at_sampling
+
           sample.policy = @file.policy.deep_copy
           #sample.creators << @creator
           sample.save!
@@ -975,7 +1033,11 @@ module Seek
               (sample.tissue_and_cell_types.member?(tissue_and_cell_type) || tissue_and_cell_type_title == "") &&
               sample.donation_date == Time.zone.parse(donation_date).utc &&
               sample.institution == institution &&
-              sample.comments == comments
+              sample.comments == comments &&
+              sample.sampling_date == Time.zone.parse(sampling_date).utc &&
+              sample.age_at_sampling == age_at_sampling &&
+              sample.age_at_sampling_unit == age_at_sampling_unit
+
               sleep(1);
               sample.title =  "#{sample_title}-#{Time.now}"
               sample.save!
@@ -1199,6 +1261,11 @@ module Seek
 
       return table_names[index+1].content
     end
+
+    def nil_or_float o
+      o.nil? ? nil : o.to_f
+    end
+
   end
   end
 end
