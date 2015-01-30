@@ -41,14 +41,14 @@ module AssaysHelper
     result= "<p class='#{html_options[:class]}' id='#{html_options[:id]}'> <b>#{attribute}</b>: "
 
     result +="<span class='none_text'>#{none_text}</span>" if assay_samples.blank? and assay_organisms.blank?
+    grouped_samples = assay_samples.group_by{|s|[s.specimen.strain.organism_id, s.specimen.strain_id, s.specimen.culture_growth_type_id, s.tissue_and_cell_types.map(&:id).join(",")].join(",")}.map(&:first)
+    grouped_samples.each do |gs|
+      gs_array = gs.split(",")
+      result += "<br/>" if gs==grouped_samples.first
+      organism = Organism.where(id: gs_array[0]).first
+      strain = Strain.where(id: gs_array[1]).first
 
-    assay_samples.each do |as|
-      result += "<br/>" if as==assay_samples.first
-      organism = as.specimen.organism
-      strain = as.specimen.strain
-      sample = as
-
-      culture_growth_type = as.specimen.culture_growth_type
+      culture_growth_type = CultureGrowthType.where(id: gs_array[2]).first
 
       if organism
         result += link_to organism.title, organism, {:class => "assay_organism_info"}
@@ -60,21 +60,22 @@ module AssaysHelper
         result += "</span>"
       end
 
-      if sample && sample.tissue_and_cell_types.count > 0
+      if gs_array[3] && (tissue_and_cell_types = gs_array[3].split(",")).count > 0
         result += " : "
        # result += link_to sample.title, sample
-        sample.tissue_and_cell_types.each do |tt|
-          result += "[" if tt== sample.tissue_and_cell_types.first
-          result += link_to h(tt.title), tt
-          result += "|" unless tt == sample.tissue_and_cell_types.last
-          result += "]" if tt == sample.tissue_and_cell_types.last
+        tissue_and_cell_types.each do |tt|
+          tissue_and_cell_type = TissueAndCellType.where(id: tt).first
+          result += "[" if tt== tissue_and_cell_types.first
+          result += link_to h(tissue_and_cell_type.try(:title)), tissue_and_cell_type
+          result += "|" unless tt == tissue_and_cell_types.last
+          result += "]" if tt == tissue_and_cell_types.last
         end
       end
 
       if culture_growth_type
         result += " (#{culture_growth_type.title})"
       end
-      result += ", " unless as==assay_samples.last and assay_organisms.blank?
+      result += ", " unless gs==grouped_samples.last and assay_organisms.blank?
     end
 
 
