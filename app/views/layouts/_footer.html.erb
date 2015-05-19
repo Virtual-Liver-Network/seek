@@ -26,7 +26,7 @@
       <td class="middle">
         <p>Related <%= t('project').pluralize %> and friends</p>
             <br/>
-            <%= link_to "Imprint", imprint_home_path %>
+            <%= link_to("Imprint", imprint_home_path) if Seek::Config.imprint_enabled %>
           <%= link_to image_tag("logos/taverna_logo_footer.png",:title=>"Taverna workflow workbench",:alt=>"Taverna workflow workbench"), "http://www.mygrid.org.uk/tools/taverna/", :target => '_blank' %>
           <%= link_to image_tag("logos/myexperiment_logo_footer.png",:title=>"myExperiment",:alt=>"myExperiment"), "http://www.myExperiment.org", :target => '_blank' %>
           <%= link_to image_tag("logos/jwsonline_webpic_footer.jpg",:title=>"JWS Online",:alt=>"JWS Online"), "http://jjj.biochem.sun.ac.za/", :target => '_blank' %>
