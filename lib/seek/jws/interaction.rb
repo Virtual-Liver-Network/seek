@@ -49,7 +49,7 @@ module Seek
       end
 
       def get_endpoint
-        RestClient::Resource.new(Seek::Config.jws_online_root)
+        RestClient::Resource.new(Seek::Config.jws_online_root, {:ssl_version => :TLSv1})
       end
     end
   end
