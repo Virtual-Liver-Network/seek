@@ -54,7 +54,11 @@ module Seek
     end
 
     def is_pdf_convertable? blob=self
-      !(PDF_CONVERTABLE_FORMAT & mime_extensions(blob.content_type)).empty? && Seek::Config.pdf_conversion_enabled
+      if blob.is_excel?
+        !(PDF_CONVERTABLE_FORMAT & mime_extensions(blob.content_type)).empty? && Seek::Config.pdf_conversion_enabled && within_size_limit(blob)
+      else
+        !(PDF_CONVERTABLE_FORMAT & mime_extensions(blob.content_type)).empty? && Seek::Config.pdf_conversion_enabled
+      end
     end
 
     def is_viewable_format? blob=self
