@@ -42,7 +42,14 @@ function tab_on_click(scale_title, resource_type, resource_ids, actions_partial_
 
 }
 function deactivate_previous_tab(tab_element){
-        var previous_active_tab = tab_element.up("ul.tabbernav").getElementsByClassName('tabberactive')[0];
+    var previous_active_tab;
+    var tabber_nav = tab_element.up('div.tabberlive').getElementsByClassName('tabbernav');
+    for(var i=0; i<tabber_nav.length; i++){
+        var tabber_active = tabber_nav[i].getElementsByClassName('tabberactive')[0];
+        if (tabber_active != null){
+            previous_active_tab = tabber_active;
+        }
+    }
         previous_active_tab.className = '';
         //Then hide the content of the tab
         var scale_and_type = previous_active_tab.childNodes[0].className;
