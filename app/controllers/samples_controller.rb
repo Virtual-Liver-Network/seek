@@ -26,8 +26,6 @@ class SamplesController < ApplicationController
     unless @sample.specimen.can_view?
       @sample.specimen = nil
       notice_message << "The #{t('biosamples.sample_parent_term')} of the existing Sample cannot be viewed, please specify your own #{t('biosamples.sample_parent_term')}! <br/> "
-    else
-      flash.now[:notice] = ""
     end
 
     @existing_sample.data_file_masters.each do |df|
