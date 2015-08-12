@@ -22,30 +22,35 @@ class SamplesController < ApplicationController
     @existing_sample =  Sample.find(params[:id])
     @sample = @existing_sample.clone_with_associations
 
+    notice_message = ''
     unless @sample.specimen.can_view?
       @sample.specimen = nil
-      flash.now[:notice] = "The #{t('biosamples.sample_parent_term')} of the existing Sample cannot be viewed, please specify your own #{t('biosamples.sample_parent_term')}! <br/> "
+      notice_message << "The #{t('biosamples.sample_parent_term')} of the existing Sample cannot be viewed, please specify your own #{t('biosamples.sample_parent_term')}! <br/> "
     else
       flash.now[:notice] = ""
     end
 
     @existing_sample.data_file_masters.each do |df|
        if !df.can_view?
-       flash.now[:notice] << "Some or all #{t('data_file').pluralize} of the existing Sample cannot be viewed, you may specify your own! <br/>"
+         notice_message << "Some or all #{t('data_file').pluralize} of the existing Sample cannot be viewed, you may specify your own! <br/>"
         break
       end
     end
     @existing_sample.model_masters.each do |m|
        if !m.can_view?
-       flash.now[:notice] << "Some or all #{t('model').pluralize} of the existing Sample cannot be viewed, you may specify your own! <br/>"
+         notice_message << "Some or all #{t('model').pluralize} of the existing Sample cannot be viewed, you may specify your own! <br/>"
         break
       end
     end
     @existing_sample.sop_masters.each do |s|
        if !s.can_view?
-       flash.now[:notice] << "Some or all #{t('sop').pluralize} of the existing Sample cannot be viewed, you may specify your own! <br/>"
+         notice_message << "Some or all #{t('sop').pluralize} of the existing Sample cannot be viewed, you may specify your own! <br/>"
         break
       end
+    end
+
+    unless notice_message.blank?
+      flash.now[:notice] = notice_message.html_safe
     end
 
     render :action=>"new"
