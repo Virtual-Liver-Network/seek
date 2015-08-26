@@ -160,7 +160,6 @@ module AssetsHelper
 
   #Get a hash of appropriate related resources for the given resource. Also returns a hash of hidden resources
   def get_related_resources(resource, limit=nil)
-    return resource_hash_lazy_load(resource) if Seek::Config.tabs_lazy_load_enabled
     name = resource.class.name.split("::")[0]
 
     related = collect_related_items(resource)
