@@ -31,7 +31,7 @@
               </ul>
 
               <% if Seek::Config.is_virtualliver -%>
-                  <input type=button id="file_upload_tool" class="gadget_button" value="Upload tool" onclick="window.open('http://seek.virtual-liver.de/file_upload_tool/')">
+                  <input type=button id="file_upload_tool" class="gadget_button" value="Upload tool" onclick="window.location.href = '<%= Seek::Config.site_base_host%>' + '/data_files/new?file_upload_tool=true'">
               <% end %>
 
             </div>

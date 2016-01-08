@@ -1,3 +1,6 @@
+<% if params['file_upload_tool'] == 'true'%>
+  <% flash[:notice] = 'If you upload a small/medium file (< 2 GB), please upload it through this interface.' %>
+<% end %>
 
 <% @page_title ||= "New #{t('data_file')}" %>
 <h1><%= @page_title %></h1>
