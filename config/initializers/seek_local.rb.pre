@@ -3,5 +3,4 @@ SEEK::Application.configure do
     #GLOBAL_PASSPHRASE=""
 
 
-    #PORTER_SECRET = ""
 end

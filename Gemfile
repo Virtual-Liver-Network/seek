@@ -39,7 +39,6 @@ gem 'acts-as-taggable-on',"3.0.1"
 gem 'acts_as_list'
 gem 'acts_as_tree'
 gem 'country-select'
-gem 'modporter-plugin'
 gem "will_paginate", "~> 3.0.4"
 gem 'calendar_date_select', :git => 'https://github.com/paneq/calendar_date_select.git'
 gem "yaml_db"
