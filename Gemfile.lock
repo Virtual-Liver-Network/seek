@@ -369,7 +369,6 @@ GEM
       builder
       minitest (>= 2.12, < 5.0)
       powerbar
-    modporter-plugin (0.1.0)
     multi_json (1.10.1)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
@@ -711,7 +710,6 @@ DEPENDENCIES
   mimemagic
   minitest (~> 4.0)
   minitest-reporters
-  modporter-plugin
   my_annotations!
   my_rails_settings!
   my_responds_to_parent!
@@ -767,3 +765,6 @@ DEPENDENCIES
   will_paginate (~> 3.0.4)
   yaml_db
   yui-compressor
+
+BUNDLED WITH
+   1.12.5
